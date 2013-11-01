@@ -15,6 +15,12 @@ class UrlMatch
   
   removePattern: (pattern) ->
     @_patterns = @_patterns.filter (item) -> item.originalPattern isnt pattern
+  
+  test: (url = '') ->
+    # Go through all patterns and return false if any of them does not match.
+    (return false if not pattern.validate url) for pattern in @_patterns
+    # None of the patterns returned false, it means that URL passed them all.
+    true
 
 # Expose object to the global namespace
 window.UrlMatch = UrlMatch
@@ -33,21 +39,43 @@ class Pattern
     (/[^\?\#]*)           # (5) path
   ///
 
-  constructor: (@originalPattern) ->
-    @pattern = @originalPattern
-    # convert general patterns into a well formed one
-    @pattern = '*://*/*' if @pattern in ['<all_urls>', '*']
-    if @_RE.test @pattern
-      #split URL pattern into parts and create helper objects
-      @parts = @pattern.match @_RE
-      @scheme = new Scheme @parts?[1]
-      @host = new Host @parts?[3]
-      @path = new Path @parts?[5]
+  constructor: (@originalPattern = '') ->
+    @parts = @getParts @split @sanitize @originalPattern
+  
+  split: (pattern = @sanitize @originalPattern) ->
+    result =
+      scheme: ''
+      host: ''
+      path: ''
+    if @_RE.test pattern
+      parts = pattern.match @_RE
+      result.scheme = parts?[1]
+      result.host = parts?[3]
+      result.path = parts?[5]
+    result
+  
+  getParts: (fragments = (@split @sanitize @originalPattern) or {}) ->
+    scheme: new Scheme fragments.scheme
+    host: new Host fragments.host
+    path: new Path fragments.path
+  
+  sanitize: (pattern = @originalPattern) ->
+    # Convert general patterns into a well formed one.
+    pattern = '*://*/*' if pattern in ['<all_urls>', '*']
+    pattern
 
-  validate: ->
-    @scheme?.validate() and
-    @host?.validate() and
-    @path?.validate()
+  validate: (parts = @parts) ->
+    parts.scheme?.validate() and
+    parts.host?.validate() and
+    parts.path?.validate()
+    
+  test: (url = '', parts = @parts)->
+    if fragments = @split url
+      parts.scheme?.test(fragments.scheme) and
+      parts.host?.test(fragments.host) and
+      parts.path?.test(fragments.path)
+    else
+      false
 
 class Scheme
   
@@ -85,7 +113,8 @@ class Host
   validate: (pattern = @originalPattern) ->
     # list of prohibited sequences in pattern
     not ///
-      \*\*           # two asterisks in a row
+      ^$             # empty string
+      |\*\*          # two asterisks in a row
       |\*[^\.]+      # asterisk not followed by a dot
       |.\*           # asterisk not at the beginning
       |^(\.|-)       # starts with dot or hyphen

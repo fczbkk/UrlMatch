@@ -157,7 +157,7 @@
   
   <span class="attribute">sanitize</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span>
     pattern
-      .replace <span class="string">'*'</span>, <span class="string">'https?'</span>
+      .replace(<span class="string">'*'</span>, <span class="string">'https?'</span>)
   
   <span class="attribute">test</span>: <span class="function"><span class="params">(scheme, pattern = <span class="property">@pattern</span>)</span> -&gt;</span>
     <span class="regexp">///
@@ -183,13 +183,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>Escape dots.
-.replace &#39;.&#39;, &#39;.&#39;
-Allow letters, numbers, hyphens and dots instead of asterisk.</p>
+              <p>Allow letters, numbers, hyphens and dots instead of asterisk.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      .replace <span class="string">'*'</span>, <span class="string">'[a-z0-9-.]+'</span>
+            <div class="content"><div class='highlight'><pre>      .replace(<span class="string">'*'</span>, <span class="string">'[a-z0-9-.]+'</span>)
 
   <span class="attribute">validate</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span></pre></div></div>
             
@@ -222,10 +220,13 @@ Allow letters, numbers, hyphens and dots instead of asterisk.</p>
       $
     ///</span>.test host
     
-
 <span class="class"><span class="keyword">class</span> <span class="title">Path</span></span>
-  <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@pattern</span>)</span> -&gt;</span>
-  <span class="attribute">validate</span>:<span class="function"> -&gt;</span> <span class="literal">true</span></pre></div></div>
+
+  <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@originalPattern</span>)</span> -&gt;</span>
+    <span class="property">@pattern</span> = <span class="property">@sanitize</span> <span class="property">@originalPattern</span>
+
+  <span class="attribute">sanitize</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span>
+    pattern</pre></div></div>
             
         </li>
         
@@ -233,12 +234,15 @@ Allow letters, numbers, hyphens and dots instead of asterisk.</p>
         <li id="section-9">
             <div class="annotation">
               
-              <div class="pilwrap for-h1">
+              <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <h1>Utilities</h1>
+              <p>Assume trailing slash at the end of path as optional, but not if it is
+the first one.</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>      .replace(<span class="regexp">/(?!^)\/\*$/</span>, <span class="string">'(/*|$)'</span>)</pre></div></div>
             
         </li>
         
@@ -248,6 +252,46 @@ Allow letters, numbers, hyphens and dots instead of asterisk.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Allow letters, numbers, hyphens and dots and slashes instead of *.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      .replace(<span class="regexp">/\*/g</span>, <span class="string">'[a-z0-9-./]*'</span>)
+
+  <span class="attribute">validate</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span>
+    <span class="regexp">///
+      ^/    <span class="comment"># must start with slash</span>
+    ///</span>.test pattern
+
+  <span class="attribute">test</span>: <span class="function"><span class="params">(path, pattern = <span class="property">@pattern</span>)</span> -&gt;</span>
+    <span class="regexp">///
+      ^
+      <span class="comment">#{pattern}</span>
+      $
+    ///</span>.test path</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h1>Utilities</h1>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Check if object is an array. Used when adding patterns to UrlMatch.
 Taken from:

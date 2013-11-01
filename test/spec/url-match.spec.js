@@ -25,26 +25,132 @@
       a.removePattern('*');
       return expect(a._patterns.length).toBe(0);
     });
+    it('should not add pattern if scheme operator is incorrect', function() {
+      var a;
+      a = new UrlMatch(['http:aaa.bbb/ccc', 'http:/aaa.bbb/ccc', 'http/aaa.bbb/ccc', 'http//aaa.bbb/ccc']);
+      return expect(a._patterns.length).toBe(0);
+    });
     return it('should match URL against multiple patterns', function() {});
   });
 
   describe('Pattern', function() {
-    it('should validate', function() {});
-    it('should not validate if scheme, host or path is missing', function() {});
-    it('should not validate if scheme operator is incorrect', function() {});
-    it('should sanitize', function() {});
-    it('should split pattern into scheme, host and path parts', function() {});
-    it('should convert <all_urls> into *://*/*', function() {});
-    it('should convert * into *://*/*', function() {});
-    it('should match any URL when *://*/* is used', function() {});
-    return it('should match correctly when specific URL is used', function() {});
+    var pattern;
+    pattern = null;
+    beforeEach(function() {
+      return pattern = (new UrlMatch('*'))._patterns[0];
+    });
+    it('should validate', function() {
+      var data;
+      expect(pattern.validate()).toBe(true);
+      data = pattern.getParts({
+        scheme: '*',
+        host: '*',
+        path: '/*'
+      });
+      return expect(pattern.validate(data)).toBe(true);
+    });
+    it('should not validate if scheme is missing', function() {
+      var data;
+      data = pattern.getParts({
+        scheme: '',
+        host: '*',
+        path: '/*'
+      });
+      return expect(pattern.validate(data)).toBe(false);
+    });
+    it('should not validate if host is missing', function() {
+      var data;
+      data = pattern.getParts({
+        scheme: '*',
+        host: '',
+        path: '/*'
+      });
+      return expect(pattern.validate(data)).toBe(false);
+    });
+    it('should not validate if path is missing', function() {
+      var data;
+      data = pattern.getParts({
+        scheme: '*',
+        host: '*',
+        path: ''
+      });
+      return expect(pattern.validate(data)).toBe(false);
+    });
+    it('should convert <all_urls> into *://*/*', function() {
+      return expect(pattern.sanitize('<all_urls>')).toBe('*://*/*');
+    });
+    it('should conpvert * into *://*/*', function() {
+      return expect(pattern.sanitize('*')).toBe('*://*/*');
+    });
+    it('should sanitize', function() {
+      expect(pattern.sanitize('*://*/*')).toBe('*://*/*');
+      expect(pattern.sanitize('aaa://*/*')).toBe('aaa://*/*');
+      expect(pattern.sanitize('aaa://bbb/*')).toBe('aaa://bbb/*');
+      expect(pattern.sanitize('*://bbb/*')).toBe('*://bbb/*');
+      expect(pattern.sanitize('aaa://bbb/ccc')).toBe('aaa://bbb/ccc');
+      expect(pattern.sanitize('*://bbb/ccc')).toBe('*://bbb/ccc');
+      expect(pattern.sanitize('aaa://*/ccc')).toBe('aaa://*/ccc');
+      return expect(pattern.sanitize('*://*/ccc')).toBe('*://*/ccc');
+    });
+    it('should split valid pattern into parts', function() {
+      var result;
+      result = pattern.split('*://*/*');
+      expect(result.scheme).toBe('*');
+      expect(result.host).toBe('*');
+      expect(result.path).toBe('/*');
+      result = pattern.split('aaa://bbb.ccc/ddd');
+      expect(result.scheme).toBe('aaa');
+      expect(result.host).toBe('bbb.ccc');
+      return expect(result.path).toBe('/ddd');
+    });
+    it('should split invalid valid pattern into empty parts', function() {
+      var result;
+      result = pattern.split('');
+      expect(result.scheme).toBe('');
+      expect(result.host).toBe('');
+      expect(result.path).toBe('');
+      result = pattern.split('xxx');
+      expect(result.scheme).toBe('');
+      expect(result.host).toBe('');
+      return expect(result.path).toBe('');
+    });
+    it('should match any URL when *://*/* is used', function() {
+      pattern = (new UrlMatch('*'))._patterns[0];
+      expect(pattern.test('http://aaa.bbb/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/ccc')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/ccc.ddd')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/ccc/ddd')).toBe(true);
+      return expect(pattern.test('http://aaa.bbb/ccc/ddd.eee')).toBe(true);
+    });
+    it('should match correctly when specific URL is used', function() {
+      pattern = (new UrlMatch('http://aaa.bbb/*'))._patterns[0];
+      expect(pattern.test('http://aaa.bbb/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/ccc')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/ccc.ddd')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/ccc/ddd')).toBe(true);
+      return expect(pattern.test('http://aaa.bbb/ccc/ddd.eee')).toBe(true);
+    });
+    it('should not match non-matching URLs', function() {
+      pattern = (new UrlMatch('*://xxx.yyy/*'))._patterns[0];
+      expect(pattern.test('http://aaa.bbb/')).toBe(false);
+      expect(pattern.test('http://aaa.bbb/ccc')).toBe(false);
+      expect(pattern.test('http://aaa.bbb/ccc.ddd')).toBe(false);
+      expect(pattern.test('http://aaa.bbb/ccc/ddd')).toBe(false);
+      return expect(pattern.test('http://aaa.bbb/ccc/ddd.eee')).toBe(false);
+    });
+    return it('should not match invalid URLs', function() {
+      pattern = (new UrlMatch('*'))._patterns[0];
+      expect(pattern.test('http://')).toBe(false);
+      expect(pattern.test('http:aaa.bbb/')).toBe(false);
+      return expect(pattern.test('aaa.bbb')).toBe(false);
+    });
   });
 
   describe('Scheme', function() {
     var scheme;
     scheme = null;
     beforeEach(function() {
-      return scheme = (new UrlMatch('*'))._patterns[0].scheme;
+      return scheme = (new UrlMatch('*'))._patterns[0].parts.scheme;
     });
     it('should validate asterisk', function() {
       return expect(scheme.validate('*')).toBe(true);
@@ -96,7 +202,10 @@
     var host;
     host = null;
     beforeEach(function() {
-      return host = (new UrlMatch('*'))._patterns[0].host;
+      return host = (new UrlMatch('*'))._patterns[0].parts.host;
+    });
+    it('should not validate if empty', function() {
+      return expect(host.validate('')).toBe(false);
     });
     it('should validate asterisk', function() {
       return expect(host.validate('*')).toBe(true);
@@ -171,7 +280,7 @@
     var path;
     path = null;
     beforeEach(function() {
-      return path = (new UrlMatch('*'))._patterns[0].path;
+      return path = (new UrlMatch('*'))._patterns[0].parts.path;
     });
     it('should validate only if starts with a slash', function() {
       expect(path.validate('/')).toBe(true);

@@ -22,26 +22,119 @@ describe 'URL Match', ->
     a.removePattern '*'
     expect(a._patterns.length).toBe 0
 
+  it 'should not add pattern if scheme operator is incorrect', ->
+    a = new UrlMatch [
+      'http:aaa.bbb/ccc'
+      'http:/aaa.bbb/ccc'
+      'http/aaa.bbb/ccc'
+      'http//aaa.bbb/ccc'
+    ]
+    expect(a._patterns.length).toBe 0
+
   it 'should match URL against multiple patterns', ->
-    # TODO
+    # a = new UrlMatch ['*://aaa.bbb/*', '*://ccc.ddd/*']
+    # expect(a.test 'http://aaa.bbb/ccc').toBe true
+    # expect(a.test 'http://ccc.ddd/').toBe true
+    # expect(a.test 'http://ccc.ddd/eee.fff').toBe true
+    # expect(a.test 'http://xxx.yyy/').toBe false
+    
 
 describe 'Pattern', ->
+
+  pattern = null
+  
+  beforeEach ->
+    pattern = (new UrlMatch '*')._patterns[0]
+  
   it 'should validate', ->
-  it 'should not validate if scheme, host or path is missing', ->
-  it 'should not validate if scheme operator is incorrect', ->
-  it 'should sanitize', ->
-  it 'should split pattern into scheme, host and path parts', ->
+    expect(pattern.validate()).toBe true
+    data = pattern.getParts {scheme: '*', host: '*', path: '/*'}
+    expect(pattern.validate data).toBe true
+    
+  it 'should not validate if scheme is missing', ->
+    data = pattern.getParts {scheme: '', host: '*', path: '/*'}
+    expect(pattern.validate data).toBe false
+
+  it 'should not validate if host is missing', ->
+    data = pattern.getParts {scheme: '*', host: '', path: '/*'}
+    expect(pattern.validate data).toBe false
+
+  it 'should not validate if path is missing', ->
+    data = pattern.getParts {scheme: '*', host: '*', path: ''}
+    expect(pattern.validate data).toBe false
+
   it 'should convert <all_urls> into *://*/*', ->
-  it 'should convert * into *://*/*', ->
+    expect(pattern.sanitize '<all_urls>').toBe '*://*/*'
+
+  it 'should conpvert * into *://*/*', ->
+    expect(pattern.sanitize '*').toBe '*://*/*'
+
+  it 'should sanitize', ->
+    expect(pattern.sanitize '*://*/*').toBe '*://*/*'
+    expect(pattern.sanitize 'aaa://*/*').toBe 'aaa://*/*'
+    expect(pattern.sanitize 'aaa://bbb/*').toBe 'aaa://bbb/*'
+    expect(pattern.sanitize '*://bbb/*').toBe '*://bbb/*'
+    expect(pattern.sanitize 'aaa://bbb/ccc').toBe 'aaa://bbb/ccc'
+    expect(pattern.sanitize '*://bbb/ccc').toBe '*://bbb/ccc'
+    expect(pattern.sanitize 'aaa://*/ccc').toBe 'aaa://*/ccc'
+    expect(pattern.sanitize '*://*/ccc').toBe '*://*/ccc'
+
+  it 'should split valid pattern into parts', ->
+    result = pattern.split '*://*/*'
+    expect(result.scheme).toBe '*'
+    expect(result.host).toBe '*'
+    expect(result.path).toBe '/*'
+    result = pattern.split 'aaa://bbb.ccc/ddd'
+    expect(result.scheme).toBe 'aaa'
+    expect(result.host).toBe 'bbb.ccc'
+    expect(result.path).toBe '/ddd'
+  
+  it 'should split invalid valid pattern into empty parts', ->
+    result = pattern.split ''
+    expect(result.scheme).toBe ''
+    expect(result.host).toBe ''
+    expect(result.path).toBe ''
+    result = pattern.split 'xxx'
+    expect(result.scheme).toBe ''
+    expect(result.host).toBe ''
+    expect(result.path).toBe ''
+  
   it 'should match any URL when *://*/* is used', ->
+    pattern = (new UrlMatch '*')._patterns[0]
+    expect(pattern.test 'http://aaa.bbb/').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc.ddd').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc/ddd').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc/ddd.eee').toBe true
+    
   it 'should match correctly when specific URL is used', ->
+    pattern = (new UrlMatch 'http://aaa.bbb/*')._patterns[0]
+    expect(pattern.test 'http://aaa.bbb/').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc.ddd').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc/ddd').toBe true
+    expect(pattern.test 'http://aaa.bbb/ccc/ddd.eee').toBe true
+
+  it 'should not match non-matching URLs', ->
+    pattern = (new UrlMatch '*://xxx.yyy/*')._patterns[0]
+    expect(pattern.test 'http://aaa.bbb/').toBe false
+    expect(pattern.test 'http://aaa.bbb/ccc').toBe false
+    expect(pattern.test 'http://aaa.bbb/ccc.ddd').toBe false
+    expect(pattern.test 'http://aaa.bbb/ccc/ddd').toBe false
+    expect(pattern.test 'http://aaa.bbb/ccc/ddd.eee').toBe false
+
+  it 'should not match invalid URLs', ->
+    pattern = (new UrlMatch '*')._patterns[0]
+    expect(pattern.test 'http://').toBe false
+    expect(pattern.test 'http:aaa.bbb/').toBe false
+    expect(pattern.test 'aaa.bbb').toBe false
 
 describe 'Scheme', ->
 
   scheme = null
   
   beforeEach ->
-    scheme = (new UrlMatch '*')._patterns[0].scheme
+    scheme = (new UrlMatch '*')._patterns[0].parts.scheme
   
   it 'should validate asterisk', ->
     expect(scheme.validate '*').toBe true
@@ -92,8 +185,11 @@ describe 'Host', ->
   host = null
   
   beforeEach ->
-    host = (new UrlMatch '*')._patterns[0].host
+    host = (new UrlMatch '*')._patterns[0].parts.host
   
+  it 'should not validate if empty', ->
+    expect(host.validate '').toBe false
+
   it 'should validate asterisk', ->
     expect(host.validate '*').toBe true
 
@@ -166,7 +262,7 @@ describe 'Path', ->
   path = null
   
   beforeEach ->
-    path = (new UrlMatch '*')._patterns[0].path
+    path = (new UrlMatch '*')._patterns[0].parts.path
   
   it 'should validate only if starts with a slash', ->
     expect(path.validate '/').toBe true
