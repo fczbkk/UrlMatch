@@ -34,8 +34,234 @@
             
             <div class="content"><div class='highlight'><pre>
 <span class="class"><span class="keyword">class</span> <span class="title">UrlMatch</span></span>
+  
+  <span class="attribute">constructor</span>: <span class="function"><span class="params">(pattern)</span> -&gt;</span>
+    <span class="property">@_patterns</span> = []
+    <span class="property">@addPattern</span> pattern
+  
+  <span class="attribute">addPattern</span>: <span class="function"><span class="params">(pattern)</span> -&gt;</span>
+    (<span class="property">@addPattern</span> item <span class="keyword">for</span> item <span class="keyword">in</span> pattern) <span class="keyword">if</span> isArray pattern
+    <span class="keyword">if</span> <span class="keyword">typeof</span> pattern <span class="keyword">is</span> <span class="string">'string'</span>
+      patternObj = <span class="keyword">new</span> Pattern pattern
+      <span class="property">@_patterns</span>.push patternObj <span class="keyword">if</span> patternObj.validate()
+  
+  <span class="attribute">removePattern</span>: <span class="function"><span class="params">(pattern)</span> -&gt;</span>
+    <span class="property">@_patterns</span> = <span class="property">@_patterns</span>.filter <span class="function"><span class="params">(item)</span> -&gt;</span> item.originalPattern <span class="keyword">isnt</span> pattern</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Expose object to the global namespace</p>
 
-  <span class="attribute">constructor</span>:<span class="function"> -&gt;</span></pre></div></div>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>window.UrlMatch = UrlMatch</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h1>Helper classes</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="class"><span class="keyword">class</span> <span class="title">Pattern</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>RegEx to validate and split the URL pattern</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="attribute">_RE</span>: <span class="regexp">///
+    ^                     <span class="comment"># beginning</span>
+    ([a-z]+|\*)           <span class="comment"># (1) scheme</span>
+    ://                   <span class="comment"># scheme separator</span>
+    (.+@)*                <span class="comment"># (2) username and/or password</span>
+    ([\w\*\.\-]+(\:\d+)*) <span class="comment"># (3) host, including (4) port number</span>
+    (/[^\?\<span class="comment">#]*)           # (5) path</span>
+  ///</span>
+
+  <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@originalPattern</span>)</span> -&gt;</span>
+    <span class="property">@pattern</span> = <span class="property">@originalPattern</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>convert general patterns into a well formed one</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="property">@pattern</span> = <span class="string">'*://*/*'</span> <span class="keyword">if</span> <span class="property">@pattern</span> <span class="keyword">in</span> [<span class="string">'&lt;all_urls&gt;'</span>, <span class="string">'*'</span>]
+    <span class="keyword">if</span> <span class="property">@_RE</span>.test <span class="property">@pattern</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>split URL pattern into parts and create helper objects</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="property">@parts</span> = <span class="property">@pattern</span>.match <span class="property">@_RE</span>
+      <span class="property">@scheme</span> = <span class="keyword">new</span> Scheme <span class="property">@parts</span>?[<span class="number">1</span>]
+      <span class="property">@host</span> = <span class="keyword">new</span> Host <span class="property">@parts</span>?[<span class="number">3</span>]
+      <span class="property">@path</span> = <span class="keyword">new</span> Path <span class="property">@parts</span>?[<span class="number">5</span>]
+
+  <span class="attribute">validate</span>:<span class="function"> -&gt;</span>
+    <span class="property">@scheme</span>?.validate() <span class="keyword">and</span>
+    <span class="property">@host</span>?.validate() <span class="keyword">and</span>
+    <span class="property">@path</span>?.validate()
+
+<span class="class"><span class="keyword">class</span> <span class="title">Scheme</span></span>
+  
+  <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@originalPattern</span>)</span> -&gt;</span>
+    <span class="property">@pattern</span> = <span class="property">@sanitize</span> <span class="property">@originalPattern</span>
+  
+  <span class="attribute">validate</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span>
+    <span class="regexp">///
+      ^            <span class="comment"># beginning</span>
+      ([a-z]+|\*)  <span class="comment"># characters or single asterisk</span>
+      $            <span class="comment"># end</span>
+    ///</span>.test pattern
+  
+  <span class="attribute">sanitize</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span>
+    pattern
+      .replace <span class="string">'*'</span>, <span class="string">'https?'</span>
+  
+  <span class="attribute">test</span>: <span class="function"><span class="params">(scheme, pattern = <span class="property">@pattern</span>)</span> -&gt;</span>
+    <span class="regexp">///
+      ^
+      <span class="comment">#{pattern}</span>
+      $
+    ///</span>.test scheme
+
+<span class="class"><span class="keyword">class</span> <span class="title">Host</span></span>
+
+  <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@originalPattern</span>)</span> -&gt;</span>
+    <span class="property">@pattern</span> = <span class="property">@sanitize</span> <span class="property">@originalPattern</span>
+
+  <span class="attribute">sanitize</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span>
+    pattern</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Escape dots.
+.replace &#39;.&#39;, &#39;.&#39;
+Allow letters, numbers, hyphens and dots instead of asterisk.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      .replace <span class="string">'*'</span>, <span class="string">'[a-z0-9-.]+'</span>
+
+  <span class="attribute">validate</span>: <span class="function"><span class="params">(pattern = <span class="property">@originalPattern</span>)</span> -&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>list of prohibited sequences in pattern</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">not</span> <span class="regexp">///
+      \*\*           <span class="comment"># two asterisks in a row</span>
+      |\*[^\.]+      <span class="comment"># asterisk not followed by a dot</span>
+      |.\*           <span class="comment"># asterisk not at the beginning</span>
+      |^(\.|-)       <span class="comment"># starts with dot or hyphen</span>
+      |(\.|-)$       <span class="comment"># ends with dot or hyphen</span>
+      |[^a-z0-9-.\*] <span class="comment"># anything except characters, numbers, hyphen, dot and *</span>
+    ///</span>.test pattern
+
+  <span class="attribute">test</span>: <span class="function"><span class="params">(host, pattern = <span class="property">@pattern</span>)</span> -&gt;</span>
+    <span class="regexp">///
+      ^
+      <span class="comment">#{pattern}</span>
+      $
+    ///</span>.test host
+    
+
+<span class="class"><span class="keyword">class</span> <span class="title">Path</span></span>
+  <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@pattern</span>)</span> -&gt;</span>
+  <span class="attribute">validate</span>:<span class="function"> -&gt;</span> <span class="literal">true</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap for-h1">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h1>Utilities</h1>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Check if object is an array. Used when adding patterns to UrlMatch.
+Taken from:
+<a href="http://coffeescriptcookbook.com/chapters/arrays/check-type-is-array">http://coffeescriptcookbook.com/chapters/arrays/check-type-is-array</a></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="function"><span class="title">isArray</span> = <span class="params">(value)</span> -&gt;</span>
+  value <span class="keyword">and</span>
+  <span class="keyword">typeof</span> value <span class="keyword">is</span> <span class="string">'object'</span> <span class="keyword">and</span>
+  value <span class="keyword">instanceof</span> Array <span class="keyword">and</span>
+  <span class="keyword">typeof</span> value.length <span class="keyword">is</span> <span class="string">'number'</span> <span class="keyword">and</span>
+  <span class="keyword">typeof</span> value.splice <span class="keyword">is</span> <span class="string">'function'</span> <span class="keyword">and</span>
+  <span class="keyword">not</span> (value.propertyIsEnumerable <span class="string">'length'</span>)</pre></div></div>
             
         </li>
         
