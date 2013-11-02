@@ -28,7 +28,7 @@ class UrlMatch
   # Test if *url* (string) matches any of the patterns.
   test: (url = '') ->
     # Go through all patterns and return true if any of them does match.
-    (return true if pattern.validate url) for pattern in @_patterns
+    (return true if pattern.test url) for pattern in @_patterns
     # If none of the patterns matched, return false.
     false
 

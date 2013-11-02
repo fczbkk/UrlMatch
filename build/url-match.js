@@ -48,7 +48,7 @@
       _ref = this._patterns;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pattern = _ref[_i];
-        if (pattern.validate(url)) {
+        if (pattern.test(url)) {
           return true;
         }
       }
