@@ -9,7 +9,7 @@ module.exports = (grunt) ->
       default:
         src: ['build/url-match.js']
         options:
-          keepRunner: true
+          keepRunner: false
           specs: 'test/spec/url-match.spec.js'
 
     coffee:
