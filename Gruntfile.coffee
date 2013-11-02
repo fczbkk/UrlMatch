@@ -43,7 +43,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
   grunt.loadNpmTasks 'grunt-docco'
   
-  grunt.registerTask 'build', ['dev', 'doc', 'uglify:default']
+  grunt.registerTask 'build', ['dev', 'uglify:default', 'doc']
   grunt.registerTask 'dev', ['coffeelint', 'coffee:default', 'jasmine:default']
   grunt.registerTask 'default', ['watch:default']
   grunt.registerTask 'doc', ['docco:default']
