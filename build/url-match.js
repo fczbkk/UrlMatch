@@ -1,5 +1,7 @@
 (function() {
-  var Host, Path, Pattern, Scheme, UrlMatch, isArray;
+  var Host, Path, Pattern, Scheme, UrlFragment, UrlMatch, isArray, _ref, _ref1, _ref2,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   UrlMatch = (function() {
     function UrlMatch(pattern) {
@@ -125,98 +127,121 @@
 
   })();
 
-  Scheme = (function() {
-    function Scheme(originalPattern) {
+  UrlFragment = (function() {
+    UrlFragment.prototype._sanitation = {};
+
+    UrlFragment.prototype._validationRequire = [];
+
+    UrlFragment.prototype._validationReject = [];
+
+    function UrlFragment(originalPattern) {
       this.originalPattern = originalPattern;
       this.pattern = this.sanitize(this.originalPattern);
     }
 
-    Scheme.prototype.validate = function(pattern) {
+    UrlFragment.prototype.validate = function(pattern) {
+      var result, rule, _i, _j, _len, _len1, _ref, _ref1;
       if (pattern == null) {
         pattern = this.originalPattern;
       }
-      return /^([a-z]+|\*)$/.test(pattern);
+      result = false;
+      _ref = this._validationRequire;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        rule = _ref[_i];
+        if (rule.test(pattern)) {
+          result = true;
+        }
+      }
+      _ref1 = this._validationReject;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        rule = _ref1[_j];
+        if (rule.test(pattern)) {
+          result = false;
+        }
+      }
+      return result;
     };
 
-    Scheme.prototype.sanitize = function(pattern) {
+    UrlFragment.prototype.sanitize = function(pattern) {
+      var key, val, _ref;
       if (pattern == null) {
         pattern = this.originalPattern;
       }
-      return pattern.replace('*', 'https?');
+      _ref = this._sanitation;
+      for (key in _ref) {
+        val = _ref[key];
+        pattern = pattern.replace(val, key);
+      }
+      return pattern;
     };
 
-    Scheme.prototype.test = function(scheme, pattern) {
+    UrlFragment.prototype.test = function(part, pattern) {
       if (pattern == null) {
         pattern = this.pattern;
       }
-      return RegExp("^" + pattern + "$").test(scheme);
+      return RegExp("" + pattern).test(part);
+    };
+
+    return UrlFragment;
+
+  })();
+
+  Scheme = (function(_super) {
+    __extends(Scheme, _super);
+
+    function Scheme() {
+      _ref = Scheme.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Scheme.prototype._validationRequire = [/^([a-z]+|\*)$/];
+
+    Scheme.prototype._sanitation = {
+      'https?': '*'
     };
 
     return Scheme;
 
-  })();
+  })(UrlFragment);
 
-  Host = (function() {
-    function Host(originalPattern) {
-      this.originalPattern = originalPattern;
-      this.pattern = this.sanitize(this.originalPattern);
+  Host = (function(_super) {
+    __extends(Host, _super);
+
+    function Host() {
+      _ref1 = Host.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
-    Host.prototype.sanitize = function(pattern) {
-      if (pattern == null) {
-        pattern = this.originalPattern;
-      }
-      return pattern.replace('*', '[a-z0-9-.]+');
-    };
+    Host.prototype._validationRequire = [/.+/];
 
-    Host.prototype.validate = function(pattern) {
-      if (pattern == null) {
-        pattern = this.originalPattern;
-      }
-      return !/^$|\*\*|\*[^\.]+|.\*|^(\.|-)|(\.|-)$|[^a-z0-9-.\*]/.test(pattern);
-    };
+    Host.prototype._validationReject = [/\*\*/, /\*[^\.]+/, /.\*/, /^(\.|-)/, /(\.|-)$/, /[^a-z0-9-.\*]/];
 
-    Host.prototype.test = function(host, pattern) {
-      if (pattern == null) {
-        pattern = this.pattern;
-      }
-      return RegExp("^" + pattern + "$").test(host);
+    Host.prototype._sanitation = {
+      '[a-z0-9-.]+': '*'
     };
 
     return Host;
 
-  })();
+  })(UrlFragment);
 
-  Path = (function() {
-    function Path(originalPattern) {
-      this.originalPattern = originalPattern;
-      this.pattern = this.sanitize(this.originalPattern);
+  Path = (function(_super) {
+    __extends(Path, _super);
+
+    function Path() {
+      _ref2 = Path.__super__.constructor.apply(this, arguments);
+      return _ref2;
     }
 
-    Path.prototype.sanitize = function(pattern) {
-      if (pattern == null) {
-        pattern = this.originalPattern;
-      }
-      return pattern.replace(/(?!^)\/\*$/, '(/*|$)').replace(/\*/g, '[a-z0-9-./]*');
-    };
+    Path.prototype._validationRequire = [/^\//];
 
-    Path.prototype.validate = function(pattern) {
-      if (pattern == null) {
-        pattern = this.originalPattern;
-      }
-      return /^\//.test(pattern);
-    };
-
-    Path.prototype.test = function(path, pattern) {
-      if (pattern == null) {
-        pattern = this.pattern;
-      }
-      return RegExp("^" + pattern + "$").test(path);
+    Path.prototype._sanitation = {
+      '(/*|$)': /(?!^)\/\*$/,
+      '[a-z0-9-./]*': /\*/g
     };
 
     return Path;
 
-  })();
+  })(UrlFragment);
 
   isArray = function(value) {
     return value && typeof value === 'object' && value instanceof Array && typeof value.length === 'number' && typeof value.splice === 'function' && !(value.propertyIsEnumerable('length'));

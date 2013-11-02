@@ -77,83 +77,63 @@ class Pattern
     else
       false
 
-class Scheme
-  
-  constructor: (@originalPattern) ->
-    @pattern = @sanitize @originalPattern
-  
-  validate: (pattern = @originalPattern) ->
-    ///
-      ^            # beginning
-      ([a-z]+|\*)  # characters or single asterisk
-      $            # end
-    ///.test pattern
-  
-  sanitize: (pattern = @originalPattern) ->
-    pattern
-      .replace('*', 'https?')
-  
-  test: (scheme, pattern = @pattern) ->
-    ///
-      ^
-      #{pattern}
-      $
-    ///.test scheme
+class UrlFragment
 
-class Host
+  _sanitation: {}
+  _validationRequire: []
+  _validationReject: []
 
   constructor: (@originalPattern) ->
     @pattern = @sanitize @originalPattern
-
-  sanitize: (pattern = @originalPattern) ->
-    pattern
-      # Allow letters, numbers, hyphens and dots instead of asterisk.
-      .replace('*', '[a-z0-9-.]+')
 
   validate: (pattern = @originalPattern) ->
-    # list of prohibited sequences in pattern
-    not ///
-      ^$             # empty string
-      |\*\*          # two asterisks in a row
-      |\*[^\.]+      # asterisk not followed by a dot
-      |.\*           # asterisk not at the beginning
-      |^(\.|-)       # starts with dot or hyphen
-      |(\.|-)$       # ends with dot or hyphen
-      |[^a-z0-9-.\*] # anything except characters, numbers, hyphen, dot and *
-    ///.test pattern
-
-  test: (host, pattern = @pattern) ->
-    ///
-      ^
-      #{pattern}
-      $
-    ///.test host
-    
-class Path
-
-  constructor: (@originalPattern) ->
-    @pattern = @sanitize @originalPattern
+    result = false
+    for rule in @_validationRequire
+      result = true if rule.test pattern
+    for rule in @_validationReject
+      result = false if rule.test pattern
+    result
 
   sanitize: (pattern = @originalPattern) ->
+    pattern = pattern.replace val, key for key, val of @_sanitation
     pattern
-      # Assume trailing slash at the end of path as optional, but not if it is
-      # the first one.
-      .replace(/(?!^)\/\*$/, '(/*|$)')
+
+  test: (part, pattern = @pattern) ->
+    ///#{pattern}///.test part
+
+class Scheme extends UrlFragment
+  _validationRequire: [
+    /^([a-z]+|\*)$/ # only characters or single asterisk
+  ]
+  _sanitation:
+    'https?': '*'
+
+class Host extends UrlFragment
+  _validationRequire: [
+    /.+/            # should not be empty
+  ]
+  _validationReject: [
+    /\*\*/          # two asterisks in a row
+    /\*[^\.]+/      # asterisk not followed by a dot
+    /.\*/           # asterisk not at the beginning
+    /^(\.|-)/       # starts with dot or hyphen
+    /(\.|-)$/       # ends with dot or hyphen
+    /[^a-z0-9-.\*]/ # anything except characters, numbers, hyphen, dot and *
+  ]
+  _sanitation:
+    '[a-z0-9-.]+': '*'
+
+class Path extends UrlFragment
+  _validationRequire: [
+    /^\//   # must start with a slash
+  ]
+  _sanitation:
+    # Assume trailing slash at the end of path as optional, but not if it is
+    # the first one.
+    '(/*|$)': /(?!^)\/\*$/
       # Allow letters, numbers, hyphens and dots and slashes instead of *.
-      .replace(/\*/g, '[a-z0-9-./]*')
-
-  validate: (pattern = @originalPattern) ->
-    ///
-      ^/    # must start with slash
-    ///.test pattern
-
-  test: (path, pattern = @pattern) ->
-    ///
-      ^
-      #{pattern}
-      $
-    ///.test path
-
+    '[a-z0-9-./]*': /\*/g
+    
 # # Utilities
 
 # Check if object is an array. Used when adding patterns to UrlMatch.
