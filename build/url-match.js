@@ -26,9 +26,18 @@
     };
 
     UrlMatch.prototype.removePattern = function(pattern) {
-      return this._patterns = this._patterns.filter(function(item) {
-        return item.originalPattern !== pattern;
-      });
+      var item, _i, _len;
+      if (isArray(pattern)) {
+        for (_i = 0, _len = pattern.length; _i < _len; _i++) {
+          item = pattern[_i];
+          this.removePattern(item);
+        }
+      }
+      if (typeof pattern === 'string') {
+        return this._patterns = this._patterns.filter(function(item) {
+          return item.originalPattern !== pattern;
+        });
+      }
     };
 
     UrlMatch.prototype.test = function(url) {
@@ -39,11 +48,11 @@
       _ref = this._patterns;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pattern = _ref[_i];
-        if (!pattern.validate(url)) {
-          return false;
+        if (pattern.validate(url)) {
+          return true;
         }
       }
-      return true;
+      return false;
     };
 
     return UrlMatch;

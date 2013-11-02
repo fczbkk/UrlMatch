@@ -7,26 +7,38 @@ class UrlMatch
     @_patterns = []
     @addPattern pattern
   
+  # Adds a pattern (or group of patterns) to the list.
+  # The *pattern* parameter can be either string (single pattern) or array
+  # (group of patterns).
   addPattern: (pattern) ->
     (@addPattern item for item in pattern) if isArray pattern
     if typeof pattern is 'string'
       patternObj = new Pattern pattern
       @_patterns.push patternObj if patternObj.validate()
   
+  # Remove a pattern (or group of patterns) from the list.
+  # The *pattern* parameter can be either string (single pattern) or array
+  # (group of patterns).
   removePattern: (pattern) ->
-    @_patterns = @_patterns.filter (item) -> item.originalPattern isnt pattern
+    (@removePattern item for item in pattern) if isArray pattern
+    if typeof pattern is 'string'
+      @_patterns = @_patterns.filter (item) ->
+        item.originalPattern isnt pattern
   
+  # Test if *url* (string) matches any of the patterns.
   test: (url = '') ->
-    # Go through all patterns and return false if any of them does not match.
-    (return false if not pattern.validate url) for pattern in @_patterns
-    # None of the patterns returned false, it means that URL passed them all.
-    true
+    # Go through all patterns and return true if any of them does match.
+    (return true if pattern.validate url) for pattern in @_patterns
+    # If none of the patterns matched, return false.
+    false
 
 # Expose object to the global namespace
 window.UrlMatch = UrlMatch
 
 # # Helper classes
 
+# Contains a single pattern and provides methods to sanitize, validate and
+# test URLs against it.
 class Pattern
 
   # RegEx to validate and split the URL pattern
@@ -42,6 +54,9 @@ class Pattern
   constructor: (@originalPattern = '') ->
     @parts = @getParts @split @sanitize @originalPattern
   
+  # Splits the pattern into object with three properties: scheme, host and
+  # path. If the pattern is not valid, it returns empty strings for all of the
+  # properties. This usually means that all tests for any values will fail.
   split: (pattern = @sanitize @originalPattern) ->
     result =
       scheme: ''
@@ -54,21 +69,27 @@ class Pattern
       result.path = parts?[5]
     result
   
+  # Each of the parts has it's own validation and sanitation rules. It is
+  # easier to treat them as separate objects.
   getParts: (fragments = (@split @sanitize @originalPattern) or {}) ->
     scheme: new Scheme fragments.scheme
     host: new Host fragments.host
     path: new Path fragments.path
   
+  # User can use shortcuts for commonly used patterns, such as single asterisk.
   sanitize: (pattern = @originalPattern) ->
     # Convert general patterns into a well formed one.
     pattern = '*://*/*' if pattern in ['<all_urls>', '*']
     pattern
-
+  
+  # The Pattern is valid if all of its parts are valid.
   validate: (parts = @parts) ->
     parts.scheme?.validate() and
     parts.host?.validate() and
     parts.path?.validate()
-    
+  
+  # When testing against a URL, it is first divided into parts and then tested
+  # agains each of the part separately.
   test: (url = '', parts = @parts)->
     if fragments = @split url
       parts.scheme?.test(fragments.scheme) and
@@ -77,9 +98,21 @@ class Pattern
     else
       false
 
+# This is an abstract objects that all of the specialized objects for parts
+# (Scheme, Host and Path) inherit from. It provides methods to validate,
+# sanitize and test patterns against provided rules. Each of the child objects
+# has the same interface and functionality, it just provides a different set
+# of rules.
 class UrlFragment
 
+  # List of sanitation rules in form of a hash object. The key is a string to
+  # be used as a replacement, the value is a string or regex to be replaced.
+  # This order is somehow counterintuitive, but I used it because regex can
+  # not be used as a key and I didn't want to use more complex structure.
   _sanitation: {}
+  
+  # Arrays containing validation rules. They can contain mix of strings and/or
+  # regexes.
   _validationRequire: []
   _validationReject: []
 
