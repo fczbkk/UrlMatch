@@ -109,7 +109,7 @@ The <em>pattern</em> parameter can be either string (single pattern) or array
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    (<span class="keyword">return</span> <span class="literal">true</span> <span class="keyword">if</span> pattern.validate url) <span class="keyword">for</span> pattern <span class="keyword">in</span> <span class="property">@_patterns</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>    (<span class="keyword">return</span> <span class="literal">true</span> <span class="keyword">if</span> pattern.test url) <span class="keyword">for</span> pattern <span class="keyword">in</span> <span class="property">@_patterns</span></pre></div></div>
             
         </li>
         
@@ -365,6 +365,9 @@ regexes.</p>
             
             <div class="content"><div class='highlight'><pre>  <span class="attribute">_validationRequire</span>: []
   <span class="attribute">_validationReject</span>: []
+  
+  <span class="attribute">_patternBefore</span>: <span class="string">'^'</span>
+  <span class="attribute">_patternAfter</span>: <span class="string">'$'</span>
 
   <span class="attribute">constructor</span>: <span class="function"><span class="params">(<span class="property">@originalPattern</span>)</span> -&gt;</span>
     <span class="property">@pattern</span> = <span class="property">@sanitize</span> <span class="property">@originalPattern</span>
@@ -382,35 +385,39 @@ regexes.</p>
     pattern
 
   <span class="attribute">test</span>: <span class="function"><span class="params">(part, pattern = <span class="property">@pattern</span>)</span> -&gt;</span>
-    <span class="regexp">///<span class="comment">#{pattern}///.test part</span>
+    <span class="regexp">///
+      <span class="comment">#{@_patternBefore}</span>
+      <span class="comment">#{pattern}</span>
+      <span class="comment">#{@_patternAfter}</span>
+    ///</span>.test part
 
-class Scheme extends UrlFragment
-  _validationRequire: [
-    /^([a-z]+|\*)$/ <span class="comment"># only characters or single asterisk</span>
+<span class="class"><span class="keyword">class</span> <span class="title">Scheme</span> <span class="keyword">extends</span> <span class="title">UrlFragment</span></span>
+  <span class="attribute">_validationRequire</span>: [
+    <span class="regexp">/^([a-z]+|\*)$/</span> <span class="comment"># only characters or single asterisk</span>
   ]
-  _sanitation:
-    'https?': '*'
+  <span class="attribute">_sanitation</span>:
+    <span class="string">'https?'</span>: <span class="string">'*'</span>
 
-class Host extends UrlFragment
-  _validationRequire: [
-    /.+/            <span class="comment"># should not be empty</span>
+<span class="class"><span class="keyword">class</span> <span class="title">Host</span> <span class="keyword">extends</span> <span class="title">UrlFragment</span></span>
+  <span class="attribute">_validationRequire</span>: [
+    <span class="regexp">/.+/</span>            <span class="comment"># should not be empty</span>
   ]
-  _validationReject: [
-    /\*\*/          <span class="comment"># two asterisks in a row</span>
-    /\*[^\.]+/      <span class="comment"># asterisk not followed by a dot</span>
-    /.\*/           <span class="comment"># asterisk not at the beginning</span>
-    /^(\.|-)/       <span class="comment"># starts with dot or hyphen</span>
-    /(\.|-)$/       <span class="comment"># ends with dot or hyphen</span>
-    /[^a-z0-9-.\*]/ <span class="comment"># anything except characters, numbers, hyphen, dot and *</span>
+  <span class="attribute">_validationReject</span>: [
+    <span class="regexp">/\*\*/</span>          <span class="comment"># two asterisks in a row</span>
+    <span class="regexp">/\*[^\.]+/</span>      <span class="comment"># asterisk not followed by a dot</span>
+    <span class="regexp">/.\*/</span>           <span class="comment"># asterisk not at the beginning</span>
+    <span class="regexp">/^(\.|-)/</span>       <span class="comment"># starts with dot or hyphen</span>
+    <span class="regexp">/(\.|-)$/</span>       <span class="comment"># ends with dot or hyphen</span>
+    <span class="regexp">/[^a-z0-9-.\*]/</span> <span class="comment"># anything except characters, numbers, hyphen, dot and *</span>
   ]
-  _sanitation:
-    '[a-z0-9-.]+': '*'
+  <span class="attribute">_sanitation</span>:
+    <span class="string">'[a-z0-9-.]+'</span>: <span class="string">'*'</span>
 
-class Path extends UrlFragment
-  _validationRequire: [
-    /^\//   <span class="comment"># must start with a slash</span>
+<span class="class"><span class="keyword">class</span> <span class="title">Path</span> <span class="keyword">extends</span> <span class="title">UrlFragment</span></span>
+  <span class="attribute">_validationRequire</span>: [
+    <span class="regexp">/^\//</span>   <span class="comment"># must start with a slash</span>
   ]
-  _sanitation:</pre></div></div>
+  <span class="attribute">_sanitation</span>:</pre></div></div>
             
         </li>
         

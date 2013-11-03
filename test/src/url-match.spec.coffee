@@ -31,12 +31,39 @@ describe 'URL Match', ->
     ]
     expect(a._patterns.length).toBe 0
 
+  it 'should match URL against a general pattern', ->
+    a = new UrlMatch '*'
+    expect(a.test 'http://aaa.bbb/ccc').toBe true
+    expect(a.test 'https://aaa.bbb/ccc').toBe true
+
+  it 'should match correct scheme', ->
+    a = new UrlMatch 'http://*/*'
+    expect(a.test 'http://aaa.bbb/').toBe true
+    expect(a.test 'https://aaa.bbb/').toBe false
+
+  it 'should match correct host', ->
+    a = new UrlMatch '*://aaa.bbb/*'
+    b = new UrlMatch '*://*.bbb/*'
+    expect(a.test 'http://aaa.bbb/').toBe true
+    expect(a.test 'http://xxx.yyy/').toBe false
+    expect(b.test 'http://aaa.bbb/').toBe true
+    expect(b.test 'http://xxx.yyy/').toBe false
+
+  it 'should match correct path', ->
+    a = new UrlMatch '*://*/ccc/*'
+    expect(a.test 'http://aaa.bbb/ccc').toBe true
+    expect(a.test 'http://aaa.bbb/ccc/').toBe true
+    expect(a.test 'http://aaa.bbb/ccc/ddd').toBe true
+    expect(a.test 'http://aaa.bbb/ddd').toBe false
+    expect(a.test 'http://aaa.bbb/ddd/').toBe false
+    expect(a.test 'http://aaa.bbb/ddd/ccc').toBe false
+
   it 'should match URL against multiple patterns', ->
-    # a = new UrlMatch ['*://aaa.bbb/*', '*://ccc.ddd/*']
-    # expect(a.test 'http://aaa.bbb/ccc').toBe true
-    # expect(a.test 'http://ccc.ddd/').toBe true
-    # expect(a.test 'http://ccc.ddd/eee.fff').toBe true
-    # expect(a.test 'http://xxx.yyy/').toBe false
+    a = new UrlMatch ['*://aaa.bbb/*', '*://ccc.ddd/*']
+    expect(a.test 'http://aaa.bbb/ccc').toBe true
+    expect(a.test 'http://ccc.ddd/').toBe true
+    expect(a.test 'http://ccc.ddd/eee.fff').toBe true
+    expect(a.test 'http://xxx.yyy/').toBe false
     
 
 describe 'Pattern', ->
@@ -66,7 +93,7 @@ describe 'Pattern', ->
   it 'should convert <all_urls> into *://*/*', ->
     expect(pattern.sanitize '<all_urls>').toBe '*://*/*'
 
-  it 'should conpvert * into *://*/*', ->
+  it 'should convert * into *://*/*', ->
     expect(pattern.sanitize '*').toBe '*://*/*'
 
   it 'should sanitize', ->
@@ -110,6 +137,8 @@ describe 'Pattern', ->
   it 'should match correctly when specific URL is used', ->
     pattern = (new UrlMatch 'http://aaa.bbb/*')._patterns[0]
     expect(pattern.test 'http://aaa.bbb/').toBe true
+    expect(pattern.test 'https://aaa.bbb/').toBe false
+    expect(pattern.test 'http://xxx.yyy/').toBe false
     expect(pattern.test 'http://aaa.bbb/ccc').toBe true
     expect(pattern.test 'http://aaa.bbb/ccc.ddd').toBe true
     expect(pattern.test 'http://aaa.bbb/ccc/ddd').toBe true
@@ -136,6 +165,12 @@ describe 'Scheme', ->
   beforeEach ->
     scheme = (new UrlMatch '*')._patterns[0].parts.scheme
   
+  it 'should create correct pattern', ->
+    scheme = (new UrlMatch '*')._patterns[0].parts.scheme
+    expect(scheme.pattern).toBe 'https?'
+    scheme = (new UrlMatch 'http://*/*')._patterns[0].parts.scheme
+    expect(scheme.pattern).toBe 'http'
+
   it 'should validate asterisk', ->
     expect(scheme.validate '*').toBe true
 
@@ -176,8 +211,15 @@ describe 'Scheme', ->
     expect(scheme.test 'https', scheme.sanitize '*').toBe true
     expect(scheme.test 'aaa', scheme.sanitize '*').toBe false
     
+  it 'should match only http/https scheme when specific scheme provided', ->
+    expect(scheme.test 'http', 'http').toBe true
+    expect(scheme.test 'http', 'https').toBe false
+    expect(scheme.test 'https', 'https').toBe true
+    expect(scheme.test 'http', 'https').toBe false
+
   it 'should match only specific scheme when provided', ->
     expect(scheme.test 'aaa', 'aaa').toBe true
+    expect(scheme.test 'aaa', 'aaaaaa').toBe false
     expect(scheme.test 'aaa', 'bbb').toBe false
 
 describe 'Host', ->

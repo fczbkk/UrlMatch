@@ -30,7 +30,45 @@
       a = new UrlMatch(['http:aaa.bbb/ccc', 'http:/aaa.bbb/ccc', 'http/aaa.bbb/ccc', 'http//aaa.bbb/ccc']);
       return expect(a._patterns.length).toBe(0);
     });
-    return it('should match URL against multiple patterns', function() {});
+    it('should match URL against a general pattern', function() {
+      var a;
+      a = new UrlMatch('*');
+      expect(a.test('http://aaa.bbb/ccc')).toBe(true);
+      return expect(a.test('https://aaa.bbb/ccc')).toBe(true);
+    });
+    it('should match correct scheme', function() {
+      var a;
+      a = new UrlMatch('http://*/*');
+      expect(a.test('http://aaa.bbb/')).toBe(true);
+      return expect(a.test('https://aaa.bbb/')).toBe(false);
+    });
+    it('should match correct host', function() {
+      var a, b;
+      a = new UrlMatch('*://aaa.bbb/*');
+      b = new UrlMatch('*://*.bbb/*');
+      expect(a.test('http://aaa.bbb/')).toBe(true);
+      expect(a.test('http://xxx.yyy/')).toBe(false);
+      expect(b.test('http://aaa.bbb/')).toBe(true);
+      return expect(b.test('http://xxx.yyy/')).toBe(false);
+    });
+    it('should match correct path', function() {
+      var a;
+      a = new UrlMatch('*://*/ccc/*');
+      expect(a.test('http://aaa.bbb/ccc')).toBe(true);
+      expect(a.test('http://aaa.bbb/ccc/')).toBe(true);
+      expect(a.test('http://aaa.bbb/ccc/ddd')).toBe(true);
+      expect(a.test('http://aaa.bbb/ddd')).toBe(false);
+      expect(a.test('http://aaa.bbb/ddd/')).toBe(false);
+      return expect(a.test('http://aaa.bbb/ddd/ccc')).toBe(false);
+    });
+    return it('should match URL against multiple patterns', function() {
+      var a;
+      a = new UrlMatch(['*://aaa.bbb/*', '*://ccc.ddd/*']);
+      expect(a.test('http://aaa.bbb/ccc')).toBe(true);
+      expect(a.test('http://ccc.ddd/')).toBe(true);
+      expect(a.test('http://ccc.ddd/eee.fff')).toBe(true);
+      return expect(a.test('http://xxx.yyy/')).toBe(false);
+    });
   });
 
   describe('Pattern', function() {
@@ -79,7 +117,7 @@
     it('should convert <all_urls> into *://*/*', function() {
       return expect(pattern.sanitize('<all_urls>')).toBe('*://*/*');
     });
-    it('should conpvert * into *://*/*', function() {
+    it('should convert * into *://*/*', function() {
       return expect(pattern.sanitize('*')).toBe('*://*/*');
     });
     it('should sanitize', function() {
@@ -125,6 +163,8 @@
     it('should match correctly when specific URL is used', function() {
       pattern = (new UrlMatch('http://aaa.bbb/*'))._patterns[0];
       expect(pattern.test('http://aaa.bbb/')).toBe(true);
+      expect(pattern.test('https://aaa.bbb/')).toBe(false);
+      expect(pattern.test('http://xxx.yyy/')).toBe(false);
       expect(pattern.test('http://aaa.bbb/ccc')).toBe(true);
       expect(pattern.test('http://aaa.bbb/ccc.ddd')).toBe(true);
       expect(pattern.test('http://aaa.bbb/ccc/ddd')).toBe(true);
@@ -151,6 +191,12 @@
     scheme = null;
     beforeEach(function() {
       return scheme = (new UrlMatch('*'))._patterns[0].parts.scheme;
+    });
+    it('should create correct pattern', function() {
+      scheme = (new UrlMatch('*'))._patterns[0].parts.scheme;
+      expect(scheme.pattern).toBe('https?');
+      scheme = (new UrlMatch('http://*/*'))._patterns[0].parts.scheme;
+      return expect(scheme.pattern).toBe('http');
     });
     it('should validate asterisk', function() {
       return expect(scheme.validate('*')).toBe(true);
@@ -192,8 +238,15 @@
       expect(scheme.test('https', scheme.sanitize('*'))).toBe(true);
       return expect(scheme.test('aaa', scheme.sanitize('*'))).toBe(false);
     });
+    it('should match only http/https scheme when specific scheme provided', function() {
+      expect(scheme.test('http', 'http')).toBe(true);
+      expect(scheme.test('http', 'https')).toBe(false);
+      expect(scheme.test('https', 'https')).toBe(true);
+      return expect(scheme.test('http', 'https')).toBe(false);
+    });
     return it('should match only specific scheme when provided', function() {
       expect(scheme.test('aaa', 'aaa')).toBe(true);
+      expect(scheme.test('aaa', 'aaaaaa')).toBe(false);
       return expect(scheme.test('aaa', 'bbb')).toBe(false);
     });
   });

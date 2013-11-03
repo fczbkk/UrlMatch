@@ -115,6 +115,9 @@ class UrlFragment
   # regexes.
   _validationRequire: []
   _validationReject: []
+  
+  _patternBefore: '^'
+  _patternAfter: '$'
 
   constructor: (@originalPattern) ->
     @pattern = @sanitize @originalPattern
@@ -132,7 +135,11 @@ class UrlFragment
     pattern
 
   test: (part, pattern = @pattern) ->
-    ///#{pattern}///.test part
+    ///
+      #{@_patternBefore}
+      #{pattern}
+      #{@_patternAfter}
+    ///.test part
 
 class Scheme extends UrlFragment
   _validationRequire: [

@@ -143,6 +143,10 @@
 
     UrlFragment.prototype._validationReject = [];
 
+    UrlFragment.prototype._patternBefore = '^';
+
+    UrlFragment.prototype._patternAfter = '$';
+
     function UrlFragment(originalPattern) {
       this.originalPattern = originalPattern;
       this.pattern = this.sanitize(this.originalPattern);
@@ -188,7 +192,7 @@
       if (pattern == null) {
         pattern = this.pattern;
       }
-      return RegExp("" + pattern).test(part);
+      return RegExp("" + this._patternBefore + pattern + this._patternAfter).test(part);
     };
 
     return UrlFragment;
