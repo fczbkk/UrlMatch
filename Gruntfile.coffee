@@ -1,6 +1,8 @@
 module.exports = (grunt) ->
 
   grunt.initConfig
+  
+    pkg: grunt.file.readJSON 'package.json'
     
     coffeelint:
       app: ['src/url-match.coffee', 'test/src/url-match.spec.coffee']
@@ -20,6 +22,13 @@ module.exports = (grunt) ->
 
     uglify:
       default:
+        options:
+          banner:
+            """
+              // URL Match <%= pkg.version %> (https://github.com/fczbkk/UrlMatch)
+              // by <%= pkg.author %>
+              
+            """
         files:
           'build/url-match.min.js' : ['build/url-match.js']
     
