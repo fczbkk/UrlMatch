@@ -95,7 +95,13 @@ describe 'Pattern', ->
 
   it 'should convert * into *://*/*', ->
     expect(pattern.sanitize '*').toBe '*://*/*'
-
+  
+  it 'should convert provided pattern to string', ->
+    expect(typeof pattern.sanitize 'aaa').toBe 'string'
+    expect(typeof pattern.sanitize {}).toBe 'string'
+    expect(typeof pattern.sanitize []).toBe 'string'
+    expect(typeof pattern.sanitize document.location).toBe 'string'
+  
   it 'should sanitize', ->
     expect(pattern.sanitize '*://*/*').toBe '*://*/*'
     expect(pattern.sanitize 'aaa://*/*').toBe 'aaa://*/*'

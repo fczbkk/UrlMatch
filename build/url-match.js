@@ -103,6 +103,9 @@
       if (pattern == null) {
         pattern = this.originalPattern;
       }
+      if (typeof pattern !== 'string' && (pattern.toString != null)) {
+        pattern = pattern.toString();
+      }
       if (pattern === '<all_urls>' || pattern === '*') {
         pattern = '*://*/*';
       }

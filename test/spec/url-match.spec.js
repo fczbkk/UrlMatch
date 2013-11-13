@@ -120,6 +120,12 @@
     it('should convert * into *://*/*', function() {
       return expect(pattern.sanitize('*')).toBe('*://*/*');
     });
+    it('should convert provided pattern to string', function() {
+      expect(typeof pattern.sanitize('aaa')).toBe('string');
+      expect(typeof pattern.sanitize({})).toBe('string');
+      expect(typeof pattern.sanitize([])).toBe('string');
+      return expect(typeof pattern.sanitize(document.location)).toBe('string');
+    });
     it('should sanitize', function() {
       expect(pattern.sanitize('*://*/*')).toBe('*://*/*');
       expect(pattern.sanitize('aaa://*/*')).toBe('aaa://*/*');

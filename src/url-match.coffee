@@ -78,6 +78,10 @@ class Pattern
   
   # User can use shortcuts for commonly used patterns, such as single asterisk.
   sanitize: (pattern = @originalPattern) ->
+    # Convert provided pattern into a string. This is useful if user provides
+    # object like `document.location` as a pattern.
+    if typeof pattern isnt 'string' and pattern.toString?
+      pattern = pattern.toString()
     # Convert general patterns into a well formed one.
     pattern = '*://*/*' if pattern in ['<all_urls>', '*']
     pattern
