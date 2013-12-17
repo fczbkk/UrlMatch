@@ -1,7 +1,9 @@
 (function() {
-  var Host, Path, Pattern, Scheme, UrlFragment, UrlMatch, isArray, _ref, _ref1, _ref2,
+  var Host, Path, Pattern, Scheme, UrlFragment, UrlMatch, isArray, root, _ref, _ref1, _ref2,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  root = typeof exports === 'object' ? exports : this;
 
   UrlMatch = (function() {
     function UrlMatch(pattern) {
@@ -59,7 +61,7 @@
 
   })();
 
-  window.UrlMatch = UrlMatch;
+  root.UrlMatch = UrlMatch;
 
   Pattern = (function() {
     Pattern.prototype._RE = /^([a-z]+|\*):\/\/(.+@)*([\w\*\.\-]+(\:\d+)*)(\/[^\?\#]*)/;

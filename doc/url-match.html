@@ -33,6 +33,8 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>
+root = <span class="keyword">if</span> <span class="keyword">typeof</span> <span class="built_in">exports</span> <span class="keyword">is</span> <span class="string">'object'</span> <span class="keyword">then</span> <span class="built_in">exports</span> <span class="keyword">else</span> <span class="keyword">this</span>
+
 <span class="class"><span class="keyword">class</span> <span class="title">UrlMatch</span></span>
   
   <span class="attribute">constructor</span>: <span class="function"><span class="params">(pattern)</span> -&gt;</span>
@@ -139,7 +141,7 @@ The <em>pattern</em> parameter can be either string (single pattern) or array
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>window.UrlMatch = UrlMatch</pre></div></div>
+            <div class="content"><div class='highlight'><pre>root.UrlMatch = UrlMatch</pre></div></div>
             
         </li>
         
@@ -265,6 +267,23 @@ easier to treat them as separate objects.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
+              <p>Convert provided pattern into a string. This is useful if user provides
+object like <code>document.location</code> as a pattern.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="keyword">if</span> <span class="keyword">typeof</span> pattern <span class="keyword">isnt</span> <span class="string">'string'</span> <span class="keyword">and</span> pattern.toString?
+      pattern = pattern.toString()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
               <p>Convert general patterns into a well formed one.</p>
 
             </div>
@@ -275,11 +294,11 @@ easier to treat them as separate objects.</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>The Pattern is valid if all of its parts are valid.</p>
 
@@ -293,11 +312,11 @@ easier to treat them as separate objects.</p>
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>When testing against a URL, it is first divided into parts and then tested
 agains each of the part separately.</p>
@@ -315,11 +334,11 @@ agains each of the part separately.</p>
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>This is an abstract objects that all of the specialized objects for parts
 (Scheme, Host and Path) inherit from. It provides methods to validate,
@@ -334,11 +353,11 @@ of rules.</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>List of sanitation rules in form of a hash object. The key is a string to
 be used as a replacement, the value is a string or regex to be replaced.
@@ -352,11 +371,11 @@ not be used as a key and I didn&#39;t want to use more complex structure.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>Arrays containing validation rules. They can contain mix of strings and/or
 regexes.</p>
@@ -422,11 +441,11 @@ regexes.</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>Assume trailing slash at the end of path as optional, but not if it is
 the first one.</p>
@@ -438,11 +457,11 @@ the first one.</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p>Allow letters, numbers, hyphens and dots and slashes instead of *.</p>
 
@@ -453,11 +472,11 @@ the first one.</p>
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap for-h1">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <h1>Utilities</h1>
 
@@ -466,11 +485,11 @@ the first one.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>Check if object is an array. Used when adding patterns to UrlMatch.
 Taken from:

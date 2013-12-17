@@ -1,6 +1,8 @@
 # URL Matcher in the style of Google Chrome:
 # http://developer.chrome.com/extensions/match_patterns.html
 
+root = if typeof exports is 'object' then exports else this
+
 class UrlMatch
   
   constructor: (pattern) ->
@@ -33,7 +35,7 @@ class UrlMatch
     false
 
 # Expose object to the global namespace
-window.UrlMatch = UrlMatch
+root.UrlMatch = UrlMatch
 
 # # Helper classes
 
