@@ -35,24 +35,16 @@ module.exports = (grunt) ->
     watch:
       default:
         options:
-          atStart: true
+          atBegin: true
         files: ['src/url-match.coffee', 'test/src/url-match.spec.coffee']
         tasks: ['dev']
-    
-    docco:
-      default:
-        src: ['src/url-match.coffee']
-        options:
-          output: 'doc/'
     
   grunt.loadNpmTasks 'grunt-coffeelint'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-jasmine'
-  grunt.loadNpmTasks 'grunt-docco'
-  
-  grunt.registerTask 'build', ['dev', 'uglify:default', 'doc']
+
+  grunt.registerTask 'build', ['dev', 'uglify:default']
   grunt.registerTask 'dev', ['coffeelint', 'coffee:default', 'jasmine:default']
   grunt.registerTask 'default', ['watch:default']
-  grunt.registerTask 'doc', ['docco:default']
