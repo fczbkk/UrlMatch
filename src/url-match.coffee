@@ -172,18 +172,16 @@ class UrlMatch
       true
     
     sanitize: (pattern = @original_pattern) ->
-      if pattern?
-        # Assume trailing slash at the end of path is optional.
-        pattern = pattern.replace /\/$/, '\\/*'
-        # Allow letters, numbers, hyphens and dots and slashes instead of *.
-        pattern = pattern.replace '*', '[a-z0-9-./]*'
-        ///
-          ^
-          #{pattern}
-          $
-        ///
-      else
-        null
+      pattern = '' if not pattern?
+      # Assume trailing slash at the end of path is optional.
+      pattern = pattern.replace /\/$/, '\\/*'
+      # Allow letters, numbers, hyphens and dots and slashes instead of *.
+      pattern = pattern.replace '*', '[a-z0-9-./]*'
+      ///
+        ^
+        #{pattern}
+        $
+      ///
 
   class @Params extends @UrlPart
   

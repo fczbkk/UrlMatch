@@ -302,13 +302,12 @@
         if (pattern == null) {
           pattern = this.original_pattern;
         }
-        if (pattern != null) {
-          pattern = pattern.replace(/\/$/, '\\/*');
-          pattern = pattern.replace('*', '[a-z0-9-./]*');
-          return RegExp("^" + pattern + "$");
-        } else {
-          return null;
+        if (pattern == null) {
+          pattern = '';
         }
+        pattern = pattern.replace(/\/$/, '\\/*');
+        pattern = pattern.replace('*', '[a-z0-9-./]*');
+        return RegExp("^" + pattern + "$");
       };
 
       return Path;

@@ -240,9 +240,14 @@
           pattern = new UrlMatch.Pattern('*://*/*?*#jjj');
           return expect(pattern.test(complex_url)).toBe(true);
         });
-        return it('should match exact URL', function() {
+        it('should match exact URL', function() {
           pattern = new UrlMatch.Pattern(complex_url);
           return expect(pattern.test(complex_url)).toBe(true);
+        });
+        return it('should match pattern without path correctly', function() {
+          pattern = new UrlMatch.Pattern('*://aaa.bbb/');
+          expect(pattern.test('http://aaa.bbb/')).toBe(true);
+          return expect(pattern.test('http://aaa.bbb/ccc')).toBe(false);
         });
       });
     });
@@ -605,7 +610,7 @@
           }
           return _results;
         });
-        return it('should match correct paths specific when path is specified', function() {
+        it('should match correct paths specific when path is specified', function() {
           var item, paths, pattern, _i, _len, _results;
           paths = ['', 'aaa', 'aaa/bbb', 'aaa/bbb.ccc'];
           _results = [];
@@ -615,6 +620,13 @@
             _results.push(expect(path.test(item, pattern)).toBe(true));
           }
           return _results;
+        });
+        return it('should treat missing path as empty string', function() {
+          var pattern;
+          pattern = path.sanitize(null);
+          expect(path.test(null, pattern)).toBe(true);
+          expect(path.test('', pattern)).toBe(true);
+          return expect(path.test('aaa', pattern)).toBe(false);
         });
       });
     });

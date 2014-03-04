@@ -227,6 +227,11 @@ describe 'URL Match', ->
       it 'should match exact URL', ->
         pattern = new UrlMatch.Pattern complex_url
         expect(pattern.test complex_url).toBe true
+      
+      it 'should match pattern without path correctly', ->
+        pattern = new UrlMatch.Pattern '*://aaa.bbb/'
+        expect(pattern.test 'http://aaa.bbb/').toBe true
+        expect(pattern.test 'http://aaa.bbb/ccc').toBe false
 
   describe 'Scheme', ->
   
@@ -471,6 +476,12 @@ describe 'URL Match', ->
         for item in paths
           pattern = path.sanitize item
           expect(path.test item, pattern).toBe true
+      
+      it 'should treat missing path as empty string', ->
+        pattern = path.sanitize null
+        expect(path.test null, pattern).toBe true
+        expect(path.test '', pattern).toBe true
+        expect(path.test 'aaa', pattern).toBe false
 
   describe 'Params', ->
     
