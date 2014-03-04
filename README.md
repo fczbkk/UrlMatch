@@ -81,42 +81,42 @@ You can check for URL parameters:
 
 ```javascript
 myMatch = new UrlMatch('*://*/*?aaa=*');
-myMatch.test('http://google.com/?aaa=bbb); // true
-myMatch.test('http://facebook.com/?aaa=ccc); // true
-myMatch.test('http://apple.com/?aaa=bbb&ccc=ddd); // true
-myMatch.test('http://google.com/); // false
+myMatch.test('http://google.com/?aaa=bbb'); // true
+myMatch.test('http://facebook.com/?aaa=ccc'); // true
+myMatch.test('http://apple.com/?aaa=bbb&ccc=ddd'); // true
+myMatch.test('http://google.com/'); // false
 ```
 
 You can check for URL parameters with specific value:
 
 ```javascript
 myMatch = new UrlMatch('*://*/*?aaa=bbb');
-myMatch.test('http://google.com/?aaa=bbb); // true
-myMatch.test('http://google.com/?aaa=ccc); // false
+myMatch.test('http://google.com/?aaa=bbb'); // true
+myMatch.test('http://google.com/?aaa=ccc'); // false
 ```
 
 You can check for URL parameters using wildcards:
 
 ```javascript
 myMatch = new UrlMatch('*://*/*?aaa=bbb*');
-myMatch.test('http://google.com/?aaa=bbb); // true
-myMatch.test('http://google.com/?aaa=bbbccc); // true
+myMatch.test('http://google.com/?aaa=bbb'); // true
+myMatch.test('http://google.com/?aaa=bbbccc'); // true
 ```
 
 You can even check for any URL parameter with specific value:
 
 ```javascript
 myMatch = new UrlMatch('*://*/*?*=ccc');
-myMatch.test('http://google.com/?aaa=ccc); // true
-myMatch.test('http://google.com/?bbb=ccc); // true
+myMatch.test('http://google.com/?aaa=ccc'); // true
+myMatch.test('http://google.com/?bbb=ccc'); // true
 ```
 
 The order of parameters does not matter:
 
 ```javascript
 myMatch = new UrlMatch('*://*/*?aaa=bbb&ccc=ddd');
-myMatch.test('http://google.com/?aaa=bbb&ccc=ddd); // true
-myMatch.test('http://google.com/?ccc=ddd&aaa=bbb); // true
+myMatch.test('http://google.com/?aaa=bbb&ccc=ddd'); // true
+myMatch.test('http://google.com/?ccc=ddd&aaa=bbb'); // true
 ```
 
 ### Match URL fragments
@@ -127,16 +127,16 @@ You can check for URL fragments (the part of the URL after `#`):
 
 ```javascript
 myMatch = new UrlMatch('*://*/*#aaa');
-myMatch.test('http://google.com/#aaa); // true
-myMatch.test('http://google.com/#bbb); // false
+myMatch.test('http://google.com/#aaa'); // true
+myMatch.test('http://google.com/#bbb'); // false
 ```
 
 You can check for URL fragments using wildcards:
 
 ```javascript
 myMatch = new UrlMatch('*://*/*#aaa***');
-myMatch.test('http://google.com/#aaa); // true
-myMatch.test('http://google.com/#aaabbb); // true
+myMatch.test('http://google.com/#aaa'); // true
+myMatch.test('http://google.com/#aaabbb'); // true
 ```
 
 ## Bug reports, feature requests and contact
