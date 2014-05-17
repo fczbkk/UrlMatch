@@ -19,6 +19,8 @@
     "src",
     "doc",
     "Gruntfile.coffee",
-    ".DS_Store"
+    ".DS_Store",
+    "bower.json",
+    "package.json"
   ]
 }
