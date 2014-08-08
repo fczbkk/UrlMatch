@@ -67,7 +67,7 @@
         this.url_parts = this.getUrlParts(sanitized_pattern);
       }
 
-      Pattern.prototype.split_re = /^([a-z]+|\*)*:\/\/(.+@)*([\w\*\.\-]+(\:\d+)*)*(\/([^\?\#]*))*(\?([^\#]*))*(\#(.*))*/;
+      Pattern.prototype.split_re = /^([a-z]+|\*)*:\/\/(.+@)*([\w\*\.\-]+)*(\:\d+)*(\/([^\?\#]*))*(\?([^\#]*))*(\#(.*))*/;
 
       Pattern.prototype.split = function(pattern, empty_value) {
         var key, parts, parts_map, result, val;

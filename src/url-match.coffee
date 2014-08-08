@@ -17,33 +17,34 @@ class UrlMatch
     patterns = [patterns] if typeof patterns is 'string'
     @patterns = @patterns.filter (item) ->
       item not in patterns
-  
+
   test: (content) ->
     for pattern in @patterns
       pattern_obj = new UrlMatch.Pattern pattern
       return true if pattern_obj.test content
     false
-  
+
   class @Pattern
-  
+
     constructor: (pattern) ->
       pattern = '*://*/*?*#*' if pattern in ['*', '<all_urls>']
       @original_pattern = pattern
       sanitized_pattern = @sanitize pattern
       @pattern = sanitized_pattern
       @url_parts = @getUrlParts sanitized_pattern
-    
+
     split_re: ///
       ^                      # beginning
       ([a-z]+|\*)*           # (1) scheme
       ://                    # scheme separator
       (.+@)*                 # (2) username and/or password
-      ([\w\*\.\-]+(\:\d+)*)* # (3) host, including (4) port number
+      ([\w\*\.\-]+)*         # (3) host
+      (\:\d+)*               # (4) port number
       (/([^\?\#]*))*         # (5) path, (6) excluding slash
       (\?([^\#]*))*          # (7) params, (8) excluding question mark
       (\#(.*))*              # (9) fragment, (10) excluding hash
     ///
-    
+
     split: (pattern = '', empty_value = null) ->
       parts = pattern.match @split_re
       parts_map = {scheme: 1, host: 3, path: 6, params: 8, fragment: 10}
@@ -51,7 +52,7 @@ class UrlMatch
       for key, val of parts_map
         result[key] = parts?[val] or empty_value
       result
-    
+
     getUrlParts: (pattern = @pattern) ->
       splits = @split pattern
       {
@@ -61,18 +62,18 @@ class UrlMatch
         params: new UrlMatch.Params splits.params
         fragment: new UrlMatch.Fragment splits.fragment
       }
-    
+
     sanitize: (pattern = @original_pattern) ->
       universal_pattern = '*://*/*?*#*'
       pattern = universal_pattern if pattern in ['*', '<all_urls>']
       pattern
-    
+
     validate: (url_parts = @url_parts) ->
       result = true
       for key, val of url_parts
         result = false if not val.validate()
       result
-    
+
     test: (url) ->
       if url?
         splits = @split url
@@ -82,21 +83,21 @@ class UrlMatch
         result
       else
         false
-    
+
   class @UrlPart
     constructor: (pattern) ->
       @original_pattern = pattern
       @pattern = @sanitize pattern
-      
+
     validate: (pattern = @original_pattern) ->
       false
-    
+
     test: (content = '', pattern = @pattern) ->
       if pattern?
         pattern.test content
       else
         true
-    
+
     sanitize: (pattern = @original_pattern) ->
       if @validatePattern
         ///
@@ -106,9 +107,9 @@ class UrlMatch
         ///
       else
         null
-  
+
   class @Scheme extends @UrlPart
-  
+
     validate: (pattern = @original_pattern) ->
       if pattern?
         ///
@@ -119,7 +120,7 @@ class UrlMatch
         ///.test pattern
       else
         false
-    
+
     sanitize: (pattern = @original_pattern) ->
       if @validate pattern
         pattern = pattern.replace '*', 'https?'
@@ -130,9 +131,9 @@ class UrlMatch
         ///
       else
         null
-      
+
   class @Host extends @UrlPart
-  
+
     validate: (pattern = @original_pattern) ->
       if pattern?
         validate_rules = [
@@ -153,7 +154,7 @@ class UrlMatch
         result
       else
         false
-    
+
     sanitize: (pattern = @original_pattern) ->
       if @validate pattern
         pattern = pattern.replace '.', '\\.'
@@ -170,7 +171,7 @@ class UrlMatch
 
     validate: (pattern = @original_pattern) ->
       true
-    
+
     sanitize: (pattern = @original_pattern) ->
       pattern = '' if not pattern?
       # Assume trailing slash at the end of path is optional.
@@ -184,7 +185,7 @@ class UrlMatch
       ///
 
   class @Params extends @UrlPart
-  
+
     validate: (pattern = @original_pattern) ->
       if pattern?
         invalidate_rules = [
@@ -197,7 +198,7 @@ class UrlMatch
         result
       else
         true
-    
+
     sanitize: (pattern = @original_pattern) ->
       # single asterisk is universal selector
       pattern = null if pattern is '*'
@@ -213,7 +214,7 @@ class UrlMatch
           val = if val is '*' then '=?.*' else '=' + val.replace /\*/g, '.*'
           result[key] = val
       result
-    
+
     test: (content = '', pattern = @pattern) ->
       result = true
       for key, val of pattern
@@ -224,9 +225,9 @@ class UrlMatch
         ///
         result = false if not re.test content
       result
-    
+
   class @Fragment extends @UrlPart
-  
+
     validate: (pattern = @original_pattern) ->
       if pattern?
         invalidate_rules = [
@@ -237,7 +238,7 @@ class UrlMatch
         result
       else
         true
-    
+
     sanitize: (pattern = @original_pattern) ->
       if @validate pattern
         if pattern?

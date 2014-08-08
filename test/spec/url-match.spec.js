@@ -2,7 +2,7 @@
   describe('URL Match', function() {
     var complex_url, url_match;
     url_match = null;
-    complex_url = 'http://aaa.bbb.ccc/ddd/eee?fff=ggg&hhh=iii#jjj';
+    complex_url = 'http://user:pass@aaa.bbb.ccc:8080/ddd/eee?fff=ggg&hhh=iii#jjj';
     beforeEach(function() {
       return url_match = new UrlMatch();
     });
@@ -908,6 +908,11 @@
       expect(my_match.test('http://www.facebook.com/')).toBe(false);
       return expect(my_match.test('http://www.google.sucks.com/')).toBe(false);
     });
+    it('should work on URLs with port', function() {
+      var my_match;
+      my_match = new UrlMatch('*://*.google.com/*');
+      return expect(my_match.test('http://www.google.com:8080/')).toBe(true);
+    });
     it('should do match on multiple patterns', function() {
       var my_match;
       my_match = new UrlMatch(['*://*.google.com/*', '*://*.facebook.com/*']);
@@ -915,7 +920,7 @@
       expect(my_match.test('http://www.facebook.com/')).toBe(true);
       return expect(my_match.test('http://www.apple.com/')).toBe(false);
     });
-    return it('should handle adding and removing of patterns', function() {
+    it('should handle adding and removing of patterns', function() {
       var my_match;
       my_match = new UrlMatch('*://*.google.com/*');
       expect(my_match.test('http://www.google.com/')).toBe(true);
@@ -926,6 +931,16 @@
       my_match.remove('*://*.google.com/*');
       expect(my_match.test('http://www.google.com/')).toBe(false);
       return expect(my_match.test('http://www.facebook.com/')).toBe(true);
+    });
+    it('should handle localhost', function() {
+      var my_match;
+      my_match = new UrlMatch('*://*/aaa');
+      return expect(my_match.test('http://localhost/aaa')).toBe(true);
+    });
+    return it('should handle localhost with port', function() {
+      var my_match;
+      my_match = new UrlMatch('*://*/aaa');
+      return expect(my_match.test('http://localhost:3000/aaa')).toBe(true);
     });
   });
 
