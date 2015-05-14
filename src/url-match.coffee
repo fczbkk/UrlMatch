@@ -149,8 +149,13 @@ class UrlMatch
                           # and asterisk
         ]
         result = true
-        (result = false if not rule.test pattern) for rule in validate_rules
-        (result = false if rule.test pattern) for rule in invalidate_rules
+
+        for rule in validate_rules
+          result = false if not rule.test pattern
+
+        for rule in invalidate_rules
+          result = false if rule.test pattern
+
         result
       else
         false
@@ -173,11 +178,14 @@ class UrlMatch
       true
 
     sanitize: (pattern = @original_pattern) ->
-      pattern = '' if not pattern?
+      pattern = '' unless pattern?
+
       # Assume trailing slash at the end of path is optional.
-      pattern = pattern.replace /\/$/, '\\/*'
+      pattern = pattern.replace /\/$/, '\\/?'
+      pattern = pattern.replace /\/\*$/, '((\/?)|\/*)'
       # Allow letters, numbers, hyphens and dots and slashes instead of *.
-      pattern = pattern.replace '*', '[a-z0-9-./]*'
+      pattern = pattern.replace /\*/g, '[a-z0-9-./]*'
+
       ///
         ^
         #{pattern}
@@ -194,7 +202,10 @@ class UrlMatch
           /^\=$/          # single equal sign
         ]
         result = true
-        (result = false if rule.test pattern) for rule in invalidate_rules
+
+        for rule in invalidate_rules
+          result = false if rule.test pattern
+
         result
       else
         true
@@ -234,7 +245,10 @@ class UrlMatch
           /\#/          # must not contain hash sign
         ]
         result = true
-        (result = false if rule.test pattern) for rule in invalidate_rules
+
+        for rule in invalidate_rules
+          result = false if rule.test pattern
+
         result
       else
         true

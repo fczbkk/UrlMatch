@@ -72,12 +72,12 @@ module.exports = (grunt) ->
       'bump-commit'
     ]
 
-
   grunt.registerTask 'dev', [
     'coffeelint'
     'coffee:default'
     'jasmine:default'
   ]
+
   grunt.registerTask 'default', [
     'watch:default'
   ]

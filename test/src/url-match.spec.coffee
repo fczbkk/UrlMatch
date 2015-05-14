@@ -447,27 +447,35 @@ describe 'URL Match', ->
           'aaa/bbb.ccc': 'aaa/bbb.ccc*'
           'aaa/bbb.ccc': 'aaa/*.ccc'
           'aaa/bbb.ccc': '*/*.ccc'
-        for key, val in pairs
+        for key, val of pairs
           pattern = path.sanitize val
-          expect(path.test key, pattern).tobe true
+          expect(path.test key, pattern).toBe true
 
       it 'should not match incorrect paths when path with * is specified', ->
         pairs =
           'bbb': 'aaa*'
-          'aaa/bbb': 'aaa*/'
           'bbb/': 'aaa/*'
           'aaa/ccc': 'aaa/*.ccc'
           'bbb.ccc': '*/*.ccc'
-        for key, val in pairs
+        for key, val of pairs
           pattern = path.sanitize val
-          expect(path.test key, pattern).tobe false
+          expect(path.test key, pattern).toBe false
 
-      it 'should assume trailing slash is present when matching', ->
+      it 'should assume trailing `/` is optional', ->
+        pairs =
+          '': '/'
+          'aaa': 'aaa/'
+          'aaa/bbb': 'aaa/bbb/'
+        for key, val of pairs
+          pattern = path.sanitize val
+          expect(path.test key, pattern).toBe true
+
+      it 'should assume trailing `/*` is present when matching', ->
         pairs =
           '': '*'
           'aaa': 'aaa/*'
           'aaa/bbb': 'aaa/bbb/*'
-        for key, val in pairs
+        for key, val of pairs
           pattern = path.sanitize val
           expect(path.test key, pattern).toBe true
 
@@ -723,3 +731,11 @@ describe 'Real life examples', ->
   it 'should handle localhost with port', ->
     my_match = new UrlMatch '*://*/aaa'
     expect(my_match.test 'http://localhost:3000/aaa').toBe true
+
+  it 'should not require `/` after a domain name', ->
+    my_match = new UrlMatch 'http://google.com/'
+    expect(my_match.test 'http://google.com').toBe true
+
+  it 'should not require `/` after a domain name on general pattern', ->
+    my_match = new UrlMatch '*://*/*'
+    expect(my_match.test 'http://google.com').toBe true

@@ -1,8 +1,8 @@
 (function() {
   var UrlMatch, root,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
 
   UrlMatch = (function() {
     function UrlMatch(patterns) {
@@ -14,16 +14,16 @@
     }
 
     UrlMatch.prototype.add = function(patterns) {
-      var pattern, _i, _len;
+      var i, len, pattern;
       if (patterns == null) {
         patterns = [];
       }
       if (typeof patterns === 'string') {
         patterns = [patterns];
       }
-      for (_i = 0, _len = patterns.length; _i < _len; _i++) {
-        pattern = patterns[_i];
-        if (__indexOf.call(this.patterns, pattern) < 0) {
+      for (i = 0, len = patterns.length; i < len; i++) {
+        pattern = patterns[i];
+        if (indexOf.call(this.patterns, pattern) < 0) {
           this.patterns.push(pattern);
         }
       }
@@ -38,15 +38,15 @@
         patterns = [patterns];
       }
       return this.patterns = this.patterns.filter(function(item) {
-        return __indexOf.call(patterns, item) < 0;
+        return indexOf.call(patterns, item) < 0;
       });
     };
 
     UrlMatch.prototype.test = function(content) {
-      var pattern, pattern_obj, _i, _len, _ref;
-      _ref = this.patterns;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        pattern = _ref[_i];
+      var i, len, pattern, pattern_obj, ref;
+      ref = this.patterns;
+      for (i = 0, len = ref.length; i < len; i++) {
+        pattern = ref[i];
         pattern_obj = new UrlMatch.Pattern(pattern);
         if (pattern_obj.test(content)) {
           return true;
@@ -136,13 +136,13 @@
       };
 
       Pattern.prototype.test = function(url) {
-        var part, result, splits, _i, _len, _ref;
+        var i, len, part, ref, result, splits;
         if (url != null) {
           splits = this.split(url);
           result = true;
-          _ref = ['scheme', 'host', 'path', 'params', 'fragment'];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            part = _ref[_i];
+          ref = ['scheme', 'host', 'path', 'params', 'fragment'];
+          for (i = 0, len = ref.length; i < len; i++) {
+            part = ref[i];
             if (!this.url_parts[part].test(splits[part])) {
               result = false;
             }
@@ -199,8 +199,8 @@
 
     })();
 
-    UrlMatch.Scheme = (function(_super) {
-      __extends(Scheme, _super);
+    UrlMatch.Scheme = (function(superClass) {
+      extend(Scheme, superClass);
 
       function Scheme() {
         return Scheme.__super__.constructor.apply(this, arguments);
@@ -233,15 +233,15 @@
 
     })(UrlMatch.UrlPart);
 
-    UrlMatch.Host = (function(_super) {
-      __extends(Host, _super);
+    UrlMatch.Host = (function(superClass) {
+      extend(Host, superClass);
 
       function Host() {
         return Host.__super__.constructor.apply(this, arguments);
       }
 
       Host.prototype.validate = function(pattern) {
-        var invalidate_rules, result, rule, validate_rules, _i, _j, _len, _len1;
+        var i, invalidate_rules, j, len, len1, result, rule, validate_rules;
         if (pattern == null) {
           pattern = this.original_pattern;
         }
@@ -249,14 +249,14 @@
           validate_rules = [/.+/];
           invalidate_rules = [/\*\*/, /\*[^\.]+/, /.\*/, /^(\.|-)/, /(\.|-)$/, /[^a-z0-9-.\*]/];
           result = true;
-          for (_i = 0, _len = validate_rules.length; _i < _len; _i++) {
-            rule = validate_rules[_i];
+          for (i = 0, len = validate_rules.length; i < len; i++) {
+            rule = validate_rules[i];
             if (!rule.test(pattern)) {
               result = false;
             }
           }
-          for (_j = 0, _len1 = invalidate_rules.length; _j < _len1; _j++) {
-            rule = invalidate_rules[_j];
+          for (j = 0, len1 = invalidate_rules.length; j < len1; j++) {
+            rule = invalidate_rules[j];
             if (rule.test(pattern)) {
               result = false;
             }
@@ -284,8 +284,8 @@
 
     })(UrlMatch.UrlPart);
 
-    UrlMatch.Path = (function(_super) {
-      __extends(Path, _super);
+    UrlMatch.Path = (function(superClass) {
+      extend(Path, superClass);
 
       function Path() {
         return Path.__super__.constructor.apply(this, arguments);
@@ -305,8 +305,9 @@
         if (pattern == null) {
           pattern = '';
         }
-        pattern = pattern.replace(/\/$/, '\\/*');
-        pattern = pattern.replace('*', '[a-z0-9-./]*');
+        pattern = pattern.replace(/\/$/, '\\/?');
+        pattern = pattern.replace(/\/\*$/, '((\/?)|\/*)');
+        pattern = pattern.replace(/\*/g, '[a-z0-9-./]*');
         return RegExp("^" + pattern + "$");
       };
 
@@ -314,23 +315,23 @@
 
     })(UrlMatch.UrlPart);
 
-    UrlMatch.Params = (function(_super) {
-      __extends(Params, _super);
+    UrlMatch.Params = (function(superClass) {
+      extend(Params, superClass);
 
       function Params() {
         return Params.__super__.constructor.apply(this, arguments);
       }
 
       Params.prototype.validate = function(pattern) {
-        var invalidate_rules, result, rule, _i, _len;
+        var i, invalidate_rules, len, result, rule;
         if (pattern == null) {
           pattern = this.original_pattern;
         }
         if (pattern != null) {
           invalidate_rules = [/\=\=/, /\=[^\&]+\=/, /^\=$/];
           result = true;
-          for (_i = 0, _len = invalidate_rules.length; _i < _len; _i++) {
-            rule = invalidate_rules[_i];
+          for (i = 0, len = invalidate_rules.length; i < len; i++) {
+            rule = invalidate_rules[i];
             if (rule.test(pattern)) {
               result = false;
             }
@@ -342,7 +343,7 @@
       };
 
       Params.prototype.sanitize = function(pattern) {
-        var key, pair, result, val, _i, _len, _ref, _ref1;
+        var i, key, len, pair, ref, ref1, result, val;
         if (pattern == null) {
           pattern = this.original_pattern;
         }
@@ -351,10 +352,10 @@
         }
         result = {};
         if (pattern != null) {
-          _ref = pattern.split('&');
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            pair = _ref[_i];
-            _ref1 = pair.split('='), key = _ref1[0], val = _ref1[1];
+          ref = pattern.split('&');
+          for (i = 0, len = ref.length; i < len; i++) {
+            pair = ref[i];
+            ref1 = pair.split('='), key = ref1[0], val = ref1[1];
             key = key === '*' ? '.+' : key.replace(/\*/g, '.*');
             val = val === '*' ? '=?.*' : '=' + val.replace(/\*/g, '.*');
             result[key] = val;
@@ -386,23 +387,23 @@
 
     })(UrlMatch.UrlPart);
 
-    UrlMatch.Fragment = (function(_super) {
-      __extends(Fragment, _super);
+    UrlMatch.Fragment = (function(superClass) {
+      extend(Fragment, superClass);
 
       function Fragment() {
         return Fragment.__super__.constructor.apply(this, arguments);
       }
 
       Fragment.prototype.validate = function(pattern) {
-        var invalidate_rules, result, rule, _i, _len;
+        var i, invalidate_rules, len, result, rule;
         if (pattern == null) {
           pattern = this.original_pattern;
         }
         if (pattern != null) {
           invalidate_rules = [/\#/];
           result = true;
-          for (_i = 0, _len = invalidate_rules.length; _i < _len; _i++) {
-            rule = invalidate_rules[_i];
+          for (i = 0, len = invalidate_rules.length; i < len; i++) {
+            rule = invalidate_rules[i];
             if (rule.test(pattern)) {
               result = false;
             }
