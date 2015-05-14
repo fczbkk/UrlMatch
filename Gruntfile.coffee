@@ -1,8 +1,20 @@
 module.exports = (grunt) ->
 
+  require('load-grunt-tasks')(grunt)
+
   grunt.initConfig
 
     pkg: grunt.file.readJSON 'package.json'
+
+    banner:
+      """
+        /*
+        <%= pkg.title %>, v<%= pkg.version %>
+        by <%= pkg.author %>
+        <%= pkg.homepage %>
+        */
+
+      """
 
     coffeelint:
       app: ['src/url-match.coffee', 'test/src/url-match.spec.coffee']
@@ -23,12 +35,7 @@ module.exports = (grunt) ->
     uglify:
       default:
         options:
-          banner:
-            """
-              // URL Match <%= pkg.version %> (https://github.com/fczbkk/UrlMatch)
-              // by <%= pkg.author %>
-
-            """
+          banner: "<%= banner %>"
         files:
           'build/url-match.min.js' : ['build/url-match.js']
 
@@ -39,18 +46,38 @@ module.exports = (grunt) ->
         files: ['src/url-match.coffee', 'test/src/url-match.spec.coffee']
         tasks: ['dev']
 
+    changelog:
+      options: {}
+
     bump:
       options:
-        files: ['package.json', 'bower.json']
+        files: [
+          'package.json'
+          'bower.json'
+        ]
+        updateConfigs: ['pkg']
         commitFiles: ['-a']
+        pushTo: 'origin'
 
-  grunt.loadNpmTasks 'grunt-coffeelint'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-uglify'
-  grunt.loadNpmTasks 'grunt-contrib-jasmine'
-  grunt.loadNpmTasks 'grunt-bump'
 
-  grunt.registerTask 'build', ['dev', 'uglify:default']
-  grunt.registerTask 'dev', ['coffeelint', 'coffee:default', 'jasmine:default']
-  grunt.registerTask 'default', ['watch:default']
+  # Constructs the code, runs tests and if everyting is OK, creates a minified
+  # version ready for production. This task is intended to be run manually.
+  grunt.registerTask 'build', 'Bumps version and builds JS.', (version_type) ->
+    version_type = 'patch' unless version_type in ['patch', 'minor', 'major']
+    grunt.task.run [
+      "bump-only:#{version_type}"
+      'dev'
+      'uglify'
+      'changelog'
+      'bump-commit'
+    ]
+
+
+  grunt.registerTask 'dev', [
+    'coffeelint'
+    'coffee:default'
+    'jasmine:default'
+  ]
+  grunt.registerTask 'default', [
+    'watch:default'
+  ]
