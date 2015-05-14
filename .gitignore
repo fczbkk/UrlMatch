@@ -3,3 +3,4 @@
 /.grunt/
 /.idea/
 .DS_Store
+/test/spec/
