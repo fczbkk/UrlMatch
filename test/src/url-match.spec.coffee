@@ -440,6 +440,10 @@ describe 'URL Match', ->
         for item in paths
           expect(path.test item, pattern).toBe true
 
+      it 'should match path containing uppercase letters when * is used', ->
+        pattern = path.sanitize '*'
+        expect(path.test 'AAA', pattern).toBe true
+
       it 'should match correct paths when path with * is specified', ->
         pairs =
           'aaa': 'aaa*'

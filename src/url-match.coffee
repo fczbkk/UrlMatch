@@ -184,7 +184,7 @@ class UrlMatch
       pattern = pattern.replace /\/$/, '\\/?'
       pattern = pattern.replace /\/\*$/, '((\/?)|\/*)'
       # Allow letters, numbers, hyphens and dots and slashes instead of *.
-      pattern = pattern.replace /\*/g, '[a-z0-9-./]*'
+      pattern = pattern.replace /\*/g, '[a-zA-Z0-9-./]*'
 
       ///
         ^

@@ -307,7 +307,7 @@
         }
         pattern = pattern.replace(/\/$/, '\\/?');
         pattern = pattern.replace(/\/\*$/, '((\/?)|\/*)');
-        pattern = pattern.replace(/\*/g, '[a-z0-9-./]*');
+        pattern = pattern.replace(/\*/g, '[a-zA-Z0-9-./]*');
         return RegExp("^" + pattern + "$");
       };
 
