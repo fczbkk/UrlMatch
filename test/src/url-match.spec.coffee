@@ -286,8 +286,9 @@ describe 'URL Match', ->
           'aaa': 'aaabbb'
           'aaa': 'bbbaaa'
           'aaa': 'bbb'
-        for key, val in invalid_pairs
-          expect(scheme.test key, val).toBe false
+        for key, val of invalid_pairs
+          pattern = scheme.sanitize val
+          expect(scheme.test key, pattern).toBe false
 
       it 'should only match `http` or `https` on universal pattern', ->
         pattern = scheme.sanitize '*'
