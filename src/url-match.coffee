@@ -265,15 +265,8 @@ class UrlMatch
       null
 
 # Expose object to the global namespace.
-root = if typeof exports is 'object' then exports else this
-root.UrlMatch = UrlMatch
-
-
-# class Fragment extends UrlFragment
-#   _validationRequire: [
-#     # must start with a hash
-#     /^\#/
-#   ]
-#   _sanitation:
-#     # Allow any character instead of *.
-#     '.*': /\*/g
+if expose?
+  expose UrlMatch, 'UrlMatch'
+else
+  root = if typeof exports is 'object' then exports else this
+  root.UrlMatch = UrlMatch

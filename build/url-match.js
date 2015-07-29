@@ -435,8 +435,11 @@
 
   })();
 
-  root = typeof exports === 'object' ? exports : this;
-
-  root.UrlMatch = UrlMatch;
+  if (typeof expose !== "undefined" && expose !== null) {
+    expose(UrlMatch, 'UrlMatch');
+  } else {
+    root = typeof exports === 'object' ? exports : this;
+    root.UrlMatch = UrlMatch;
+  }
 
 }).call(this);
