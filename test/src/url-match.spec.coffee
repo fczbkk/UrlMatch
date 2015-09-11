@@ -444,6 +444,10 @@ describe 'URL Match', ->
         pattern = path.sanitize '*'
         expect(path.test 'AAA', pattern).toBe true
 
+      it 'should match path containing underscore', ->
+        pattern = path.sanitize '*'
+        expect(path.test 'aaa_bbb', pattern).toBe true
+
       it 'should match correct paths when path with * is specified', ->
         pairs =
           'aaa': 'aaa*'

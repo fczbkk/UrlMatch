@@ -183,8 +183,9 @@ class UrlMatch
       # Assume trailing slash at the end of path is optional.
       pattern = pattern.replace /\/$/, '\\/?'
       pattern = pattern.replace /\/\*$/, '((\/?)|\/*)'
-      # Allow letters, numbers, hyphens and dots and slashes instead of *.
-      pattern = pattern.replace /\*/g, '[a-zA-Z0-9-./]*'
+      # Allow letters, numbers, hyphens, dots, slashes and underscores
+      # instead of *.
+      pattern = pattern.replace /\*/g, '[a-zA-Z0-9-./_]*'
 
       ///
         ^
