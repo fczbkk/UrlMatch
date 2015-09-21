@@ -358,6 +358,8 @@
             ref1 = pair.split('='), key = ref1[0], val = ref1[1];
             key = key === '*' ? '.+' : key.replace(/\*/g, '.*');
             val = val === '*' ? '=?.*' : '=' + val.replace(/\*/g, '.*');
+            val = val.replace('[', '\\[');
+            val = val.replace(']', '\\]');
             result[key] = val;
           }
         }

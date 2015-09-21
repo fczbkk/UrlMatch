@@ -573,6 +573,10 @@ describe 'URL Match', ->
           'aaa.*': '=.*bbb'
           'ccc.*ddd': '=.*eee.*'
 
+      it 'should escape square brackets', ->
+        expect(params.sanitize 'aaa=[]').toEqual
+          'aaa': '=\\[\\]'
+
     describe 'test', ->
 
       it 'should match empty params on universal match', ->
@@ -623,6 +627,23 @@ describe 'URL Match', ->
       it 'should match pair with universal val', ->
         pattern = params.sanitize '*=bbb'
         expect(params.test 'aaa=bbb', pattern).toBe true
+
+      it 'should match partial wildcard in key', ->
+        pattern = params.sanitize 'aaa*ccc=ddd'
+        expect(params.test 'aaabbbccc=ddd', pattern).toBe true
+
+      it 'should match partial wildcard in val', ->
+        pattern = params.sanitize 'aaa=bbb*ddd'
+        expect(params.test 'aaa=bbbcccddd', pattern).toBe true
+
+      it 'should match val with square brackets', ->
+        pattern = params.sanitize 'aaa=[bbb]'
+        expect(params.test 'aaa=[bbb]', pattern).toBe true
+
+      it 'should match val with asterisk in square brackets', ->
+        pattern = params.sanitize 'aaa=bbb[*]ddd'
+        expect(params.test 'aaa=bbb[ccc]ddd', pattern).toBe true
+
 
   describe 'Fragment', ->
 
