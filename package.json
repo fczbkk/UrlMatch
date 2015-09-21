@@ -1,6 +1,6 @@
 {
   "name": "url-match",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "JavaScript object that provides URL matching functionality using patterns similar to what is used in extensions in Google Chrome",
   "author": "Riki Fridrich <riki@fczbkk.com> (http://fczbkk.com)",
   "license": "UNLICENSE",
