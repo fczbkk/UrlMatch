@@ -25,6 +25,7 @@ module.exports = (grunt) ->
         options:
           keepRunner: false
           specs: 'test/spec/url-match.spec.js'
+          summary: true
 
     coffee:
       default:
@@ -46,8 +47,12 @@ module.exports = (grunt) ->
         files: ['src/url-match.coffee', 'test/src/url-match.spec.coffee']
         tasks: ['dev']
 
-    changelog:
-      options: {}
+    conventionalChangelog:
+      options:
+        changelogOpts:
+          preset: 'angular'
+      release:
+        src: 'CHANGELOG.md'
 
     bump:
       options:
@@ -68,7 +73,7 @@ module.exports = (grunt) ->
       "bump-only:#{version_type}"
       'dev'
       'uglify'
-      'changelog'
+      'conventionalChangelog'
       'bump-commit'
     ]
 
