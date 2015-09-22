@@ -224,9 +224,9 @@ class UrlMatch
           # if value match is universal, the value is optional, thus the
           # equal sign is optional
           val = if val is '*' then '=?.*' else '=' + val.replace /\*/g, '.*'
-          # escape square brackets
-          val = val.replace '[', '\\['
-          val = val.replace ']', '\\]'
+          # escape all brackets
+          val = val.replace /[\[\](){}]/g, '\\$&'
+
           result[key] = val
       result
 

@@ -577,6 +577,14 @@ describe 'URL Match', ->
         expect(params.sanitize 'aaa=[]').toEqual
           'aaa': '=\\[\\]'
 
+      it 'should escape nested square brackets', ->
+        expect(params.sanitize 'aaa=[[]]').toEqual
+          'aaa': '=\\[\\[\\]\\]'
+
+      it 'should escape serialized JSON data', ->
+        expect(params.sanitize 'aaa=[[]]').toEqual
+          'aaa': '=\\[\\[\\]\\]'
+
     describe 'test', ->
 
       it 'should match empty params on universal match', ->
@@ -643,6 +651,14 @@ describe 'URL Match', ->
       it 'should match val with asterisk in square brackets', ->
         pattern = params.sanitize 'aaa=bbb[*]ddd'
         expect(params.test 'aaa=bbb[ccc]ddd', pattern).toBe true
+
+      it 'should match val with nested brackets', ->
+        pattern = params.sanitize 'aaa=[[*]]'
+        expect(params.test 'aaa=[[bbb]]', pattern).toBe true
+
+      it 'should match val with serialized JSON data', ->
+        pattern = params.sanitize 'aaa={bbb:*,ddd:[*,fff]}'
+        expect(params.test 'aaa={bbb:ccc,ddd:[eee,fff]}', pattern).toBe true
 
 
   describe 'Fragment', ->
