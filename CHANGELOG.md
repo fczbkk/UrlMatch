@@ -1,3 +1,13 @@
+<a name="0.4.3"></a>
+## [0.4.3](https://github.com/fczbkk/UrlMatch/compare/v0.4.2...v0.4.3) (2015-09-22)
+
+
+### Bug Fixes
+
+* properly escape all kinds of brackets in param val ([a368664](https://github.com/fczbkk/UrlMatch/commit/a368664))
+
+
+
 <a name="0.4.2"></a>
 ## [0.4.2](https://github.com/fczbkk/UrlMatch/compare/v0.4.1...v0.4.2) (2015-09-21)
 
