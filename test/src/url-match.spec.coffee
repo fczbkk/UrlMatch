@@ -361,7 +361,7 @@ describe 'URL Match', ->
         expect(host.sanitize 'aaa').toEqual /^aaa$/
 
       it 'should sanitize host with asterisk', ->
-        expect(host.sanitize '*.aaa').toEqual /^[a-z0-9-.]+\.aaa$/
+        expect(host.sanitize '*.aaa').toEqual /^([a-z0-9-.]+\.)?aaa$/
 
     describe 'match', ->
 
@@ -785,3 +785,7 @@ describe 'Real life examples', ->
   it 'should not require `/` after a domain name on general pattern', ->
     my_match = new UrlMatch '*://*/*'
     expect(my_match.test 'http://google.com').toBe true
+
+  it 'should match missing 3rd level domain', ->
+    my_match = new UrlMatch '*://*.aaa.com/'
+    expect(my_match.test 'http://aaa.com/').toBe true

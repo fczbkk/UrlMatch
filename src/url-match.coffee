@@ -162,7 +162,11 @@ class UrlMatch
 
     sanitize: (pattern = @original_pattern) ->
       if @validate pattern
+        # make asterisk and dot at the beginning optional
+        pattern = pattern.replace /^\*\./, '(*.)?'
+        # escape all dots
         pattern = pattern.replace '.', '\\.'
+        # replace asterisks with pattern
         pattern = pattern.replace '*', '[a-z0-9-.]+'
         ///
           ^
