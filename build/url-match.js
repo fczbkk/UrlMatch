@@ -272,6 +272,7 @@
           pattern = this.original_pattern;
         }
         if (this.validate(pattern)) {
+          pattern = pattern.replace(/^\*\./, '(*.)?');
           pattern = pattern.replace('.', '\\.');
           pattern = pattern.replace('*', '[a-z0-9-.]+');
           return RegExp("^" + pattern + "$");

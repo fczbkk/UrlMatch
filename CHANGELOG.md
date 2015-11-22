@@ -1,3 +1,13 @@
+<a name="0.4.4"></a>
+## [0.4.4](https://github.com/fczbkk/UrlMatch/compare/v0.4.3...v0.4.4) (2015-11-22)
+
+
+### Bug Fixes
+
+* make subdomain represented as asterisk optional ([2a100c3](https://github.com/fczbkk/UrlMatch/commit/2a100c3))
+
+
+
 <a name="0.4.3"></a>
 ## [0.4.3](https://github.com/fczbkk/UrlMatch/compare/v0.4.2...v0.4.3) (2015-09-22)
 
