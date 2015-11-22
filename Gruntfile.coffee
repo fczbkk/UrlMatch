@@ -25,7 +25,7 @@ module.exports = (grunt) ->
         options:
           keepRunner: false
           specs: 'test/spec/url-match.spec.js'
-          summary: true
+          summary: false
 
     coffee:
       default:
