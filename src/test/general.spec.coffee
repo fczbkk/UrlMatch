@@ -1,7 +1,6 @@
 describe 'General', ->
 
   url_match = null
-  complex_url = 'http://user:pass@aaa.bbb.ccc:8080/ddd/eee?fff=ggg&hhh=iii#jjj'
 
   beforeEach ->
     url_match = new UrlMatch()
