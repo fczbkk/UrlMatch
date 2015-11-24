@@ -28,10 +28,15 @@ module.exports = (grunt) ->
           summary: false
 
     coffee:
-      default:
+      lib:
         files:
           'build/url-match.js' : ['src/url-match.coffee']
-          'test/spec/url-match.spec.js' : ['test/src/url-match.spec.coffee']
+      test:
+        options:
+          bare: true
+        files:
+          'test/spec/url-match.spec.js' : ['test/src/*.coffee']
+
 
     uglify:
       default:
@@ -79,7 +84,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'dev', [
     'coffeelint'
-    'coffee:default'
+    'coffee'
     'jasmine:default'
   ]
 
