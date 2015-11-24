@@ -10,7 +10,7 @@
     "pattern",
     "match"
   ],
-  "license": "ULICENSE",
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
