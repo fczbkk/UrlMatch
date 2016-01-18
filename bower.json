@@ -4,7 +4,7 @@
   "homepage": "https://github.com/fczbkk/UrlMatch",
   "author": "Riki Fridrich <riki@fczbkk.com> (http://fczbkk.com/)",
   "description": "JavaScript object that provides URL matching functionality using patterns similar to what is used in extensions in Google Chrome",
-  "main": "build/url-match.js",
+  "main": "lib/url-match.js",
   "keywords": [
     "url",
     "pattern",
