@@ -26,9 +26,15 @@ class Params extends UrlPart
         [key, val] = pair.split '='
         # if key is asterisk, then at least one character is required
         key = if key is '*' then '.+' else key.replace /\*/g, '.*'
-        # if value match is universal, the value is optional, thus the
-        # equal sign is optional
-        val = if val is '*' then '=?.*' else '=' + val.replace /\*/g, '.*'
+
+        if (not val?) or (val is '')
+          # if value is missing, it is prohibited... only equal sign is allowed
+          val = '=?'
+        else
+          # if value match is universal, the value is optional, thus the
+          # equal sign is optional
+          val = if val is '*' then '=?.*' else '=' + val.replace /\*/g, '.*'
+
         # escape all brackets
         val = val.replace /[\[\](){}]/g, '\\$&'
 

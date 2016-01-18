@@ -52,6 +52,10 @@ describe 'Params', ->
     it 'should return empty hash on single asterisk', ->
       expect(params.sanitize '*').toEqual {}
 
+    it 'should handle valueless pair', ->
+      expect(params.sanitize 'aaa').toEqual {'aaa': '=?'}
+      expect(params.sanitize 'aaa=').toEqual {'aaa': '=?'}
+
     it 'should break the single pair pattern down to key/val pairs', ->
       expect(params.sanitize 'aaa=bbb').toEqual {'aaa': '=bbb'}
 
@@ -157,3 +161,14 @@ describe 'Params', ->
     it 'should match val with serialized JSON data', ->
       pattern = params.sanitize 'aaa={bbb:*,ddd:[*,fff]}'
       expect(params.test 'aaa={bbb:ccc,ddd:[eee,fff]}', pattern).toBe true
+
+    it 'should match unwanted val', ->
+      pattern = params.sanitize 'aaa'
+      expect(params.test 'aaa', pattern).toBe true
+      expect(params.test 'aaa=', pattern).toBe true
+      expect(params.test 'aaa=bbb', pattern).toBe false
+
+      pattern = params.sanitize 'aaa='
+      expect(params.test 'aaa', pattern).toBe true
+      expect(params.test 'aaa=', pattern).toBe true
+      expect(params.test 'aaa=bbb', pattern).toBe false

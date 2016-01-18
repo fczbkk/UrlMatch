@@ -33,7 +33,7 @@ module.exports = (grunt) ->
         options:
           keepRunner: false
           specs: './temp/test/<%= pkg.name %>.spec.js'
-          summary: false
+          summary: true
 
     coffee:
       default:
