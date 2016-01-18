@@ -4,6 +4,17 @@ module.exports = (grunt) ->
 
   current_version = grunt.file.readJSON('package.json').version
 
+  files_list = [
+    './src/lib/pattern.coffee'
+    './src/lib/url-part.coffee'
+    './src/lib/scheme.coffee'
+    './src/lib/host.coffee'
+    './src/lib/path.coffee'
+    './src/lib/params.coffee'
+    './src/lib/fragment.coffee'
+    './src/lib/url-match.coffee'
+  ]
+
   require('load-grunt-tasks')(grunt)
 
   grunt.initConfig
@@ -40,22 +51,13 @@ module.exports = (grunt) ->
         options:
           bare: true
         files:
-          './temp/lib/<%= pkg.name %>.js' : [
-            './src/lib/pattern.coffee'
-            './src/lib/url-part.coffee'
-            './src/lib/scheme.coffee'
-            './src/lib/host.coffee'
-            './src/lib/path.coffee'
-            './src/lib/params.coffee'
-            './src/lib/fragment.coffee'
-            './src/lib/url-match.coffee'
-          ]
+          './temp/lib/<%= pkg.name %>.js' : files_list
           './temp/test/<%= pkg.name %>.spec.js' : ['./src/test/*.coffee']
       build:
         options:
           join: true
         files:
-          './lib/<%= pkg.name %>.js' : ['./src/lib/*.coffee']
+          './lib/<%= pkg.name %>.js' : files_list
 
     watch:
       default:
