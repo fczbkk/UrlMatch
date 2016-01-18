@@ -1,3 +1,13 @@
+<a name="0.4.5"></a>
+## [0.4.5](https://github.com/fczbkk/UrlMatch/compare/v0.4.4...v0.4.5) (2016-01-18)
+
+
+### Bug Fixes
+
+* handle param patterns with only key ([609b838](https://github.com/fczbkk/UrlMatch/commit/609b838))
+
+
+
 <a name="0.4.4"></a>
 ## [0.4.4](https://github.com/fczbkk/UrlMatch/compare/v0.4.3...v0.4.4) (2015-11-22)
 

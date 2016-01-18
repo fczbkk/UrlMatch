@@ -92,7 +92,7 @@ module.exports = (grunt) ->
             {
               config: 'version'
               type: 'list'
-              message: 'Bump version from <%%= pkg.version %> to:'
+              message: 'Bump version from <%= pkg.version %> to:'
               default: 'patch'
               choices: [
                 {
@@ -126,18 +126,6 @@ module.exports = (grunt) ->
 
     grunt.task.run tasks_list
 
-
-  # Constructs the code, runs tests and if everyting is OK, creates a minified
-  # version ready for production. This task is intended to be run manually.
-  grunt.registerTask 'build', 'Bumps version and builds JS.', (version_type) ->
-    version_type = 'patch' unless version_type in ['patch', 'minor', 'major']
-    grunt.task.run [
-      "bump-only:#{version_type}"
-      'dev'
-      'uglify'
-      'conventionalChangelog'
-      'bump-commit'
-    ]
 
   grunt.registerTask 'dev', [
     'coffeelint'
