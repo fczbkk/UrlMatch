@@ -1,7 +1,7 @@
 {
   "name": "url-match",
   "title": "UrlMatch",
-  "version": "0.4.5",
+  "version": "1.0.0",
   "description": "JavaScript object that provides URL matching functionality using patterns similar to what is used in extensions in Google Chrome",
   "author": {
     "name": "Riki Fridrich",

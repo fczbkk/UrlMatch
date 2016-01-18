@@ -1,3 +1,9 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/fczbkk/UrlMatch/compare/v0.4.5...v1.0.0) (2016-01-18)
+
+
+
+
 <a name="0.4.5"></a>
 ## [0.4.5](https://github.com/fczbkk/UrlMatch/compare/v0.4.4...v0.4.5) (2016-01-18)
 
