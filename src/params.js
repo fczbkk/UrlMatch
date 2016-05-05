@@ -20,11 +20,17 @@ export default class extends UrlPart {
   }
 
   sanitize (pattern = this.original_pattern) {
-    if (pattern === '*') {
+    // strict mode
+    if (typeof pattern === 'string' && pattern.substring(0, 1) === '!') {
+      pattern = pattern.substring(1);
+      this.is_strict = true;
+    }
+
+    if (pattern === '*' || pattern === '') {
       pattern = null
     }
 
-    const result = {};
+    const result = [];
 
     if (exists(pattern)) {
 
@@ -48,7 +54,7 @@ export default class extends UrlPart {
         // escape all brackets
         val = val.replace(/[\[\](){}]/g, '\\$&');
 
-        result[key] = val;
+        result.push(key + val);
       });
 
     }
@@ -56,17 +62,27 @@ export default class extends UrlPart {
     return result;
   }
 
-  test (content = '', pattern = this.pattern) {
+  test (content = '', patterns = this.pattern) {
     let result = true;
 
-    if (exists(pattern)) {
-      for (const key in pattern) {
-        const val = pattern[key];
-        const re = new RegExp('(^|\&)' + key + val + '(\&|$)');
-        if (!re.test(content)) {
-          result = false;
-        }
+    if (exists(patterns)) {
+
+      result = patterns.reduce((previous_result, pattern) => {
+        const re = new RegExp('(^|\&)' + pattern + '(\&|$)');
+        return previous_result && re.test(content);
+      }, result);
+
+      if (this.is_strict === true) {
+        const wrapped_patterns = patterns
+          .map((pattern) => `(${pattern})`)
+          .join('|');
+        const re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
+
+        result = content.split('&').reduce((previous_result, pair) => {
+          return previous_result && re.test(pair);
+        }, result);
       }
+
     }
 
     return result;

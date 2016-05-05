@@ -115,6 +115,22 @@ myMatch.test('http://google.com/?aaa=bbb&ccc=ddd'); // true
 myMatch.test('http://google.com/?ccc=ddd&aaa=bbb'); // true
 ```
 
+#### Strict mode for params
+
+You can activate strict mode for checking params by prepending exclamation mark (`!`) in front of params pattern:
+
+```javascript
+myMatch = new UrlMatch('*://*/*?!aaa=*');
+```
+
+In strict mode, all param patterns must be matched and there can be no unmatched params:
+
+```javascript
+myMatch.test('http://google.com/?aaa=bbb'); // true
+myMatch.test('http://google.com/'); // false (param missing)
+myMatch.test('http://google.com/?aaa=bbb&ccc=ddd'); // false (too many params)
+```
+
 ### Match URL fragments
 
 NOTE: This functionality is not available in Chrome pattern matching.

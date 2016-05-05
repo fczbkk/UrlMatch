@@ -6,6 +6,7 @@ export default class {
   constructor (pattern) {
     this.original_pattern = pattern;
     this.pattern = this.sanitize(pattern);
+    this.is_strict = false;
   }
 
   get default_value () {

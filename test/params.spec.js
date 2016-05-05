@@ -60,70 +60,70 @@ describe('Params', function() {
   describe('sanitize', function() {
 
     it('should return empty hash on empty', function() {
-      expect(params.sanitize()).toEqual({});
+      expect(params.sanitize()).toEqual([]);
     });
 
     it('should return empty hash on single asterisk', function() {
-      expect(params.sanitize('*')).toEqual({});
+      expect(params.sanitize('*')).toEqual([]);
     });
 
     it('should handle valueless pair', function() {
-      expect(params.sanitize('aaa')).toEqual({
-        'aaa': '=?'
-      });
-      expect(params.sanitize('aaa=')).toEqual({
-        'aaa': '=?'
-      });
+      expect(params.sanitize('aaa')).toEqual([
+        'aaa=?'
+      ]);
+      expect(params.sanitize('aaa=')).toEqual([
+        'aaa=?'
+      ]);
     });
 
     it('should break the single pair pattern down to key/val pairs', function() {
-      expect(params.sanitize('aaa=bbb')).toEqual({
-        'aaa': '=bbb'
-      });
+      expect(params.sanitize('aaa=bbb')).toEqual([
+        'aaa=bbb'
+      ]);
     });
 
     it('should break the multi pair pattern down to key/val pairs', function() {
-      expect(params.sanitize('aaa=bbb&ccc=ddd')).toEqual({
-        'aaa': '=bbb',
-        'ccc': '=ddd'
-      });
+      expect(params.sanitize('aaa=bbb&ccc=ddd')).toEqual([
+        'aaa=bbb',
+        'ccc=ddd'
+      ]);
     });
 
     it('should replace asterisks in keys with universal matches', function() {
-      expect(params.sanitize('*=bbb')).toEqual({
-        '.+': '=bbb'
-      });
+      expect(params.sanitize('*=bbb')).toEqual([
+        '.+=bbb'
+      ]);
     });
 
     it('should replace asterisks in vals with universal matches', function() {
-      expect(params.sanitize('aaa=*')).toEqual({
-        'aaa': '=?.*'
-      });
+      expect(params.sanitize('aaa=*')).toEqual([
+        'aaa=?.*'
+      ]);
     });
 
     it('should replace partial asterisks with universal matches', function() {
-      expect(params.sanitize('aaa*=*bbb&ccc*ddd=*eee*')).toEqual({
-        'aaa.*': '=.*bbb',
-        'ccc.*ddd': '=.*eee.*'
-      });
+      expect(params.sanitize('aaa*=*bbb&ccc*ddd=*eee*')).toEqual([
+        'aaa.*=.*bbb',
+        'ccc.*ddd=.*eee.*'
+      ]);
     });
 
     it('should escape square brackets', function() {
-      expect(params.sanitize('aaa=[]')).toEqual({
-        'aaa': '=\\[\\]'
-      });
+      expect(params.sanitize('aaa=[]')).toEqual([
+        'aaa=\\[\\]'
+      ]);
     });
 
     it('should escape nested square brackets', function() {
-      expect(params.sanitize('aaa=[[]]')).toEqual({
-        'aaa': '=\\[\\[\\]\\]'
-      });
+      expect(params.sanitize('aaa=[[]]')).toEqual([
+        'aaa=\\[\\[\\]\\]'
+      ]);
     });
 
     it('should escape serialized JSON data', function() {
-      expect(params.sanitize('aaa=[[]]')).toEqual({
-        'aaa': '=\\[\\[\\]\\]'
-      });
+      expect(params.sanitize('aaa=[[]]')).toEqual([
+        'aaa=\\[\\[\\]\\]'
+      ]);
     });
 
   });
@@ -230,5 +230,63 @@ describe('Params', function() {
       expect(params.test('aaa=', pattern)).toBe(true);
       expect(params.test('aaa=bbb', pattern)).toBe(false);
     });
+
+  });
+
+  describe('strict mode', function () {
+
+    it('should set `is_strict` property', function () {
+      params.sanitize('!aaa=*');
+      expect(params.is_strict).toEqual(true);
+    });
+
+    it('should match known params when in strict mode', function () {
+      const pattern = params.sanitize('!aaa=*');
+      expect(params.test('aaa=bbb', pattern)).toBe(true);
+    });
+
+    it('should not match unknown params when in strict mode', function () {
+      const pattern = params.sanitize('!aaa=*');
+      expect(params.test('aaa=bbb&ccc=ddd', pattern)).toBe(false);
+      expect(params.test('ccc=ddd', pattern)).toBe(false);
+    });
+
+    it('should not match any params when empty in strict mode', function () {
+      const pattern = params.sanitize('!');
+      expect(params.test('aaa=bbb', pattern)).toBe(false);
+    });
+
+    it('should match empty params when empty in strict mode', function () {
+      const pattern = params.sanitize('!');
+      expect(params.test('', pattern)).toBe(true);
+    });
+
+    it('should match generic key param in strict mode', function () {
+      const pattern = params.sanitize('!*=aaa');
+      expect(params.test('bbb=aaa', pattern)).toBe(true);
+      expect(params.test('ccc=aaa', pattern)).toBe(true);
+    });
+
+    it('should match multiple key params in strict mode', function () {
+      const pattern = params.sanitize('!*=aaa');
+      expect(params.test('bbb=aaa&ccc=aaa', pattern)).toBe(true);
+    });
+
+    it('should match multiple generic key params in strict mode', function () {
+      const pattern = params.sanitize('!*=aaa&*=ccc');
+      expect(params.test('bbb=aaa&bbb=ccc', pattern)).toBe(true);
+      expect(params.test('bbb=aaa&bbb=ccc&xxx=yyy', pattern)).toBe(false);
+    });
+
+    it('should match multiple val params in strict mode', function () {
+      const pattern = params.sanitize('!aaa=*');
+      expect(params.test('aaa=bbb&aaa=ccc', pattern)).toBe(true);
+    });
+
+    it('should not match one of multiple params in strict mode', function () {
+      const pattern = params.sanitize('!aaa=*ccc');
+      expect(params.test('aaa=bbbccc&aaa=xxx', pattern)).toBe(false);
+    });
+
   });
 });
