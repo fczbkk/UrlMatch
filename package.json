@@ -1,7 +1,7 @@
 {
   "name": "url-match",
   "title": "UrlMatch",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "JavaScript object for matching URLs against patterns.",
   "repository": {
     "type": "git",

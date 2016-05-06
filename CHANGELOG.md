@@ -1,3 +1,13 @@
+<a name="2.1.2"></a>
+## [2.1.2](https://github.com/fczbkk/UrlMatch/compare/v2.1.1...v2.1.2) (2016-05-06)
+
+
+### Bug Fixes
+
+* do not throw an error in strict Param mode when params are missing([2d62d77](https://github.com/fczbkk/UrlMatch/commit/2d62d77))
+
+
+
 <a name="2.1.1"></a>
 ## [2.1.1](https://github.com/fczbkk/UrlMatch/compare/v2.1.0...v2.1.1) (2016-05-06)
 
