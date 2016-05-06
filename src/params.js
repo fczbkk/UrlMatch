@@ -73,14 +73,18 @@ export default class extends UrlPart {
       }, result);
 
       if (this.is_strict === true) {
-        const wrapped_patterns = patterns
-          .map((pattern) => `(${pattern})`)
-          .join('|');
-        const re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
+        if (typeof content === 'string') {
+          const wrapped_patterns = patterns
+            .map((pattern) => `(${pattern})`)
+            .join('|');
+          const re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
 
-        result = content.split('&').reduce((previous_result, pair) => {
-          return previous_result && re.test(pair);
-        }, result);
+          result = content.split('&').reduce((previous_result, pair) => {
+            return previous_result && re.test(pair);
+          }, result);
+        } else {
+          result = false;
+        }
       }
 
     }

@@ -288,5 +288,10 @@ describe('Params', function() {
       expect(params.test('aaa=bbbccc&aaa=xxx', pattern)).toBe(false);
     });
 
+    it('should work without errors when no params are present', function () {
+      const pattern = params.sanitize('!aaa=bbb');
+      expect(params.test(null, pattern)).toBe(false);
+    });
+
   });
 });
