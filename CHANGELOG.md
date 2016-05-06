@@ -1,3 +1,13 @@
+<a name="2.1.1"></a>
+## [2.1.1](https://github.com/fczbkk/UrlMatch/compare/v2.1.0...v2.1.1) (2016-05-06)
+
+
+### Bug Fixes
+
+* properly remember whether Params should be in strict mode([04f45e7](https://github.com/fczbkk/UrlMatch/commit/04f45e7))
+
+
+
 <a name="2.1.0"></a>
 # [2.1.0](https://github.com/fczbkk/UrlMatch/compare/v2.0.0...v2.1.0) (2016-05-05)
 
