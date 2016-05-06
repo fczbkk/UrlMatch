@@ -67,4 +67,13 @@ describe('Real life examples', function() {
     const my_match = new UrlMatch('*://*.aaa.com/');
     expect(my_match.test('http://aaa.com/')).toBe(true);
   });
+
+  it('strict matching', function () {
+    const my_match = new UrlMatch('http://*.aaa.com/*?!aaa=bbb');
+    expect(my_match.test('http://www.aaa.com/?aaa=bbb')).toBe(true);
+    expect(my_match.test('http://www.aaa.com/?aaa=bbb&ccc=ddd')).toBe(false);
+    expect(my_match.test('http://www.aaa.com/?ccc=ddd')).toBe(false);
+    expect(my_match.test('http://www.aaa.com/index.php?aaa=bbb')).toBe(true);
+  });
+
 });
