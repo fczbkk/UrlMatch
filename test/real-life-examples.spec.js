@@ -76,4 +76,18 @@ describe('Real life examples', function() {
     expect(my_match.test('http://www.aaa.com/index.php?aaa=bbb')).toBe(true);
   });
 
+  it('should match localhost on universal pattern', function () {
+    const my_match = new UrlMatch('*');
+    expect(my_match.test('http://localhost/')).toBe(true);
+    expect(my_match.test('http://localhost:3000/')).toBe(true);
+    expect(my_match.test('http://localhost:3000/aaa/bbb')).toBe(true);
+  });
+
+  it('should match localhost on specific pattern', function () {
+    const my_match = new UrlMatch('*://*/aaa/bbb');
+    expect(my_match.test('http://localhost/')).toBe(false);
+    expect(my_match.test('http://localhost:3000/')).toBe(false);
+    expect(my_match.test('http://localhost:3000/aaa/bbb')).toBe(true);
+  });
+
 });
