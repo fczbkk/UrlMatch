@@ -1,3 +1,13 @@
+<a name="2.2.0"></a>
+# [2.2.0](https://github.com/fczbkk/UrlMatch/compare/v2.1.2...v2.2.0) (2016-05-13)
+
+
+### Features
+
+* add compatibility with PrototypeJS v1.6 and lower([867bc62](https://github.com/fczbkk/UrlMatch/commit/867bc62))
+
+
+
 <a name="2.1.2"></a>
 ## [2.1.2](https://github.com/fczbkk/UrlMatch/compare/v2.1.1...v2.1.2) (2016-05-06)
 
