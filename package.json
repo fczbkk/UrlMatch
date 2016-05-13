@@ -49,6 +49,7 @@
     "webpack": "^1.13.0"
   },
   "dependencies": {
+    "array-reduce-prototypejs-fix": "^1.0.0",
     "babel-plugin-transform-es2015-classes": "^6.8.0"
   }
 }
