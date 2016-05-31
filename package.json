@@ -1,5 +1,5 @@
 {
-  "name": "url-match",
+  "name": "@fczbkk/url-match",
   "title": "UrlMatch",
   "version": "2.2.0",
   "description": "JavaScript object for matching URLs against patterns.",
@@ -24,7 +24,7 @@
     "test": "karma start ./karma.conf.js",
     "dev": "npm run test -- --no-single-run --auto-watch",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "postversion": "git push && git push --tags",
+    "postversion": "git push && git push --tags && npm publish --access=public",
     "version": "npm run build && npm run changelog && git add -A",
     "doc": "documentation readme ./src/index.js -s 'Documentation'"
   },
