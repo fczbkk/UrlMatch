@@ -1,3 +1,8 @@
+<a name="3.0.0"></a>
+# [3.0.0](https://github.com/fczbkk/UrlMatch/compare/v2.2.0...v3.0.0) (2016-05-31)
+
+
+
 <a name="2.2.0"></a>
 # [2.2.0](https://github.com/fczbkk/UrlMatch/compare/v2.1.2...v2.2.0) (2016-05-13)
 
