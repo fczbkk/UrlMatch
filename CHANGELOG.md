@@ -1,3 +1,13 @@
+<a name="3.2.0"></a>
+# [3.2.0](https://github.com/fczbkk/UrlMatch/compare/v3.1.0...v3.2.0) (2016-07-17)
+
+
+### Bug Fixes
+
+* revert recent changes([432b5fe](https://github.com/fczbkk/UrlMatch/commit/432b5fe))
+
+
+
 <a name="3.1.0"></a>
 # [3.1.0](https://github.com/fczbkk/UrlMatch/compare/v3.0.0...v3.1.0) (2016-07-17)
 
