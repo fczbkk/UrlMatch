@@ -1,3 +1,13 @@
+<a name="3.1.0"></a>
+# [3.1.0](https://github.com/fczbkk/UrlMatch/compare/v3.0.0...v3.1.0) (2016-07-17)
+
+
+### Bug Fixes
+
+* assume path always ends with optional trailing slash if missing([0662e33](https://github.com/fczbkk/UrlMatch/commit/0662e33))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/fczbkk/UrlMatch/compare/v2.2.0...v3.0.0) (2016-05-31)
 
