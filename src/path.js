@@ -9,10 +9,6 @@ export default class extends UrlPart {
 
   get sanitize_replacements () {
     return [
-      // add trailing slash if path is empty
-      {substring: /^$/, replacement: '\/'},
-      // add trailing slash if path does not end with asterisk or trailing slash
-      {substring: /[^/*]$/, replacement: '$&\/'},
       // assume trailing slash at the end of path is optional
       {substring: /\/$/, replacement: '\\/?'},
       {substring: /\/\*$/, replacement: '((\/?)|\/*)'},

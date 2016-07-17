@@ -90,11 +90,4 @@ describe('Real life examples', function() {
     expect(my_match.test('http://localhost:3000/aaa/bbb')).toBe(true);
   });
 
-  it('should handle missing trailing slash', function () {
-    const my_match = new UrlMatch('*://*/ccc');
-    expect(my_match.test('http://aaa.bbb/ccc')).toBe(true);
-    expect(my_match.test('http://aaa.bbb/ccc/')).toBe(true);
-    expect(my_match.test('http://aaa.bbb/ccc/ddd')).toBe(false);
-  });
-
 });
