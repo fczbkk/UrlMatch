@@ -72,6 +72,12 @@ describe('Path', function() {
       expect(path.test('bbb.ccc', path.sanitize('*/*.ccc'))).toBe(false);
     });
 
+    it('should add trailing slash if missing', function () {
+      expect(path.test('/', path.sanitize(''))).toBe(true);
+      expect(path.test('aaa/', path.sanitize('aaa'))).toBe(true);
+      expect(path.test('aaa/bbb/', path.sanitize('aaa/bbb'))).toBe(true);
+    });
+
     it('should assume trailing `/` is optional', function() {
       expect(path.test('', path.sanitize('/'))).toBe(true);
       expect(path.test('aaa', path.sanitize('aaa/'))).toBe(true);
