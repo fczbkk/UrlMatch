@@ -92,13 +92,11 @@ describe('Fragment', function() {
 
     it('should match fragment with question mark', function () {
       const pattern = fragment.sanitize('aaa?bbb');
-      console.log('x', pattern);
       expect(fragment.test('aaa?bbb', pattern)).toBe(true);
     });
 
     it('should match fragment with slash', function () {
       const pattern = fragment.sanitize('aaa/bbb');
-      console.log('x', pattern);
       expect(fragment.test('aaa/bbb', pattern)).toBe(true);
     });
 
