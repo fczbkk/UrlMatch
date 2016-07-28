@@ -90,4 +90,9 @@ describe('Real life examples', function() {
     expect(my_match.test('http://localhost:3000/aaa/bbb')).toBe(true);
   });
 
+  it('should match path commonly used by SPAs', function () {
+    const my_match = new UrlMatch('*://*/#/aaa?bbb=ccc');
+    expect(my_match.test('http://www.aaa.com/#/aaa?bbb=ccc')).toBe(true);
+  });
+
 });

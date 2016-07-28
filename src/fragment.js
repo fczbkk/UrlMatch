@@ -16,7 +16,9 @@ export default class extends UrlPart {
 
   get sanitize_replacements () {
     return [
-      {substring: /\*/g, replacement: '.*'}
+      {substring: /\*/g, replacement: '.*'},
+      {substring: /\?/g, replacement: '\\\?'},
+      {substring: /\//g, replacement: '\\\/'}
     ];
   }
 

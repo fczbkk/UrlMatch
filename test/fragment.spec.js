@@ -19,7 +19,7 @@ describe('Fragment', function() {
       expect(fragment.validate('#')).toBe(false);
     });
 
-    it('should validate on combination of characters and asterixes', function() {
+    it('should validate on combination of characters and asterisks', function() {
       expect(fragment.validate('aaa*bbb*ccc')).toBe(true);
     });
 
@@ -38,6 +38,10 @@ describe('Fragment', function() {
     });
 
     it('should sanitize characters with multiple asterisk', function() {
+      expect(fragment.sanitize('aaa*bbb*ccc')).toEqual(/^aaa.*bbb.*ccc$/);
+    });
+
+    it('should escape question mark', function() {
       expect(fragment.sanitize('aaa*bbb*ccc')).toEqual(/^aaa.*bbb.*ccc$/);
     });
 
@@ -61,29 +65,41 @@ describe('Fragment', function() {
       expect(fragment.test('aaa', pattern)).toBe(true);
     });
 
-    it('should match fragment with single asterix', function() {
+    it('should match fragment with single asterisk', function() {
       const pattern = fragment.sanitize('aaa*');
       expect(fragment.test('aaa', pattern)).toBe(true);
       expect(fragment.test('aaabbb', pattern)).toBe(true);
     });
 
-    it('should not match invalid fragment with single asterix', function() {
+    it('should not match invalid fragment with single asterisk', function() {
       const pattern = fragment.sanitize('aaa*');
       expect(fragment.test('bbb', pattern)).toBe(false);
       expect(fragment.test('bbbaaa', pattern)).toBe(false);
     });
 
-    it('should match fragment with multiple asterixes', function() {
+    it('should match fragment with multiple asterisks', function() {
       const pattern = fragment.sanitize('aaa*bbb*');
       expect(fragment.test('aaabbb', pattern)).toBe(true);
       expect(fragment.test('aaaxxxbbbxxx', pattern)).toBe(true);
     });
 
-    it('should not match invalid fragment with multiple asterixes', function() {
+    it('should not match invalid fragment with multiple asterisks', function() {
       const pattern = fragment.sanitize('aaa*bbb*');
       expect(fragment.test('xxx', pattern)).toBe(false);
       expect(fragment.test('xxxaaa', pattern)).toBe(false);
       expect(fragment.test('xxxaaabbb', pattern)).toBe(false);
+    });
+
+    it('should match fragment with question mark', function () {
+      const pattern = fragment.sanitize('aaa?bbb');
+      console.log('x', pattern);
+      expect(fragment.test('aaa?bbb', pattern)).toBe(true);
+    });
+
+    it('should match fragment with slash', function () {
+      const pattern = fragment.sanitize('aaa/bbb');
+      console.log('x', pattern);
+      expect(fragment.test('aaa/bbb', pattern)).toBe(true);
     });
 
   });

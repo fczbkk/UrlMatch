@@ -11,11 +11,11 @@ const split_re = new RegExp(
   '([a-z]+|\\*)*'          + // (1) scheme
   '://'                    + // scheme separator
   '(.+@)*'                 + // (2) username and/or password
-  '([\\w\\*\\.\\-]+)*'         + // (3) host
-  '(\\:\\d+)*'               + // (4) port number
-  '(/([^\\?\\#]*))*'         + // (5) path, (6) excluding slash
-  '(\\?([^\\#]*))*'         + // (7) params, (8) excluding question mark
-  '(\\#(.*))*'                // (9) fragment, (10) excluding hash
+  '([\\w\\*\\.\\-]+)*'     + // (3) host
+  '(\\:\\d+)*'             + // (4) port number
+  '(/([^\\?\\#]*))*'       + // (5) path, (6) excluding slash
+  '(\\?([^\\#]*))*'        + // (7) params, (8) excluding question mark
+  '(\\#(.*))*'               // (9) fragment, (10) excluding hash
 );
 
 
