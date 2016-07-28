@@ -1,3 +1,13 @@
+<a name="3.2.1"></a>
+## [3.2.1](https://github.com/fczbkk/UrlMatch/compare/v3.2.0...v3.2.1) (2016-07-28)
+
+
+### Bug Fixes
+
+* match patterns containing special characters in fragment([4c8b5a1](https://github.com/fczbkk/UrlMatch/commit/4c8b5a1))
+
+
+
 <a name="3.2.0"></a>
 # [3.2.0](https://github.com/fczbkk/UrlMatch/compare/v3.1.0...v3.2.0) (2016-07-17)
 
