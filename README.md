@@ -146,7 +146,7 @@ myMatch.test('http://google.com/#bbb'); // false
 You can check for URL fragments using wildcards:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*#aaa***');
+myMatch = new UrlMatch('*://*/*#aaa*');
 myMatch.test('http://google.com/#aaa'); // true
 myMatch.test('http://google.com/#aaabbb'); // true
 ```
