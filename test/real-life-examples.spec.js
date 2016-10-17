@@ -91,8 +91,11 @@ describe('Real life examples', function() {
   });
 
   it('should match path commonly used by SPAs', function () {
-    const my_match = new UrlMatch('*://*/#/aaa?bbb=ccc');
-    expect(my_match.test('http://www.aaa.com/#/aaa?bbb=ccc')).toBe(true);
+    const pattern = '*://*/sample/context_paths/#/sample?sampleId=1234';
+    const url =
+      'http://localhost:3000/sample/context_paths/#/sample?sampleId=1234';
+    const my_match = new UrlMatch(pattern);
+    expect(my_match.test(url)).toBe(true);
   });
 
 });
