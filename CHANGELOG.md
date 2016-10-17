@@ -1,3 +1,13 @@
+<a name="3.3.0"></a>
+# [3.3.0](https://github.com/fczbkk/UrlMatch/compare/v3.2.1...v3.3.0) (2016-10-17)
+
+
+### Features
+
+* add `debug()` method([00f1da9](https://github.com/fczbkk/UrlMatch/commit/00f1da9))
+
+
+
 <a name="3.2.1"></a>
 ## [3.2.1](https://github.com/fczbkk/UrlMatch/compare/v3.2.0...v3.2.1) (2016-07-28)
 
