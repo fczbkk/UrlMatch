@@ -238,4 +238,15 @@ describe('Pattern', function() {
 
   });
 
+  describe('debug', function () {
+
+    it('should return debug object', function () {
+      pattern = new Pattern('*://aaa.bbb/');
+      const result = pattern.debug('http://aaa.bbb/');
+      expect(result.scheme)
+        .toEqual({pattern: '*', value: 'http', result: true});
+    });
+
+  });
+
 });

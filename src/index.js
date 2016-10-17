@@ -47,4 +47,15 @@ export default class {
     return result;
   }
 
+  debug (content) {
+    let result = {};
+
+    this.patterns.forEach((pattern) => {
+      const pattern_obj = new Pattern(pattern);
+      result[pattern] = pattern_obj.debug(content);
+    });
+
+    return result;
+  }
+
 }

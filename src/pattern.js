@@ -102,6 +102,21 @@ export default class {
     return result;
   }
 
+  debug (url) {
+    const splits = this.split(url);
+    const result = {};
+
+    Object.keys(splits).forEach((key) => {
+      result[key] = {
+        pattern: this.url_parts[key].original_pattern,
+        value: splits[key],
+        result: this.url_parts[key].test(splits[key])
+      }
+    });
+
+    return result;
+  }
+
 }
 
 

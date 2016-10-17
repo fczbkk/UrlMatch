@@ -151,6 +151,48 @@ myMatch.test('http://google.com/#aaa'); // true
 myMatch.test('http://google.com/#aaabbb'); // true
 ```
 
+### Debug
+
+You can use `debug()` method to get detailed information about matching of each part of the pattern against each tested URL.
+
+Use it the same way you would use `test()` method. But instead of boolean value, it returns object where keys are tested URLs and values are deconstructed results.
+
+```javascript
+myMatch = new UrlMatch('*://aaa.bbb/');
+myMatch.debug('http://aaa.bbb/');
+/*
+{
+  "*://aaa.bbb/": {
+    "scheme": {
+      "pattern": "*",
+      "value": "http",
+      "result": true
+    },
+    "host": {
+      "pattern": "aaa.bbb",
+      "value": "aaa.bbb",
+      "result": true
+    },
+    "path": {
+      "pattern": "",
+      "value": "",
+      "result": true
+    },
+    "params": {
+      "pattern": null,
+      "value": null,
+      "result": true
+    },
+    "fragment": {
+      "pattern": null,
+      "value": null,
+      "result": true
+    }
+  }
+}
+ */
+```
+
 ## Bug reports, feature requests and contact
 
 If you found any bugs, if you have feature requests or any questions, please, either [file an issue at GitHub](https://github.com/fczbkk/UrlMatch/issues) or send me an e-mail at <a href="mailto:riki@fczbkk.com">riki@fczbkk.com</a>.

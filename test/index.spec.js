@@ -101,4 +101,19 @@ describe('General', function() {
 
   });
 
+  describe('debug', function () {
+
+    it('should return debug object', function () {
+      const pattern = '*://aaa.bbb/';
+      url_match = new UrlMatch(pattern);
+      const result = url_match.debug('http://aaa.bbb/');
+      expect(result[pattern].scheme).toEqual({
+        pattern: '*',
+        value: 'http',
+        result: true
+      });
+    });
+
+  });
+
 });
