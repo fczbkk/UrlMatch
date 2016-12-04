@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UrlMatch</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="url-match.js"></script>
+  <script src="index.js"></script>
+</head>
+<body>
+
+<h1>UrlMatch</h1>
+
+<h2><label for="patterns">Patterns</label></h2>
+<div>
+  <textarea id="patterns" rows="5">*://*.google.com/*
+http://*.facebook.com/*</textarea>
+</div>
+
+<h2><label for="urls">URLs</label></h2>
+<div>
+  <textarea id="urls" rows="5">http://google.com/
+https://google.com/
+xxx://google.com/
+http://www.google.com/images</textarea>
+</div>
+
+<h2>Results</h2>
+<div id="results">
+  <table>
+    <thead>
+      <tr>
+        <th>*://*.google.com/*</th>
+        <th>http://*.facebook.com/*</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="result-ok">http</span>://<span class="result-ok">google.com</span>/</td>
+        <td><span class="result-ok">http</span>://<span class="result-fail">google.com</span>/</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

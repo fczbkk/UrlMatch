@@ -1,0 +1,32 @@
+body {
+  padding: 3em;
+  background: #fff;
+  color: #333;
+  font-family: sans-serif;
+  line-height: 1.5em;
+}
+
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  font-family: monospace;
+  font-size: 1em;
+  line-height: 1.5em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+}
+
+.result-ok {
+  color: #0c0;
+}
+
+.result-fail {
+  color: #c00;
+}

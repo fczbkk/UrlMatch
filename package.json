@@ -21,11 +21,12 @@
     "cleanup": "rimraf temp lib",
     "prebuild": "npm run test && npm run cleanup",
     "build": "babel src -d lib",
+    "docs": "webpack --config ./webpack.config.js",
     "test": "karma start ./karma.conf.js",
     "dev": "npm run test -- --no-single-run --auto-watch",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "postversion": "git push && git push --tags && npm publish --access=public",
-    "version": "npm run build && npm run changelog && git add -A",
+    "version": "npm run build && npm run docs && npm run changelog && git add -A",
     "doc": "documentation readme ./src/index.js -s 'Documentation'"
   },
   "main": "lib/index.js",
