@@ -10,7 +10,7 @@ const split_re = new RegExp(
   '^'                      + // beginning
   '([a-z]+|\\*)*'          + // (1) scheme
   '://'                    + // scheme separator
-  '(.+@)*'                 + // (2) username and/or password
+  '([^\\/\\#\\?]+@)*'      + // (2) username and/or password
   '([\\w\\*\\.\\-]+)*'     + // (3) host
   '(\\:\\d+)*'             + // (4) port number
   '(/([^\\?\\#]*))*'       + // (5) path, (6) excluding slash

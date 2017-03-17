@@ -47,6 +47,36 @@ describe('Pattern', function() {
       expect(result.fragment).toEqual('jjj');
     });
 
+    it('should allow @ in URL', function () {
+      const result = pattern.split('http://aaa.bbb/ccc@ddd');
+      expect(result.host).toEqual('aaa.bbb');
+      expect(result.path).toEqual('ccc@ddd');
+    });
+
+    it('should allow username and password and @ in URL', function () {
+      const result = pattern.split('http://aaa:bbb@ccc.ddd/eee@fff');
+      expect(result.host).toEqual('ccc.ddd');
+      expect(result.path).toEqual('eee@fff');
+    });
+
+    it('should allow just username and @ in URL', function () {
+      const result = pattern.split('http://aaa@bbb.ccc/ddd@eee');
+      expect(result.host).toEqual('bbb.ccc');
+      expect(result.path).toEqual('ddd@eee');
+    });
+
+    it('should allow @ in params', function () {
+      const result = pattern.split('http://aaa.bbb?ccc=@ddd');
+      expect(result.host).toEqual('aaa.bbb');
+      expect(result.params).toEqual('ccc=@ddd');
+    });
+
+    it('should allow @ in fragment', function () {
+      const result = pattern.split('http://aaa.bbb#@ccc');
+      expect(result.host).toEqual('aaa.bbb');
+      expect(result.fragment).toEqual('@ccc');
+    });
+
   });
 
   describe('getUrlParts', function() {

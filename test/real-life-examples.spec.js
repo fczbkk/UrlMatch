@@ -98,4 +98,11 @@ describe('Real life examples', function() {
     expect(my_match.test(url)).toBe(true);
   });
 
+  it('should match fragment containing @', function () {
+    const pattern = '*://*/CustomerPortal/#/Page/HOME@folder-35';
+    const url = 'http://aaa.bbb/CustomerPortal/#/Page/HOME@folder-35';
+    const my_match = new UrlMatch(pattern);
+    expect(my_match.test(url)).toBe(true);
+  });
+
 });
