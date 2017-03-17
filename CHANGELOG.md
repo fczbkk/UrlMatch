@@ -1,3 +1,13 @@
+<a name="3.3.1"></a>
+## [3.3.1](https://github.com/fczbkk/UrlMatch/compare/v3.3.0...v3.3.1) (2017-03-17)
+
+
+### Bug Fixes
+
+* correctly match patterns containing "@" character([cb3b3fa](https://github.com/fczbkk/UrlMatch/commit/cb3b3fa))
+
+
+
 <a name="3.3.0"></a>
 # [3.3.0](https://github.com/fczbkk/UrlMatch/compare/v3.2.1...v3.3.0) (2016-10-17)
 
