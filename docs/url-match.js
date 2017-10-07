@@ -43,7 +43,7 @@ var UrlMatch =
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -61,7 +61,7 @@ var UrlMatch =
 
 	var _class = function () {
 	  function _class() {
-	    var patterns = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	    var patterns = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	    _classCallCheck(this, _class);
 
@@ -72,7 +72,7 @@ var UrlMatch =
 	  _class.prototype.add = function add() {
 	    var _this = this;
 
-	    var patterns = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	    var patterns = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	    if (typeof patterns === 'string') {
 	      patterns = [patterns];
@@ -88,7 +88,7 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.remove = function remove() {
-	    var patterns = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+	    var patterns = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 
 	    if (typeof patterns === 'string') {
 	      patterns = [patterns];
@@ -130,9 +130,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -156,7 +156,7 @@ var UrlMatch =
 
 	var _params2 = _interopRequireDefault(_params);
 
-	var _fragment = __webpack_require__(11);
+	var _fragment = __webpack_require__(13);
 
 	var _fragment2 = _interopRequireDefault(_fragment);
 
@@ -201,8 +201,8 @@ var UrlMatch =
 	  }
 
 	  _class.prototype.split = function split() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-	    var empty_value = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var empty_value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
 	    var result = {};
 	    var parts = pattern.match(split_re);
@@ -216,7 +216,7 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.getUrlParts = function getUrlParts() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? this.pattern : arguments[0];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.pattern;
 
 	    var splits = this.split(pattern);
 	    return {
@@ -229,7 +229,7 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.sanitize = function sanitize() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? this.original_pattern : arguments[0];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.original_pattern;
 
 	    var universal_pattern = '*://*/*?*#*';
 	    if (pattern === '*' || pattern === '<all_urls>') {
@@ -239,7 +239,7 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.validate = function validate() {
-	    var url_parts = arguments.length <= 0 || arguments[0] === undefined ? this.url_parts : arguments[0];
+	    var url_parts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.url_parts;
 
 	    var result = true;
 
@@ -259,15 +259,13 @@ var UrlMatch =
 	    var result = false;
 
 	    if ((0, _exists2.default)(url)) {
-	      (function () {
-	        result = true;
-	        var splits = _this.split(url);
-	        ['scheme', 'host', 'path', 'params', 'fragment'].forEach(function (part) {
-	          if (!_this.url_parts[part].test(splits[part])) {
-	            result = false;
-	          }
-	        });
-	      })();
+	      result = true;
+	      var splits = this.split(url);
+	      ['scheme', 'host', 'path', 'params', 'fragment'].forEach(function (part) {
+	        if (!_this.url_parts[part].test(splits[part])) {
+	          result = false;
+	        }
+	      });
 	    }
 
 	    return result;
@@ -295,9 +293,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -333,7 +331,7 @@ var UrlMatch =
 	  }
 
 	  _class.prototype.validate = function validate() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? this.original_pattern : arguments[0];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.original_pattern;
 
 	    if ((0, _exists2.default)(pattern)) {
 	      var re = new RegExp('^(' + '\\*' + // single wildcard
@@ -359,9 +357,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -389,7 +387,7 @@ var UrlMatch =
 	  }
 
 	  _class.prototype.validate = function validate() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? this.original_pattern : arguments[0];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.original_pattern;
 
 	    if ((0, _exists2.default)(pattern)) {
 	      var result = true;
@@ -413,8 +411,8 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.test = function test() {
-	    var content = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-	    var pattern = arguments.length <= 1 || arguments[1] === undefined ? this.pattern : arguments[1];
+	    var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var pattern = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.pattern;
 
 	    if (content === null) {
 	      content = '';
@@ -428,7 +426,7 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.sanitize = function sanitize() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? this.original_pattern : arguments[0];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.original_pattern;
 
 	    if (!(0, _exists2.default)(pattern)) {
 	      pattern = this.default_value;
@@ -436,8 +434,8 @@ var UrlMatch =
 
 	    if ((0, _exists2.default)(pattern) && this.validate(pattern)) {
 	      this.sanitize_replacements.forEach(function (_ref) {
-	        var substring = _ref.substring;
-	        var replacement = _ref.replacement;
+	        var substring = _ref.substring,
+	            replacement = _ref.replacement;
 
 	        pattern = pattern.replace(substring, replacement);
 	      });
@@ -478,9 +476,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -492,9 +490,9 @@ var UrlMatch =
 	  return typeof val !== 'undefined' && val !== null;
 	};
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -567,9 +565,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -613,7 +611,7 @@ var UrlMatch =
 	      { substring: /\/$/, replacement: '\\/?' }, { substring: /\/\*$/, replacement: '((\/?)|\/*)' },
 	      // allow letters, numbers, hyphens, dots, slashes and underscores
 	      // instead of wildcard
-	      { substring: /\*/g, replacement: '[a-zA-Z0-9-./_]*' }];
+	      { substring: /\*/g, replacement: '[a-zA-Z0-9-./_:~!$&\'\(\)\*,;=@%]*' }];
 	    }
 	  }]);
 
@@ -622,9 +620,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -666,7 +664,7 @@ var UrlMatch =
 	  }
 
 	  _class.prototype.sanitize = function sanitize() {
-	    var pattern = arguments.length <= 0 || arguments[0] === undefined ? this.original_pattern : arguments[0];
+	    var pattern = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.original_pattern;
 
 	    // strict mode
 	    if (typeof pattern === 'string' && pattern.substring(0, 1) === '!') {
@@ -684,14 +682,13 @@ var UrlMatch =
 
 	      // replace asterisks
 	      pattern.split('&').forEach(function (pair) {
-	        var _pair$split = pair.split('=');
-
-	        var _pair$split2 = _slicedToArray(_pair$split, 2);
-
-	        var key = _pair$split2[0];
-	        var val = _pair$split2[1];
+	        var _pair$split = pair.split('='),
+	            _pair$split2 = _slicedToArray(_pair$split, 2),
+	            key = _pair$split2[0],
+	            val = _pair$split2[1];
 
 	        // if key is asterisk, then at least one character is required
+
 
 	        key = key === '*' ? '.+' : key.replace(/\*/g, '.*');
 
@@ -716,8 +713,8 @@ var UrlMatch =
 	  };
 
 	  _class.prototype.test = function test() {
-	    var content = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-	    var patterns = arguments.length <= 1 || arguments[1] === undefined ? this.pattern : arguments[1];
+	    var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	    var patterns = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.pattern;
 
 	    var result = true;
 
@@ -730,16 +727,14 @@ var UrlMatch =
 
 	      if (this.is_strict === true) {
 	        if (typeof content === 'string') {
-	          (function () {
-	            var wrapped_patterns = patterns.map(function (pattern) {
-	              return '(' + pattern + ')';
-	            }).join('|');
-	            var re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
+	          var wrapped_patterns = patterns.map(function (pattern) {
+	            return '(' + pattern + ')';
+	          }).join('|');
+	          var re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
 
-	            result = (0, _arrayReducePrototypejsFix2.default)(content.split('&'), function (previous_result, pair) {
-	              return previous_result && re.test(pair);
-	            }, result);
-	          })();
+	          result = (0, _arrayReducePrototypejsFix2.default)(content.split('&'), function (previous_result, pair) {
+	            return previous_result && re.test(pair);
+	          }, result);
 	        } else {
 	          result = false;
 	        }
@@ -772,9 +767,9 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -783,37 +778,37 @@ var UrlMatch =
 	});
 	exports.default = arrayReduce;
 
-	var _getNestedProperty = __webpack_require__(9);
-
-	var _getNestedProperty2 = _interopRequireDefault(_getNestedProperty);
-
-	var _arrayReducePolyfill = __webpack_require__(10);
+	var _arrayReducePolyfill = __webpack_require__(9);
 
 	var _arrayReducePolyfill2 = _interopRequireDefault(_arrayReducePolyfill);
 
-	function _interopRequireDefault(obj) {
-	  return obj && obj.__esModule ? obj : { default: obj };
-	}
+	var _deepEqual = __webpack_require__(10);
 
-	/**
-	 * Checks whether PrototypeJS v1.6 or lower is present.
-	 * @returns {boolean}
-	 * @ignore
-	 */
-	function isOldPrototype() {
-	  var prototype_version = (0, _getNestedProperty2.default)(window, 'Prototype.Version');
+	var _deepEqual2 = _interopRequireDefault(_deepEqual);
 
-	  if (typeof prototype_version === 'string') {
-	    var parts = prototype_version.split('.').map(function (item) {
-	      return parseInt(item, 10);
-	    });
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	    if (parts[0] < 1 || parts[0] === 1 && parts[1] < 7) {
-	      return true;
-	    }
+	function testCurrentImplementation() {
+	  var result = false;
+
+	  var data = [2, 4, 6];
+	  var init_value = 10;
+	  var iterations = [];
+	  var iterator = function iterator(accumulator, current_value, current_index, array) {
+	    iterations.push([accumulator, current_value, current_index, array]);
+	    return accumulator + current_value;
+	  };
+
+	  var expectation = [[10, 2, 0, data], [12, 4, 1, data], [16, 6, 2, data]];
+
+	  try {
+	    var output = Array.prototype.reduce.call(data, iterator, init_value);
+	    result = output === 22 && (0, _deepEqual2.default)(iterations, expectation, { strict: true });
+	  } catch (error) {
+	    // continue
 	  }
 
-	  return false;
+	  return result;
 	}
 
 	/**
@@ -825,7 +820,7 @@ var UrlMatch =
 	function arrayReduce() {
 	  var array = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
 
-	  var arrayReduce = isOldPrototype() ? _arrayReducePolyfill2.default : Array.prototype.reduce;
+	  var arrayReduce = testCurrentImplementation() ? Array.prototype.reduce : _arrayReducePolyfill2.default;
 
 	  for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 	    params[_key - 1] = arguments[_key];
@@ -834,66 +829,9 @@ var UrlMatch =
 	  return arrayReduce.apply(array, params);
 	}
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	var _typeof2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _typeof = typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol" ? function (obj) {
-	  return typeof obj === "undefined" ? "undefined" : _typeof2(obj);
-	} : function (obj) {
-	  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof2(obj);
-	};
-
-	exports.default = getNestedProperty;
-	/**
-	 * Returns nested property by path.
-	 * @param [data=window] Data object in which we will be looking for property.
-	 * @param [path=''] Dot separated path to the nested property inside object.
-	 * @returns {*} Found property of the object or `undefined` if not found.
-	 *
-	 * @example
-	 * var data = {aaa: {bbb: 'ccc'}};
-	 * getNestedProperty(data, 'aaa.bbb');
-	 * // returns 'ccc'
-	 */
-	function getNestedProperty() {
-	  var data = arguments.length <= 0 || arguments[0] === undefined ? window : arguments[0];
-	  var path = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
-
-	  if (typeof path === 'string') {
-	    var _ret = function () {
-
-	      var result = data;
-
-	      if (path !== '') {
-	        path.split('.').forEach(function (segment) {
-	          result = typeof result !== 'undefined' && typeof result[segment] !== 'undefined' ? result[segment] : undefined;
-	        });
-	      }
-
-	      return {
-	        v: result
-	      };
-	    }();
-
-	    if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	  } else {
-
-	    throw new TypeError('getNestedProperty: Provided path must be String (is "' + path + '").');
-	  }
-	}
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 
@@ -901,10 +839,7 @@ var UrlMatch =
 	  value: true
 	});
 
-	exports.default = function (callback /*, initialValue*/) // Array.reduce polyfill from:
-	// https://gist.github.com/lski/0eae0d2738831b6b0ec2b88a8a603952
-
-	{
+	exports.default = function (callback /*, initialValue*/) {
 	  'use strict';
 
 	  if (this == null) {
@@ -936,11 +871,152 @@ var UrlMatch =
 	  return value;
 	};
 
-	;
+	; // Array.reduce polyfill from:
+	// https://gist.github.com/lski/0eae0d2738831b6b0ec2b88a8a603952
 
-/***/ },
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	var pSlice = Array.prototype.slice;
+	var objectKeys = __webpack_require__(11);
+	var isArguments = __webpack_require__(12);
+
+	var deepEqual = module.exports = function (actual, expected, opts) {
+	  if (!opts) opts = {};
+	  // 7.1. All identical values are equivalent, as determined by ===.
+	  if (actual === expected) {
+	    return true;
+	  } else if (actual instanceof Date && expected instanceof Date) {
+	    return actual.getTime() === expected.getTime();
+
+	    // 7.3. Other pairs that do not both pass typeof value == 'object',
+	    // equivalence is determined by ==.
+	  } else if (!actual || !expected || (typeof actual === 'undefined' ? 'undefined' : _typeof(actual)) != 'object' && (typeof expected === 'undefined' ? 'undefined' : _typeof(expected)) != 'object') {
+	    return opts.strict ? actual === expected : actual == expected;
+
+	    // 7.4. For all other Object pairs, including Array objects, equivalence is
+	    // determined by having the same number of owned properties (as verified
+	    // with Object.prototype.hasOwnProperty.call), the same set of keys
+	    // (although not necessarily the same order), equivalent values for every
+	    // corresponding key, and an identical 'prototype' property. Note: this
+	    // accounts for both named and indexed properties on Arrays.
+	  } else {
+	    return objEquiv(actual, expected, opts);
+	  }
+	};
+
+	function isUndefinedOrNull(value) {
+	  return value === null || value === undefined;
+	}
+
+	function isBuffer(x) {
+	  if (!x || (typeof x === 'undefined' ? 'undefined' : _typeof(x)) !== 'object' || typeof x.length !== 'number') return false;
+	  if (typeof x.copy !== 'function' || typeof x.slice !== 'function') {
+	    return false;
+	  }
+	  if (x.length > 0 && typeof x[0] !== 'number') return false;
+	  return true;
+	}
+
+	function objEquiv(a, b, opts) {
+	  var i, key;
+	  if (isUndefinedOrNull(a) || isUndefinedOrNull(b)) return false;
+	  // an identical 'prototype' property.
+	  if (a.prototype !== b.prototype) return false;
+	  //~~~I've managed to break Object.keys through screwy arguments passing.
+	  //   Converting to array solves the problem.
+	  if (isArguments(a)) {
+	    if (!isArguments(b)) {
+	      return false;
+	    }
+	    a = pSlice.call(a);
+	    b = pSlice.call(b);
+	    return deepEqual(a, b, opts);
+	  }
+	  if (isBuffer(a)) {
+	    if (!isBuffer(b)) {
+	      return false;
+	    }
+	    if (a.length !== b.length) return false;
+	    for (i = 0; i < a.length; i++) {
+	      if (a[i] !== b[i]) return false;
+	    }
+	    return true;
+	  }
+	  try {
+	    var ka = objectKeys(a),
+	        kb = objectKeys(b);
+	  } catch (e) {
+	    //happens when one is a string literal and the other isn't
+	    return false;
+	  }
+	  // having the same number of owned properties (keys incorporates
+	  // hasOwnProperty)
+	  if (ka.length != kb.length) return false;
+	  //the same set of keys (although not necessarily the same order),
+	  ka.sort();
+	  kb.sort();
+	  //~~~cheap key test
+	  for (i = ka.length - 1; i >= 0; i--) {
+	    if (ka[i] != kb[i]) return false;
+	  }
+	  //equivalent values for every corresponding key, and
+	  //~~~possibly expensive deep test
+	  for (i = ka.length - 1; i >= 0; i--) {
+	    key = ka[i];
+	    if (!deepEqual(a[key], b[key], opts)) return false;
+	  }
+	  return (typeof a === 'undefined' ? 'undefined' : _typeof(a)) === (typeof b === 'undefined' ? 'undefined' : _typeof(b));
+	}
+
+/***/ }),
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	exports = module.exports = typeof Object.keys === 'function' ? Object.keys : shim;
+
+	exports.shim = shim;
+	function shim(obj) {
+	  var keys = [];
+	  for (var key in obj) {
+	    keys.push(key);
+	  }return keys;
+	}
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	var supportsArgumentsClass = function () {
+	  return Object.prototype.toString.call(arguments);
+	}() == '[object Arguments]';
+
+	exports = module.exports = supportsArgumentsClass ? supported : unsupported;
+
+	exports.supported = supported;
+	function supported(object) {
+	  return Object.prototype.toString.call(object) == '[object Arguments]';
+	};
+
+	exports.unsupported = unsupported;
+	function unsupported(object) {
+	  return object && (typeof object === 'undefined' ? 'undefined' : _typeof(object)) == 'object' && typeof object.length == 'number' && Object.prototype.hasOwnProperty.call(object, 'callee') && !Object.prototype.propertyIsEnumerable.call(object, 'callee') || false;
+	};
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -995,5 +1071,5 @@ var UrlMatch =
 
 	exports.default = _class;
 
-/***/ }
+/***/ })
 /******/ ]);

@@ -1,3 +1,13 @@
+<a name="3.3.2"></a>
+## [3.3.2](https://github.com/fczbkk/UrlMatch/compare/v3.3.1...v3.3.2) (2017-10-07)
+
+
+### Bug Fixes
+
+* add valid separator characters to the path part ([05e8e71](https://github.com/fczbkk/UrlMatch/commit/05e8e71))
+
+
+
 <a name="3.3.1"></a>
 ## [3.3.1](https://github.com/fczbkk/UrlMatch/compare/v3.3.0...v3.3.1) (2017-03-17)
 
