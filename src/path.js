@@ -14,7 +14,7 @@ export default class extends UrlPart {
       {substring: /\/\*$/, replacement: '((\/?)|\/*)'},
       // allow letters, numbers, hyphens, dots, slashes and underscores
       // instead of wildcard
-      {substring: /\*/g, replacement: '[a-zA-Z0-9-./_]*'}
+      {substring: /\*/g, replacement: '[a-zA-Z0-9-./_:~!$&\'\(\)\*,;=@%]*'}
     ];
   }
 

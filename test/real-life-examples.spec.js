@@ -105,4 +105,11 @@ describe('Real life examples', function() {
     expect(my_match.test(url)).toBe(true);
   });
 
+  it('should work with URLs containing colon', function () {
+    // see https://github.com/InlineManual/player/issues/1086 for details
+    const url = "https://aaa.bbb/ccc/(ddd:eee)";
+    const my_match = new UrlMatch('*');
+    expect(my_match.test(url)).toBe(true);
+  });
+
 });

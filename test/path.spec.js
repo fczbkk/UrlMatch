@@ -98,6 +98,16 @@ describe('Path', function() {
       expect(path.test('aaa', pattern)).toBe(false);
     });
 
+    it('should match path containing colon', function () {
+      const pattern = path.sanitize('aaa*bbb');
+      expect(path.test('aaa:bbb', pattern)).toBe(true);
+    });
+
+    it('should allow to use colon in pattern', function () {
+      const pattern = path.sanitize('*:*');
+      expect(path.test('aaa:bbb', pattern)).toBe(true);
+    });
+
   });
 
 });
