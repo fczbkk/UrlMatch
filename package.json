@@ -1,7 +1,7 @@
 {
   "name": "@fczbkk/url-match",
   "title": "UrlMatch",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "JavaScript object for matching URLs against patterns.",
   "repository": {
     "type": "git",

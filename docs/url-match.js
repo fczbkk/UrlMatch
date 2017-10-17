@@ -607,6 +607,8 @@ var UrlMatch =
 	    key: 'sanitize_replacements',
 	    get: function get() {
 	      return [
+	      // escape brackets
+	      { substring: /\(/, replacement: '\\\(' }, { substring: /\)/, replacement: '\\\)' },
 	      // assume trailing slash at the end of path is optional
 	      { substring: /\/$/, replacement: '\\/?' }, { substring: /\/\*$/, replacement: '((\/?)|\/*)' },
 	      // allow letters, numbers, hyphens, dots, slashes and underscores

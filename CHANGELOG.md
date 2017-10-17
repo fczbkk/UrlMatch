@@ -1,3 +1,13 @@
+<a name="3.3.3"></a>
+## [3.3.3](https://github.com/fczbkk/UrlMatch/compare/v3.3.2...v3.3.3) (2017-10-17)
+
+
+### Bug Fixes
+
+* escape brackets in path pattern ([d060c1a](https://github.com/fczbkk/UrlMatch/commit/d060c1a))
+
+
+
 <a name="3.3.2"></a>
 ## [3.3.2](https://github.com/fczbkk/UrlMatch/compare/v3.3.1...v3.3.2) (2017-10-07)
 
