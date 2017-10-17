@@ -9,6 +9,9 @@ export default class extends UrlPart {
 
   get sanitize_replacements () {
     return [
+      // escape brackets
+      {substring: /\(/, replacement: '\\\('},
+      {substring: /\)/, replacement: '\\\)'},
       // assume trailing slash at the end of path is optional
       {substring: /\/$/, replacement: '\\/?'},
       {substring: /\/\*$/, replacement: '((\/?)|\/*)'},

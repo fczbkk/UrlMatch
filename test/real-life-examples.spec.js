@@ -105,10 +105,31 @@ describe('Real life examples', function() {
     expect(my_match.test(url)).toBe(true);
   });
 
-  it('should work with URLs containing colon', function () {
+  it('should work with URLs containing special characters', function () {
     // see https://github.com/InlineManual/player/issues/1086 for details
     const url = "https://aaa.bbb/ccc/(ddd:eee)";
     const my_match = new UrlMatch('*');
+    expect(my_match.test(url)).toBe(true);
+  });
+
+  it('should work with patterns containing colon', function () {
+    // see https://github.com/InlineManual/player/issues/1086 for details
+    const url = "https://aaa.bbb/ccc:ddd/";
+    const my_match = new UrlMatch('*://*/ccc:ddd/');
+    expect(my_match.test(url)).toBe(true);
+  });
+
+  it('should work with patterns containing brackets', function () {
+    // see https://github.com/InlineManual/player/issues/1086 for details
+    const url = "https://aaa.bbb/(ccc)/";
+    const my_match = new UrlMatch('*://*/(ccc)/');
+    expect(my_match.test(url)).toBe(true);
+  });
+
+  it('should work with patterns containing brackets and colon', function () {
+    // see https://github.com/InlineManual/player/issues/1086 for details
+    const url = "https://aaa.bbb/(ccc:ddd)/";
+    const my_match = new UrlMatch('*://*/(ccc:ddd)/');
     expect(my_match.test(url)).toBe(true);
   });
 
