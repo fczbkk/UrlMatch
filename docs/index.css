@@ -23,10 +23,17 @@ th, td {
   border: 1px solid #ccc;
 }
 
+.result-ok, .result-fail {
+  padding: 0.25em;
+  border: 1px solid #fff;
+}
+
 .result-ok {
   color: #0c0;
+  background: #00cc0033;
 }
 
 .result-fail {
   color: #c00;
+  background: #cc000033;
 }
