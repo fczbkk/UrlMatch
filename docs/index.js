@@ -17,7 +17,6 @@ window.addEventListener('load', function () {
   }
 
   function getWrappedDetail (data) {
-    console.log('data', data);
     var class_name = (data.result) ? 'result-ok' : 'result-fail';
     return (
       '<span class="' + class_name + '" title="' + data.pattern + '">'
