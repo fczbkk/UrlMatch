@@ -722,6 +722,11 @@ var UrlMatch =
 
 	    if ((0, _exists2.default)(patterns)) {
 
+	      // special case, when we want to strictly match no params, e.g. '*://*/*?!'
+	      if (this.is_strict && content === null && patterns.length === 0) {
+	        return true;
+	      }
+
 	      result = (0, _arrayReducePrototypejsFix2.default)(patterns, function (previous_result, pattern) {
 	        var re = new RegExp('(^|\&)' + pattern + '(\&|$)');
 	        return previous_result && re.test(content);

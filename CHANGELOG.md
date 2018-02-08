@@ -1,3 +1,13 @@
+<a name="3.3.4"></a>
+## [3.3.4](https://github.com/fczbkk/UrlMatch/compare/v3.3.3...v3.3.4) (2018-02-08)
+
+
+### Bug Fixes
+
+* match pattern with strictly no params ([4a9ecd0](https://github.com/fczbkk/UrlMatch/commit/4a9ecd0))
+
+
+
 <a name="3.3.3"></a>
 ## [3.3.3](https://github.com/fczbkk/UrlMatch/compare/v3.3.2...v3.3.3) (2017-10-17)
 
