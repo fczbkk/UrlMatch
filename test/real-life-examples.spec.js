@@ -133,4 +133,12 @@ describe('Real life examples', function() {
     expect(my_match.test(url)).toBe(true);
   });
 
+  it('should allow to match URL with strictly no params', function () {
+    const my_match = new UrlMatch('*://*/*?!');
+    expect(my_match.test('https://aaa.bbb/ccc/')).toBe(true);
+    expect(my_match.test('https://aaa.bbb/ccc/?')).toBe(true);
+    expect(my_match.test('https://aaa.bbb/ccc/?ddd')).toBe(false);
+    expect(my_match.test('https://aaa.bbb/ccc/?ddd=eee')).toBe(false);
+  });
+
 });

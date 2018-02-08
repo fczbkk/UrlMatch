@@ -68,6 +68,11 @@ export default class extends UrlPart {
 
     if (exists(patterns)) {
 
+      // special case, when we want to strictly match no params, e.g. '*://*/*?!'
+      if (this.is_strict && (content === null) && (patterns.length === 0)) {
+        return true;
+      }
+
       result = arrayReduce(patterns, (previous_result, pattern) => {
         const re = new RegExp('(^|\&)' + pattern + '(\&|$)');
         return previous_result && re.test(content);

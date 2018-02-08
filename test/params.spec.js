@@ -261,6 +261,11 @@ describe('Params', function() {
       expect(params.test('', pattern)).toBe(true);
     });
 
+    it('should match empty params when null in strict mode', function () {
+      const pattern = params.sanitize('!');
+      expect(params.test(null, pattern)).toBe(true);
+    });
+
     it('should match generic key param in strict mode', function () {
       const pattern = params.sanitize('!*=aaa');
       expect(params.test('bbb=aaa', pattern)).toBe(true);
