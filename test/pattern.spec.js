@@ -38,8 +38,7 @@ describe('Pattern', function() {
     });
 
     it('should split pattern into correct parts', function() {
-      var result;
-      result = pattern.split(complex_url);
+      const result = pattern.split(complex_url);
       expect(result.scheme).toEqual('http');
       expect(result.host).toEqual('aaa.bbb.ccc');
       expect(result.path).toEqual('ddd/eee');

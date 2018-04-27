@@ -1,13 +1,16 @@
+const path = require('path');
+
 module.exports = {
-  entry: './src/index.js',
+  mode: 'production',
+  entry: path.resolve(__dirname, 'src/index.js'),
   output: {
     filename: 'url-match.js',
-    path: './docs/',
+    path: path.resolve(__dirname, 'docs'),
     library: 'UrlMatch',
     libraryTarget: 'var'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         loaders: ['babel-loader']
