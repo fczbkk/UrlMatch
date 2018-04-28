@@ -52,7 +52,6 @@ describe('Host', function() {
 
     it('should not validate characters except letters, numbers and -', function() {
       expect(host.validate('aaa?bbb.ccc')).toBe(false);
-      expect(host.validate('aaa_bbb.ccc')).toBe(false);
       expect(host.validate('aaa+bbb.ccc')).toBe(false);
     });
 
@@ -68,7 +67,7 @@ describe('Host', function() {
   describe('sanitize', function() {
 
     it('should sanitize *', function() {
-      expect(host.sanitize('*')).toEqual(/^[a-z0-9-.]+$/);
+      expect(host.sanitize('*')).toEqual(/^[a-z0-9-_.]+$/);
     });
 
     it('should sanitize host without asterisk', function() {
@@ -76,7 +75,7 @@ describe('Host', function() {
     });
 
     it('should sanitize host with asterisk', function() {
-      expect(host.sanitize('*.aaa')).toEqual(/^([a-z0-9-.]+\.)?aaa$/);
+      expect(host.sanitize('*.aaa')).toEqual(/^([a-z0-9-_.]+\.)?aaa$/);
     });
 
   });
@@ -115,6 +114,11 @@ describe('Host', function() {
       expect(host.test('aaa.bbb.ccc', host.sanitize('xxx.bbb.ccc'))).toBe(false);
       expect(host.test('aaa.bbb.ccc', host.sanitize('aaa.xxx.ccc'))).toBe(false);
       expect(host.test('aaa.bbb.ccc', host.sanitize('aaa.bbb.xxx'))).toBe(false);
+    });
+
+    it('should allow underscore in host', function () {
+      const pattern = host.sanitize('*');
+      expect(host.test('aaa_bbb', pattern)).toBe(true);
     });
 
   });

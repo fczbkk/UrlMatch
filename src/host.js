@@ -34,7 +34,7 @@ export default class extends UrlPart {
       // escape all dots
       {substring: '.', replacement: '\\.'},
       // replace asterisks with pattern
-      {substring: '*', replacement: '[a-z0-9-.]+'}
+      {substring: '*', replacement: '[a-z0-9-_.]+'}
     ];
   }
 
