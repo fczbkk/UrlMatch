@@ -1,3 +1,13 @@
+<a name="3.3.5"></a>
+## [3.3.5](https://github.com/fczbkk/UrlMatch/compare/v3.3.4...v3.3.5) (2018-04-28)
+
+
+### Bug Fixes
+
+* allow underscores in domain names ([94c33ca](https://github.com/fczbkk/UrlMatch/commit/94c33ca))
+
+
+
 <a name="3.3.4"></a>
 ## [3.3.4](https://github.com/fczbkk/UrlMatch/compare/v3.3.3...v3.3.4) (2018-02-08)
 
