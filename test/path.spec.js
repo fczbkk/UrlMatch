@@ -115,7 +115,6 @@ describe('Path', function() {
 
     it('should allow to use plus sign in pattern', function () {
       const pattern = path.sanitize('*+*');
-      console.log('pattern', pattern.toString());
       expect(path.test('aaa+bbb', pattern)).toBe(true);
     });
 
