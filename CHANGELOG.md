@@ -1,3 +1,13 @@
+<a name="3.4.0"></a>
+# [3.4.0](https://github.com/fczbkk/UrlMatch/compare/v3.3.5...v3.4.0) (2023-04-06)
+
+
+### Features
+
+* allow to use plus sign in path ([e545f1d](https://github.com/fczbkk/UrlMatch/commit/e545f1d)), closes [#6](https://github.com/fczbkk/UrlMatch/issues/6)
+
+
+
 <a name="3.3.5"></a>
 ## [3.3.5](https://github.com/fczbkk/UrlMatch/compare/v3.3.4...v3.3.5) (2018-04-28)
 
