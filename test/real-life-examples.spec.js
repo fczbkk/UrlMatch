@@ -141,4 +141,10 @@ describe('Real life examples', function() {
     expect(my_match.test('https://aaa.bbb/ccc/?ddd=eee')).toBe(false);
   });
 
+  it('should work with patterns containing a plus sign', () => {
+    const url = 'https://aaa.bbb/ccc+ddd/';
+    const my_match = new UrlMatch('*://*/ccc+ddd/');
+    expect(my_match.test(url)).toBe(true);
+  });
+
 });

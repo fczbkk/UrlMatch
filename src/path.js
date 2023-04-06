@@ -15,9 +15,11 @@ export default class extends UrlPart {
       // assume trailing slash at the end of path is optional
       {substring: /\/$/, replacement: '\\/?'},
       {substring: /\/\*$/, replacement: '((\/?)|\/*)'},
-      // allow letters, numbers, hyphens, dots, slashes and underscores
-      // instead of wildcard
-      {substring: /\*/g, replacement: '[a-zA-Z0-9-./_:~!$&\'\(\)\*,;=@%]*'}
+      // plus sign
+      {substring: /\+/, replacement: '\\\+'},
+      // allow letters, numbers, plus signs, hyphens, dots, slashes
+      // and underscores instead of wildcard
+      {substring: /\*/g, replacement: '[a-zA-Z0-9\+-./_:~!$&\'\(\)\*,;=@%]*'}
     ];
   }
 
