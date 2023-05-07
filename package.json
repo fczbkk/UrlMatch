@@ -52,5 +52,6 @@
   },
   "dependencies": {
     "array-reduce-prototypejs-fix": "^1.2.0"
-  }
+  },
+  "types": "types/index.d.ts"
 }
