@@ -1,3 +1,13 @@
+<a name="3.5.0"></a>
+# [3.5.0](https://github.com/fczbkk/UrlMatch/compare/v3.4.0...v3.5.0) (2023-05-07)
+
+
+### Features
+
+* add type definitions ([9578d07](https://github.com/fczbkk/UrlMatch/commit/9578d07))
+
+
+
 <a name="3.4.0"></a>
 # [3.4.0](https://github.com/fczbkk/UrlMatch/compare/v3.3.5...v3.4.0) (2023-04-06)
 
