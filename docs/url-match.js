@@ -1,3 +1,4 @@
+"use strict";
 var UrlMatch = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -17,19 +18,19 @@ var UrlMatch = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // src/index.js
+  // src/index.ts
   var index_exports = {};
   __export(index_exports, {
-    default: () => index_default
+    default: () => UrlMatch
   });
 
-  // src/utilities/exists.js
-  function exists_default(val) {
+  // src/utilities/exists.ts
+  function exists(val) {
     return typeof val !== "undefined" && val !== null;
   }
 
-  // src/url-part.js
-  var url_part_default = class {
+  // src/url-part.ts
+  var UrlPart = class {
     constructor(pattern) {
       this.is_strict = false;
       this.original_pattern = pattern;
@@ -48,7 +49,7 @@ var UrlMatch = (() => {
       return [];
     }
     validate(pattern = this.original_pattern) {
-      if (exists_default(pattern)) {
+      if (exists(pattern)) {
         let result = true;
         this.validate_rules.forEach((rule) => {
           if (!rule.test(pattern)) {
@@ -68,7 +69,7 @@ var UrlMatch = (() => {
       if (content === null) {
         content = "";
       }
-      if (exists_default(pattern)) {
+      if (exists(pattern) && pattern instanceof RegExp) {
         return pattern.test(content);
       }
       return true;
@@ -77,10 +78,10 @@ var UrlMatch = (() => {
       return [];
     }
     sanitize(pattern = this.original_pattern) {
-      if (!exists_default(pattern)) {
+      if (!exists(pattern)) {
         pattern = this.default_value;
       }
-      if (exists_default(pattern) && this.validate(pattern)) {
+      if (exists(pattern) && this.validate(pattern)) {
         this.sanitize_replacements.forEach(({ substring, replacement }) => {
           pattern = pattern.replace(substring, replacement);
         });
@@ -90,10 +91,10 @@ var UrlMatch = (() => {
     }
   };
 
-  // src/scheme.js
-  var scheme_default = class extends url_part_default {
+  // src/scheme.ts
+  var Scheme = class extends UrlPart {
     validate(pattern = this.original_pattern) {
-      if (exists_default(pattern)) {
+      if (exists(pattern)) {
         const re = new RegExp(
           "^(\\*|[a-z]+)$"
         );
@@ -109,8 +110,8 @@ var UrlMatch = (() => {
     }
   };
 
-  // src/host.js
-  var host_default = class extends url_part_default {
+  // src/host.ts
+  var Host = class extends UrlPart {
     get validate_rules() {
       return [
         // should not be empty
@@ -145,8 +146,8 @@ var UrlMatch = (() => {
     }
   };
 
-  // src/path.js
-  var path_default = class extends url_part_default {
+  // src/path.ts
+  var Path = class extends UrlPart {
     get default_value() {
       return "";
     }
@@ -167,8 +168,8 @@ var UrlMatch = (() => {
     }
   };
 
-  // src/params.js
-  var params_default = class extends url_part_default {
+  // src/params.ts
+  var Params = class extends UrlPart {
     get is_required() {
       return false;
     }
@@ -191,11 +192,11 @@ var UrlMatch = (() => {
         pattern = null;
       }
       const result = [];
-      if (exists_default(pattern)) {
+      if (exists(pattern)) {
         pattern.split("&").forEach((pair) => {
           let [key, val] = pair.split("=");
           key = key === "*" ? ".+" : key.replace(/\*/g, ".*");
-          if (!exists_default(val) || val === "") {
+          if (!exists(val) || val === "") {
             val = "=?";
           } else {
             val = val === "*" ? "=?.*" : "=" + val.replace(/\*/g, ".*");
@@ -208,7 +209,7 @@ var UrlMatch = (() => {
     }
     test(content = "", patterns = this.pattern) {
       let result = true;
-      if (exists_default(patterns)) {
+      if (exists(patterns)) {
         if (this.is_strict && content === null && patterns.length === 0) {
           return true;
         }
@@ -232,8 +233,8 @@ var UrlMatch = (() => {
     }
   };
 
-  // src/fragment.js
-  var fragment_default = class extends url_part_default {
+  // src/fragment.ts
+  var Fragment = class extends UrlPart {
     get is_required() {
       return false;
     }
@@ -252,7 +253,7 @@ var UrlMatch = (() => {
     }
   };
 
-  // src/pattern.js
+  // src/pattern.ts
   var split_re = new RegExp(
     "^([a-z]+|\\*)*://([^\\/\\#\\?]+@)*([\\w\\*\\.\\-]+)*(\\:\\d+)*(/([^\\?\\#]*))*(\\?([^\\#]*))*(\\#(.*))*"
     // (9) fragment, (10) excluding hash
@@ -264,7 +265,7 @@ var UrlMatch = (() => {
     params: 8,
     fragment: 10
   };
-  var pattern_default = class {
+  var Pattern = class {
     constructor(pattern) {
       if (pattern === "*" || pattern === "<all_urls>") {
         pattern = "*://*/*?*#*";
@@ -274,22 +275,30 @@ var UrlMatch = (() => {
       this.url_parts = this.getUrlParts(this.pattern);
     }
     split(pattern = "", empty_value = null) {
-      const result = {};
+      const result = {
+        scheme: null,
+        host: null,
+        path: null,
+        params: null,
+        fragment: null
+      };
       const parts = pattern.match(split_re);
-      for (const key in parts_map) {
-        const val = parts_map[key];
-        result[key] = exists_default(parts) && exists_default(parts[val]) ? parts[val] : empty_value;
+      if (exists(parts) && parts !== null) {
+        for (const key in parts_map) {
+          const val = parts_map[key];
+          result[key] = exists(parts[val]) ? parts[val] : empty_value;
+        }
       }
       return result;
     }
     getUrlParts(pattern = this.pattern) {
       const splits = this.split(pattern);
       return {
-        scheme: new scheme_default(splits.scheme),
-        host: new host_default(splits.host),
-        path: new path_default(splits.path),
-        params: new params_default(splits.params),
-        fragment: new fragment_default(splits.fragment)
+        scheme: new Scheme(splits.scheme),
+        host: new Host(splits.host),
+        path: new Path(splits.path),
+        params: new Params(splits.params),
+        fragment: new Fragment(splits.fragment)
       };
     }
     sanitize(pattern = this.original_pattern) {
@@ -311,7 +320,7 @@ var UrlMatch = (() => {
     }
     test(url) {
       let result = false;
-      if (exists_default(url)) {
+      if (exists(url)) {
         result = true;
         const splits = this.split(url);
         ["scheme", "host", "path", "params", "fragment"].forEach((part) => {
@@ -324,20 +333,38 @@ var UrlMatch = (() => {
     }
     debug(url) {
       const splits = this.split(url);
-      const result = {};
-      Object.keys(splits).forEach((key) => {
-        result[key] = {
-          pattern: this.url_parts[key].original_pattern,
-          value: splits[key],
-          result: this.url_parts[key].test(splits[key])
-        };
-      });
-      return result;
+      return {
+        scheme: {
+          pattern: this.url_parts.scheme.original_pattern,
+          value: splits.scheme,
+          result: this.url_parts.scheme.test(splits.scheme)
+        },
+        host: {
+          pattern: this.url_parts.host.original_pattern,
+          value: splits.host,
+          result: this.url_parts.host.test(splits.host)
+        },
+        path: {
+          pattern: this.url_parts.path.original_pattern,
+          value: splits.path,
+          result: this.url_parts.path.test(splits.path)
+        },
+        params: {
+          pattern: this.url_parts.params.original_pattern,
+          value: splits.params,
+          result: this.url_parts.params.test(splits.params)
+        },
+        fragment: {
+          pattern: this.url_parts.fragment.original_pattern,
+          value: splits.fragment,
+          result: this.url_parts.fragment.test(splits.fragment)
+        }
+      };
     }
   };
 
-  // src/index.js
-  var index_default = class {
+  // src/index.ts
+  var UrlMatch = class {
     constructor(patterns = []) {
       this.patterns = [];
       this.add(patterns);
@@ -365,7 +392,7 @@ var UrlMatch = (() => {
     test(content) {
       let result = false;
       this.patterns.forEach((pattern) => {
-        const pattern_obj = new pattern_default(pattern);
+        const pattern_obj = new Pattern(pattern);
         if (pattern_obj.test(content) === true) {
           result = true;
         }
@@ -373,9 +400,9 @@ var UrlMatch = (() => {
       return result;
     }
     debug(content) {
-      let result = {};
+      const result = {};
       this.patterns.forEach((pattern) => {
-        const pattern_obj = new pattern_default(pattern);
+        const pattern_obj = new Pattern(pattern);
         result[pattern] = pattern_obj.debug(content);
       });
       return result;

@@ -1,8 +1,12 @@
 import * as esbuild from 'esbuild';
 import { readdirSync, statSync } from 'fs';
 import { join } from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-// Get all .js files in src directory recursively
+const execAsync = promisify(exec);
+
+// Get all .ts files in src directory recursively
 function getAllSourceFiles(dir) {
   const files = [];
   const items = readdirSync(dir);
@@ -13,7 +17,7 @@ function getAllSourceFiles(dir) {
 
     if (stat.isDirectory()) {
       files.push(...getAllSourceFiles(fullPath));
-    } else if (item.endsWith('.js')) {
+    } else if (item.endsWith('.ts')) {
       files.push(fullPath);
     }
   }
@@ -35,9 +39,13 @@ await esbuild.build({
 
 console.log('✓ Library built to lib/');
 
+// Generate TypeScript declarations
+await execAsync('npx tsc --emitDeclarationOnly --declaration --declarationMap --outDir lib');
+console.log('✓ Type declarations generated');
+
 // Build docs bundle (IIFE for browser)
 await esbuild.build({
-  entryPoints: ['src/index.js'],
+  entryPoints: ['src/index.ts'],
   bundle: true,
   outfile: 'docs/url-match.js',
   format: 'iife',

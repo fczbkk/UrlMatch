@@ -1,13 +1,11 @@
-import UrlPart from './url-part';
+import UrlPart from './url-part.js';
 
-
-export default class extends UrlPart {
-
-  get default_value () {
+export default class Path extends UrlPart {
+  get default_value(): string {
     return '';
   }
 
-  get sanitize_replacements () {
+  get sanitize_replacements() {
     return [
       // escape brackets
       {substring: /\(/, replacement: '\\\('},
@@ -22,5 +20,4 @@ export default class extends UrlPart {
       {substring: /\*/g, replacement: '[a-zA-Z0-9\+-./_:~!$&\'\(\)\*,;=@%]*'}
     ];
   }
-
 }

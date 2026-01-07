@@ -4,6 +4,6 @@
  * @returns {boolean}
  * @ignore
  */
-export default function (val) {
+export default function exists(val: unknown): boolean {
   return (typeof val !== 'undefined') && (val !== null);
 }

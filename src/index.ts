@@ -1,14 +1,14 @@
-import Pattern from './pattern';
+import Pattern, { type UrlMatchPatternDebug } from './pattern.js';
 
+export default class UrlMatch {
+  patterns: string[];
 
-export default class {
-
-  constructor (patterns = []) {
+  constructor(patterns: string | string[] = []) {
     this.patterns = [];
     this.add(patterns);
   }
 
-  add (patterns = []) {
+  add(patterns: string | string[] = []): string[] {
     if (typeof patterns === 'string') {
       patterns = [patterns];
     }
@@ -22,7 +22,7 @@ export default class {
     return this.patterns;
   }
 
-  remove (patterns = []) {
+  remove(patterns: string | string[] = []): string[] {
     if (typeof patterns === 'string') {
       patterns = [patterns];
     }
@@ -34,7 +34,7 @@ export default class {
     return this.patterns;
   }
 
-  test (content) {
+  test(content: string): boolean {
     let result = false;
 
     this.patterns.forEach((pattern) => {
@@ -47,8 +47,8 @@ export default class {
     return result;
   }
 
-  debug (content) {
-    let result = {};
+  debug(content: string): Record<string, UrlMatchPatternDebug> {
+    const result: Record<string, UrlMatchPatternDebug> = {};
 
     this.patterns.forEach((pattern) => {
       const pattern_obj = new Pattern(pattern);
@@ -57,5 +57,4 @@ export default class {
 
     return result;
   }
-
 }

@@ -1,16 +1,14 @@
-import UrlPart from './url-part';
+import UrlPart from './url-part.js';
 
-
-export default class extends UrlPart {
-
-  get validate_rules () {
+export default class Host extends UrlPart {
+  get validate_rules(): RegExp[] {
     return [
       // should not be empty
       /.+/
     ];
   }
 
-  get invalidate_rules () {
+  get invalidate_rules(): RegExp[] {
     return [
       // two asterisks in a row
       /\*\*/,
@@ -27,7 +25,7 @@ export default class extends UrlPart {
     ];
   }
 
-  get sanitize_replacements () {
+  get sanitize_replacements() {
     return [
       // make asterisk and dot at the beginning optional
       {substring: /^\*\./, replacement: '(*.)?'},
@@ -37,5 +35,4 @@ export default class extends UrlPart {
       {substring: '*', replacement: '[a-z0-9-_.]+'}
     ];
   }
-
 }

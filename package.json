@@ -27,8 +27,8 @@
     "dev": "vitest",
     "lint": "eslint src test",
     "lint:fix": "eslint src test --fix",
-    "format": "prettier --write \"src/**/*.js\" \"test/**/*.js\"",
-    "format:check": "prettier --check \"src/**/*.js\" \"test/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.js\"",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "postversion": "git push && git push --tags && npm publish --access=public",
     "version": "npm run build && npm run changelog && git add -A",
@@ -36,13 +36,15 @@
   },
   "main": "lib/index.js",
   "devDependencies": {
+    "@types/node": "^25.0.3",
     "@vitest/coverage-v8": "^4.0.16",
     "conventional-changelog-cli": "^5.0.0",
     "documentation": "^14.0.3",
     "esbuild": "^0.27.2",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",
+    "typescript": "^5.9.3",
     "vitest": "^4.0.16"
   },
-  "types": "types/index.d.ts"
+  "types": "lib/index.d.ts"
 }
