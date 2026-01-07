@@ -121,6 +121,18 @@ describe('Host', function() {
       expect(host.test('aaa_bbb', pattern)).toBe(true);
     });
 
+    it('should escape all dots in multi-level domains', function () {
+      const pattern = host.sanitize('api.example.com');
+      expect(host.test('api.example.com', pattern)).toBe(true);
+      expect(host.test('apixexamplexcom', pattern)).toBe(false);
+    });
+
+    it('should escape all dots in wildcard multi-level domains', function () {
+      const pattern = host.sanitize('*.api.example.com');
+      expect(host.test('sub.api.example.com', pattern)).toBe(true);
+      expect(host.test('sub.apixexamplexcom', pattern)).toBe(false);
+    });
+
   });
 
 });

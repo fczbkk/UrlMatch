@@ -116,6 +116,18 @@ describe('Path', function() {
       expect(path.test('aaa+bbb', pattern)).toBe(true);
     });
 
+    it('should escape all parentheses in paths', function () {
+      const pattern = path.sanitize('api(v1)(test)');
+      expect(path.test('api(v1)(test)', pattern)).toBe(true);
+      expect(path.test('apixv1xtest', pattern)).toBe(false);
+    });
+
+    it('should escape all plus signs in paths', function () {
+      const pattern = path.sanitize('api+v2+test');
+      expect(path.test('api+v2+test', pattern)).toBe(true);
+      expect(path.test('apixv2xtest', pattern)).toBe(false);
+    });
+
   });
 
 });
