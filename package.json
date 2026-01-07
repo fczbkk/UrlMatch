@@ -20,8 +20,8 @@
   "scripts": {
     "cleanup": "rimraf temp lib",
     "prebuild": "npm run test && npm run cleanup",
-    "build": "babel src -d lib",
-    "docs": "webpack --config ./webpack.config.js",
+    "build": "node build.mjs",
+    "docs": "node build.mjs",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "dev": "vitest",
@@ -31,24 +31,19 @@
     "format:check": "prettier --check \"src/**/*.js\" \"test/**/*.js\"",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "postversion": "git push && git push --tags && npm publish --access=public",
-    "version": "npm run build && npm run docs && npm run changelog && git add -A",
+    "version": "npm run build && npm run changelog && git add -A",
     "doc": "documentation readme ./src/index.js -s 'Documentation'"
   },
   "main": "lib/index.js",
   "devDependencies": {
-    "@babel/cli": "^7.26.4",
-    "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.26.0",
     "@vitest/coverage-v8": "^4.0.16",
-    "babel-loader": "^9.2.1",
     "conventional-changelog-cli": "^5.0.0",
     "documentation": "^14.0.3",
+    "esbuild": "^0.27.2",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",
     "rimraf": "^6.0.1",
-    "vitest": "^4.0.16",
-    "webpack": "^5.97.1",
-    "webpack-cli": "^6.0.1"
+    "vitest": "^4.0.16"
   },
   "dependencies": {
     "array-reduce-prototypejs-fix": "^1.2.0"
