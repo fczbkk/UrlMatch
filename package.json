@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/fczbkk/UrlMatch#readme",
   "scripts": {
-    "cleanup": "rimraf temp lib",
+    "cleanup": "node cleanup.mjs",
     "prebuild": "npm run test && npm run cleanup",
     "build": "node build.mjs",
     "docs": "node build.mjs",
@@ -42,7 +42,6 @@
     "esbuild": "^0.27.2",
     "eslint": "^9.18.0",
     "prettier": "^3.4.2",
-    "rimraf": "^6.0.1",
     "vitest": "^4.0.16"
   },
   "types": "types/index.d.ts"
