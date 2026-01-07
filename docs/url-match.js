@@ -393,14 +393,16 @@ var UrlMatch = (() => {
     test(content) {
       return this.patterns.some((pattern) => {
         const pattern_obj = this.patternCache.get(pattern);
-        return pattern_obj.test(content);
+        return pattern_obj ? pattern_obj.test(content) : false;
       });
     }
     debug(content) {
       const result = {};
       this.patterns.forEach((pattern) => {
         const pattern_obj = this.patternCache.get(pattern);
-        result[pattern] = pattern_obj.debug(content);
+        if (pattern_obj) {
+          result[pattern] = pattern_obj.debug(content);
+        }
       });
       return result;
     }

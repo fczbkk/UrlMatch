@@ -1,4 +1,4 @@
-import UrlMatch from './../src/index';
+import UrlMatch from '../src/index';
 
 describe('Performance Tests', function() {
 

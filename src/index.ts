@@ -52,8 +52,8 @@ export default class UrlMatch {
   test(content: string): boolean {
     // Use some() for early termination when a match is found
     return this.patterns.some((pattern) => {
-      const pattern_obj = this.patternCache.get(pattern)!;
-      return pattern_obj.test(content);
+      const pattern_obj = this.patternCache.get(pattern);
+      return pattern_obj ? pattern_obj.test(content) : false;
     });
   }
 
@@ -61,8 +61,10 @@ export default class UrlMatch {
     const result: Record<string, UrlMatchPatternDebug> = {};
 
     this.patterns.forEach((pattern) => {
-      const pattern_obj = this.patternCache.get(pattern)!;
-      result[pattern] = pattern_obj.debug(content);
+      const pattern_obj = this.patternCache.get(pattern);
+      if (pattern_obj) {
+        result[pattern] = pattern_obj.debug(content);
+      }
     });
 
     return result;
