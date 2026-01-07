@@ -1,29 +1,66 @@
 # UrlMatch
 
-JavaScript object that provides URL matching functionality using patterns similar to what is used in extensions in Google Chrome:
-http://developer.chrome.com/extensions/match_patterns.html
+JavaScript library for URL pattern matching using Chrome extension-style patterns with additional support for URL parameters and fragments.
 
-On top of Chrome's pattern matching, this object can also check for specific URL parameters and fragments (see below).
+## Features
 
-## How to use
+- Chrome extension [match patterns](http://developer.chrome.com/extensions/match_patterns.html) compatible
+- URL parameter matching with wildcards
+- URL fragment matching
+- Strict mode for precise parameter validation
+- Debug mode for pattern troubleshooting
+- Works in both Node.js and browsers
+- Supports ESM and CommonJS
 
-### URL validation
+## Installation
 
-In it's most simple form, you can use it as a generic URL validator.
+```bash
+npm install @fczbkk/url-match
+```
+
+## Usage
 
 ```javascript
-myMatch = new UrlMatch('*');
+// CommonJS
+const UrlMatch = require('@fczbkk/url-match');
+
+// ESM
+import UrlMatch from '@fczbkk/url-match';
+```
+
+## Table of Contents
+
+- [Basic Usage](#basic-usage)
+  - [URL Validation](#url-validation)
+  - [Match Against Pattern](#match-against-pattern)
+  - [Match Against Multiple Patterns](#match-against-multiple-patterns)
+  - [Add or Remove Patterns](#add-or-remove-patterns)
+  - [Match URL Paths](#match-url-paths)
+- [Advanced Features](#advanced-features)
+  - [Match URL Parameters](#match-url-parameters)
+  - [Strict Mode for Params](#strict-mode-for-params)
+  - [Match URL Fragments](#match-url-fragments)
+- [Debugging](#debugging)
+
+## Basic Usage
+
+### URL Validation
+
+In its simplest form, you can use it as a generic URL validator.
+
+```javascript
+const myMatch = new UrlMatch('*');
 myMatch.test('http://www.google.com/'); // true
 myMatch.test('https://www.google.com/preferences?hl=en'); // true
 myMatch.test('this.is.not/valid.url'); // false
 ```
 
-### Match against pattern
+### Match Against Pattern
 
-But what you usually want to do is to match it against some specific URL pattern.
+Match URLs against specific patterns.
 
 ```javascript
-myMatch = new UrlMatch('*://*.google.com/*');
+const myMatch = new UrlMatch('*://*.google.com/*');
 myMatch.test('http://www.google.com/'); // true
 myMatch.test('http://calendar.google.com/'); // true
 myMatch.test('https://www.google.com/preferences?hl=en'); // true
@@ -31,136 +68,131 @@ myMatch.test('http://www.facebook.com/'); // false
 myMatch.test('http://www.google.sucks.com/'); // false
 ```
 
-## Match against multiple patterns
+### Match Against Multiple Patterns
 
-You can use it to match against a list of patterns.
+You can match against a list of patterns.
 
 ```javascript
-myMatch = new UrlMatch(['*://*.google.com/*', '*://*.facebook.com/*']);
+const myMatch = new UrlMatch(['*://*.google.com/*', '*://*.facebook.com/*']);
 myMatch.test('http://www.google.com/'); // true
 myMatch.test('http://www.facebook.com/'); // true
 myMatch.test('http://www.apple.com/'); // false
 ```
 
-### Add or remove patterns on the fly
+### Add or Remove Patterns
 
-You can add and remove the patterns on the fly.
+You can add and remove patterns dynamically.
 
 ```javascript
-myMatch = new UrlMatch('*://*.google.com/*');
+const myMatch = new UrlMatch('*://*.google.com/*');
 myMatch.test('http://www.google.com/'); // true
 myMatch.test('http://www.facebook.com/'); // false
 
-myMatch.addPattern('*://*.facebook.com/*');
+myMatch.add('*://*.facebook.com/*');
 myMatch.test('http://www.google.com/'); // true
 myMatch.test('http://www.facebook.com/'); // true
 
-myMatch.removePattern('*://*.google.com/*');
+myMatch.remove('*://*.google.com/*');
 myMatch.test('http://www.google.com/'); // false
 myMatch.test('http://www.facebook.com/'); // true
 ```
 
-### Match URL paths
+### Match URL Paths
 
 ```javascript
-myMatch = new UrlMatch('*://*.google.com/*/preferences');
+const myMatch = new UrlMatch('*://*.google.com/*/preferences');
 myMatch.test('http://www.google.com/preferences'); // false
 myMatch.test('http://www.google.com/aaa/preferences'); // true
 myMatch.test('http://www.google.com/aaa/preferences/bbb'); // false
 ```
 
-### Match URL parameters
+## Advanced Features
 
-NOTE: This functionality is not available in Chrome pattern matching.
+### Match URL Parameters
 
-You can check for URL parameters:
+Beyond Chrome's pattern matching, you can match URL query parameters.
+
+Check for any parameter:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*?aaa=*');
+const myMatch = new UrlMatch('*://*/*?aaa=*');
 myMatch.test('http://google.com/?aaa=bbb'); // true
 myMatch.test('http://facebook.com/?aaa=ccc'); // true
 myMatch.test('http://apple.com/?aaa=bbb&ccc=ddd'); // true
 myMatch.test('http://google.com/'); // false
 ```
 
-You can check for URL parameters with specific value:
+Check for specific parameter values:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*?aaa=bbb');
+const myMatch = new UrlMatch('*://*/*?aaa=bbb');
 myMatch.test('http://google.com/?aaa=bbb'); // true
 myMatch.test('http://google.com/?aaa=ccc'); // false
 ```
 
-You can check for URL parameters using wildcards:
+Use wildcards in parameter values:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*?aaa=bbb*');
+const myMatch = new UrlMatch('*://*/*?aaa=bbb*');
 myMatch.test('http://google.com/?aaa=bbb'); // true
 myMatch.test('http://google.com/?aaa=bbbccc'); // true
 ```
 
-You can even check for any URL parameter with specific value:
+Match any parameter name with a specific value:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*?*=ccc');
+const myMatch = new UrlMatch('*://*/*?*=ccc');
 myMatch.test('http://google.com/?aaa=ccc'); // true
 myMatch.test('http://google.com/?bbb=ccc'); // true
 ```
 
-The order of parameters does not matter:
+Parameter order doesn't matter:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*?aaa=bbb&ccc=ddd');
+const myMatch = new UrlMatch('*://*/*?aaa=bbb&ccc=ddd');
 myMatch.test('http://google.com/?aaa=bbb&ccc=ddd'); // true
 myMatch.test('http://google.com/?ccc=ddd&aaa=bbb'); // true
 ```
 
-#### Strict mode for params
+### Strict Mode for Params
 
-You can activate strict mode for checking params by prepending exclamation mark (`!`) in front of params pattern:
-
-```javascript
-myMatch = new UrlMatch('*://*/*?!aaa=*');
-```
-
-In strict mode, all param patterns must be matched and there can be no unmatched params:
+Activate strict mode by prepending `!` to the parameter pattern. In strict mode, all parameter patterns must match exactly with no extra parameters allowed.
 
 ```javascript
+const myMatch = new UrlMatch('*://*/*?!aaa=*');
 myMatch.test('http://google.com/?aaa=bbb'); // true
 myMatch.test('http://google.com/'); // false (param missing)
 myMatch.test('http://google.com/?aaa=bbb&ccc=ddd'); // false (too many params)
 ```
 
-### Match URL fragments
+### Match URL Fragments
 
-NOTE: This functionality is not available in Chrome pattern matching.
+Beyond Chrome's pattern matching, you can match URL fragments (the part after `#`).
 
-You can check for URL fragments (the part of the URL after `#`):
+Match specific fragments:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*#aaa');
+const myMatch = new UrlMatch('*://*/*#aaa');
 myMatch.test('http://google.com/#aaa'); // true
 myMatch.test('http://google.com/#bbb'); // false
 ```
 
-You can check for URL fragments using wildcards:
+Use wildcards in fragments:
 
 ```javascript
-myMatch = new UrlMatch('*://*/*#aaa*');
+const myMatch = new UrlMatch('*://*/*#aaa*');
 myMatch.test('http://google.com/#aaa'); // true
 myMatch.test('http://google.com/#aaabbb'); // true
 ```
 
-### Debug
+## Debugging
 
-You can use `debug()` method to get detailed information about matching of each part of the pattern against each tested URL.
-
-Use it the same way you would use `test()` method. But instead of boolean value, it returns object where keys are tested URLs and values are deconstructed results.
+Use the `debug()` method to get detailed information about how each URL part matches against the pattern. Instead of a boolean, it returns an object showing the pattern, value, and result for each URL component.
 
 ```javascript
-myMatch = new UrlMatch('*://aaa.bbb/');
+const myMatch = new UrlMatch('*://aaa.bbb/');
 myMatch.debug('http://aaa.bbb/');
-/*
+// Returns:
 {
   "*://aaa.bbb/": {
     "scheme": {
@@ -190,13 +222,12 @@ myMatch.debug('http://aaa.bbb/');
     }
   }
 }
- */
 ```
 
-## Bug reports, feature requests and contact
+## Contributing
 
-If you found any bugs, if you have feature requests or any questions, please, either [file an issue at GitHub](https://github.com/fczbkk/UrlMatch/issues) or send me an e-mail at <a href="mailto:riki@fczbkk.com">riki@fczbkk.com</a>.
+Found a bug or have a feature request? Please [file an issue on GitHub](https://github.com/fczbkk/UrlMatch/issues).
 
 ## License
 
-UrlMatch is published under the [MIT license](https://github.com/fczbkk/UrlMatch/blob/master/LICENSE).
+MIT License - see [LICENSE](https://github.com/fczbkk/UrlMatch/blob/master/LICENSE) file for details.
