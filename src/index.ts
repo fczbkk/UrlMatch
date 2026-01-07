@@ -1,4 +1,7 @@
-import Pattern, { type UrlMatchPatternDebug } from './pattern.js';
+import Pattern, { type UrlMatchPatternDebug, type UrlMatchFragmentDebug } from './pattern.js';
+
+// Export types for TypeScript users
+export type { UrlMatchPatternDebug, UrlMatchFragmentDebug };
 
 export default class UrlMatch {
   patterns: string[];
