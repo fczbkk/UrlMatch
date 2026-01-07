@@ -52,21 +52,16 @@ class Pattern {
     };
   }
   sanitize(pattern = this.original_pattern) {
-    const universal_pattern = "*://*/*?*#*";
-    if (pattern === "*" || pattern === "<all_urls>") {
-      pattern = universal_pattern;
-    }
     return pattern;
   }
   validate(url_parts = this.url_parts) {
-    let result = true;
     for (const key in url_parts) {
       const val = url_parts[key];
       if (!val.validate()) {
-        result = false;
+        return false;
       }
     }
-    return result;
+    return true;
   }
   test(url) {
     let result = false;

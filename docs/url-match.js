@@ -50,18 +50,17 @@ var UrlMatch = (() => {
     }
     validate(pattern = this.original_pattern) {
       if (exists(pattern)) {
-        let result = true;
-        this.validate_rules.forEach((rule) => {
+        for (const rule of this.validate_rules) {
           if (!rule.test(pattern)) {
-            result = false;
+            return false;
           }
-        });
-        this.invalidate_rules.forEach((rule) => {
+        }
+        for (const rule of this.invalidate_rules) {
           if (rule.test(pattern)) {
-            result = false;
+            return false;
           }
-        });
-        return result;
+        }
+        return true;
       }
       return !this.is_required;
     }
@@ -302,21 +301,16 @@ var UrlMatch = (() => {
       };
     }
     sanitize(pattern = this.original_pattern) {
-      const universal_pattern = "*://*/*?*#*";
-      if (pattern === "*" || pattern === "<all_urls>") {
-        pattern = universal_pattern;
-      }
       return pattern;
     }
     validate(url_parts = this.url_parts) {
-      let result = true;
       for (const key in url_parts) {
         const val = url_parts[key];
         if (!val.validate()) {
-          result = false;
+          return false;
         }
       }
-      return result;
+      return true;
     }
     test(url) {
       let result = false;
@@ -367,6 +361,7 @@ var UrlMatch = (() => {
   var UrlMatch = class {
     constructor(patterns = []) {
       this.patterns = [];
+      this.patternCache = /* @__PURE__ */ new Map();
       this.add(patterns);
     }
     add(patterns = []) {
@@ -376,6 +371,7 @@ var UrlMatch = (() => {
       patterns.forEach((pattern) => {
         if (this.patterns.indexOf(pattern) === -1) {
           this.patterns.push(pattern);
+          this.patternCache.set(pattern, new Pattern(pattern));
         }
       });
       return this.patterns;
@@ -384,25 +380,26 @@ var UrlMatch = (() => {
       if (typeof patterns === "string") {
         patterns = [patterns];
       }
+      const patternsToRemove = new Set(patterns);
       this.patterns = this.patterns.filter((pattern) => {
-        return patterns.indexOf(pattern) === -1;
+        const shouldRemove = patternsToRemove.has(pattern);
+        if (shouldRemove) {
+          this.patternCache.delete(pattern);
+        }
+        return !shouldRemove;
       });
       return this.patterns;
     }
     test(content) {
-      let result = false;
-      this.patterns.forEach((pattern) => {
-        const pattern_obj = new Pattern(pattern);
-        if (pattern_obj.test(content) === true) {
-          result = true;
-        }
+      return this.patterns.some((pattern) => {
+        const pattern_obj = this.patternCache.get(pattern);
+        return pattern_obj.test(content);
       });
-      return result;
     }
     debug(content) {
       const result = {};
       this.patterns.forEach((pattern) => {
-        const pattern_obj = new Pattern(pattern);
+        const pattern_obj = this.patternCache.get(pattern);
         result[pattern] = pattern_obj.debug(content);
       });
       return result;
