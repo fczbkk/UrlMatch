@@ -104,24 +104,19 @@ export default class Pattern {
   }
 
   sanitize(pattern: string = this.original_pattern): string {
-    const universal_pattern = '*://*/*?*#*';
-    if (pattern === '*' || pattern === '<all_urls>') {
-      pattern = universal_pattern;
-    }
+    // Pattern normalization is now handled in constructor
     return pattern;
   }
 
   validate(url_parts: UrlParts = this.url_parts): boolean {
-    let result = true;
-
+    // Use for...in with early return for better performance
     for (const key in url_parts) {
       const val = url_parts[key as keyof UrlParts];
       if (!val.validate()) {
-        result = false;
+        return false;
       }
     }
-
-    return result;
+    return true;
   }
 
   test(url: string): boolean {

@@ -19,18 +19,17 @@ class UrlPart {
   }
   validate(pattern = this.original_pattern) {
     if (exists(pattern)) {
-      let result = true;
-      this.validate_rules.forEach((rule) => {
+      for (const rule of this.validate_rules) {
         if (!rule.test(pattern)) {
-          result = false;
+          return false;
         }
-      });
-      this.invalidate_rules.forEach((rule) => {
+      }
+      for (const rule of this.invalidate_rules) {
         if (rule.test(pattern)) {
-          result = false;
+          return false;
         }
-      });
-      return result;
+      }
+      return true;
     }
     return !this.is_required;
   }
