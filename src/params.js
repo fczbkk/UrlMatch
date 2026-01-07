@@ -1,6 +1,5 @@
 import UrlPart from './url-part';
 import exists from './utilities/exists';
-import arrayReduce from 'array-reduce-prototypejs-fix';
 
 
 export default class extends UrlPart {
@@ -73,7 +72,7 @@ export default class extends UrlPart {
         return true;
       }
 
-      result = arrayReduce(patterns, (previous_result, pattern) => {
+      result = patterns.reduce((previous_result, pattern) => {
         const re = new RegExp('(^|\&)' + pattern + '(\&|$)');
         return previous_result && re.test(content);
       }, result);
@@ -85,7 +84,7 @@ export default class extends UrlPart {
             .join('|');
           const re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
 
-          result = arrayReduce(content.split('&'), (previous_result, pair) => {
+          result = content.split('&').reduce((previous_result, pair) => {
             return previous_result && re.test(pair);
           }, result);
         } else {

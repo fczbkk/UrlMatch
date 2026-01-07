@@ -45,8 +45,5 @@
     "rimraf": "^6.0.1",
     "vitest": "^4.0.16"
   },
-  "dependencies": {
-    "array-reduce-prototypejs-fix": "^1.2.0"
-  },
   "types": "types/index.d.ts"
 }
