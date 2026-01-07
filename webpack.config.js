@@ -6,14 +6,18 @@ module.exports = {
   output: {
     filename: 'url-match.js',
     path: path.resolve(__dirname, 'docs'),
-    library: 'UrlMatch',
-    libraryTarget: 'var'
+    library: {
+      name: 'UrlMatch',
+      type: 'var',
+      export: 'default'
+    }
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        loaders: ['babel-loader']
+        exclude: /node_modules/,
+        use: ['babel-loader']
       }
     ]
   }

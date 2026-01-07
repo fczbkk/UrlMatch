@@ -82,7 +82,7 @@ describe('Pattern', function() {
 
     let url_parts;
 
-    beforeAll(function () {
+    beforeEach(function () {
       url_parts = pattern.getUrlParts('*://*/*?*#*');
     });
 

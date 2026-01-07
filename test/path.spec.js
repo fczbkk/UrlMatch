@@ -31,8 +31,6 @@ describe('Path', function() {
 
   });
 
-  describe('sanitize', function() {});
-
   describe('test', function() {
 
     it('should match any path when * is used', function() {

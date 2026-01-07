@@ -3,3 +3,8 @@ npm-debug.log
 /node_modules/
 /temp/
 /.idea/
+/lib/
+coverage/
+*.log
+.eslintcache
+/.claude/
