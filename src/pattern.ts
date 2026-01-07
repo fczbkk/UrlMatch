@@ -112,32 +112,29 @@ export default class Pattern {
   }
 
   validate(url_parts: UrlParts = this.url_parts): boolean {
-    let result = true;
-
     for (const key in url_parts) {
       const val = url_parts[key as keyof UrlParts];
       if (!val.validate()) {
-        result = false;
+        return false;
       }
     }
 
-    return result;
+    return true;
   }
 
   test(url: string): boolean {
-    let result = false;
-
-    if (exists(url)) {
-      result = true;
-      const splits = this.split(url);
-      (['scheme', 'host', 'path', 'params', 'fragment'] as const).forEach((part) => {
-        if (!this.url_parts[part].test(splits[part])) {
-          result = false;
-        }
-      });
+    if (!exists(url)) {
+      return false;
     }
 
-    return result;
+    const splits = this.split(url);
+    for (const part of ['scheme', 'host', 'path', 'params', 'fragment'] as const) {
+      if (!this.url_parts[part].test(splits[part])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   debug(url: string): UrlMatchPatternDebug {

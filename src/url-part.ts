@@ -34,21 +34,19 @@ export default abstract class UrlPart {
 
   validate(pattern: string | null = this.original_pattern): boolean {
     if (exists(pattern)) {
-      let result = true;
-
-      this.validate_rules.forEach((rule) => {
+      for (const rule of this.validate_rules) {
         if (!rule.test(pattern as string)) {
-          result = false;
+          return false;
         }
-      });
+      }
 
-      this.invalidate_rules.forEach((rule) => {
+      for (const rule of this.invalidate_rules) {
         if (rule.test(pattern as string)) {
-          result = false;
+          return false;
         }
-      });
+      }
 
-      return result;
+      return true;
     }
 
     return !this.is_required;

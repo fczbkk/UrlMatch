@@ -47,17 +47,15 @@ export default class UrlMatch {
   }
 
   test(content: string): boolean {
-    let result = false;
-
-    this.patterns.forEach((pattern) => {
+    for (const pattern of this.patterns) {
       // Use cached Pattern object instead of creating new one
       const pattern_obj = this.pattern_cache.get(pattern);
       if (pattern_obj && pattern_obj.test(content) === true) {
-        result = true;
+        return true;
       }
-    });
+    }
 
-    return result;
+    return false;
   }
 
   debug(content: string): Record<string, UrlMatchPatternDebug> {
