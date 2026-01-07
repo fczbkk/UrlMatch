@@ -35,6 +35,15 @@
     "doc": "documentation readme ./src/index.js -s 'Documentation'"
   },
   "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./esm/index.js",
+      "require": "./lib/index.js"
+    }
+  },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "@vitest/coverage-v8": "^4.0.16",
@@ -45,6 +54,5 @@
     "prettier": "^3.4.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
-  },
-  "types": "lib/index.d.ts"
+  }
 }
