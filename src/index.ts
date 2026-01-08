@@ -4,13 +4,17 @@ import Pattern, { type UrlMatchPatternDebug, type UrlMatchFragmentDebug } from '
 export type { UrlMatchPatternDebug, UrlMatchFragmentDebug };
 
 export default class UrlMatch {
-  patterns: string[];
+  private pattern_set: Set<string>;
   private pattern_cache: Map<string, Pattern>;
 
   constructor(patterns: string | string[] = []) {
-    this.patterns = [];
+    this.pattern_set = new Set();
     this.pattern_cache = new Map();
     this.add(patterns);
+  }
+
+  get patterns(): string[] {
+    return Array.from(this.pattern_set);
   }
 
   add(patterns: string | string[] = []): string[] {
@@ -19,8 +23,8 @@ export default class UrlMatch {
     }
 
     patterns.forEach((pattern) => {
-      if (this.patterns.indexOf(pattern) === -1) {
-        this.patterns.push(pattern);
+      if (!this.pattern_set.has(pattern)) {
+        this.pattern_set.add(pattern);
         // Create and cache the Pattern object once
         this.pattern_cache.set(pattern, new Pattern(pattern));
       }
@@ -34,20 +38,19 @@ export default class UrlMatch {
       patterns = [patterns];
     }
 
-    this.patterns = this.patterns.filter((pattern) => {
-      const shouldRemove = patterns.indexOf(pattern) !== -1;
-      if (shouldRemove) {
+    patterns.forEach((pattern) => {
+      if (this.pattern_set.has(pattern)) {
+        this.pattern_set.delete(pattern);
         // Remove from cache when pattern is removed
         this.pattern_cache.delete(pattern);
       }
-      return !shouldRemove;
     });
 
     return this.patterns;
   }
 
   test(content: string): boolean {
-    for (const pattern of this.patterns) {
+    for (const pattern of this.pattern_set) {
       // Use cached Pattern object instead of creating new one
       const pattern_obj = this.pattern_cache.get(pattern);
       if (pattern_obj && pattern_obj.test(content) === true) {
@@ -61,13 +64,13 @@ export default class UrlMatch {
   debug(content: string): Record<string, UrlMatchPatternDebug> {
     const result: Record<string, UrlMatchPatternDebug> = {};
 
-    this.patterns.forEach((pattern) => {
+    for (const pattern of this.pattern_set) {
       // Use cached Pattern object instead of creating new one
       const pattern_obj = this.pattern_cache.get(pattern);
       if (pattern_obj) {
         result[pattern] = pattern_obj.debug(content);
       }
-    });
+    }
 
     return result;
   }
