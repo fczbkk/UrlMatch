@@ -5,25 +5,30 @@ import Params from './params.js';
 import Fragment from './fragment.js';
 import exists from './utilities/exists.js';
 
+/**
+ * Regular expression to parse URL patterns into components.
+ * Uses named groups for better readability and maintainability.
+ *
+ * Format: scheme://[user:pass@]host[:port]/path?params#fragment
+ *
+ * Named groups:
+ * - scheme: Protocol (http, https, *, etc.)
+ * - host: Domain name (with optional wildcards)
+ * - path: URL path (without leading slash)
+ * - params: Query parameters (without leading ?)
+ * - fragment: Hash fragment (without leading #)
+ */
 const split_re = new RegExp(
-  '^'                      + // beginning
-  '([a-z]+|\\*)*'          + // (1) scheme
-  '://'                    + // scheme separator
-  '([^\\/\\#\\?]+@)*'      + // (2) username and/or password
-  '([\\w\\*\\.\\-]+)*'     + // (3) host
-  '(\\:\\d+)*'             + // (4) port number
-  '(/([^\\?\\#]*))*'       + // (5) path, (6) excluding slash
-  '(\\?([^\\#]*))*'        + // (7) params, (8) excluding question mark
-  '(\\#(.*))*'               // (9) fragment, (10) excluding hash
+  '^'                                  + // Start of string
+  '(?<scheme>[a-z]+|\\*)*'             + // scheme: protocol or wildcard (optional)
+  '://'                                + // scheme separator
+  '(?:[^\\/\\#\\?]+@)*'                + // username/password (ignored, non-capturing)
+  '(?<host>[\\w\\*\\.\\-]+)*'          + // host: domain with wildcards (optional)
+  '(?:\\:\\d+)*'                       + // port number (ignored, non-capturing)
+  '(?:/(?<path>[^\\?\\#]*))*'          + // path: everything after / but before ? or # (optional)
+  '(?:\\?(?<params>[^\\#]*))*'         + // params: everything after ? but before # (optional)
+  '(?:\\#(?<fragment>.*))*'              // fragment: everything after # (optional)
 );
-
-const parts_map: Record<string, number> = {
-  scheme: 1,
-  host: 3,
-  path: 6,
-  params: 8,
-  fragment: 10
-};
 
 const URL_PARTS = ['scheme', 'host', 'path', 'params', 'fragment'] as const;
 
@@ -80,15 +85,14 @@ export default class Pattern {
       params: null,
       fragment: null
     };
-    const parts = pattern.match(split_re);
+    const match = pattern.match(split_re);
 
-    if (exists(parts) && parts !== null) {
-      for (const key in parts_map) {
-        const val = parts_map[key];
-        result[key as keyof UrlSplits] = exists(parts[val])
-          ? (parts[val] as string)
-          : empty_value;
-      }
+    if (exists(match) && match !== null && match.groups) {
+      result.scheme = exists(match.groups.scheme) ? match.groups.scheme : empty_value;
+      result.host = exists(match.groups.host) ? match.groups.host : empty_value;
+      result.path = exists(match.groups.path) ? match.groups.path : empty_value;
+      result.params = exists(match.groups.params) ? match.groups.params : empty_value;
+      result.fragment = exists(match.groups.fragment) ? match.groups.fragment : empty_value;
     }
 
     return result;
