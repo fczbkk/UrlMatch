@@ -299,4 +299,110 @@ describe('Params', function() {
     });
 
   });
+
+  describe('caching', function () {
+    let OriginalRegExp;
+    let constructorCallCount;
+
+    beforeEach(function () {
+      OriginalRegExp = global.RegExp;
+      constructorCallCount = 0;
+
+      // Spy on RegExp constructor without breaking it
+      global.RegExp = new Proxy(OriginalRegExp, {
+        construct(target, args) {
+          constructorCallCount++;
+          return new target(...args);
+        }
+      });
+    });
+
+    afterEach(function () {
+      global.RegExp = OriginalRegExp;
+    });
+
+    it('should pre-compile RegExp patterns during sanitize()', function () {
+      params = new Params('aaa=bbb&ccc=ddd');
+
+      // RegExp should be called during sanitization (for the 2 patterns)
+      const sanitizeCallCount = constructorCallCount;
+      expect(sanitizeCallCount).toBeGreaterThan(0);
+
+      constructorCallCount = 0;
+
+      // Now test multiple times - RegExp should NOT be called again since we're using cached patterns
+      params.test('aaa=bbb&ccc=ddd');
+      params.test('aaa=bbb&ccc=ddd&eee=fff');
+      params.test('aaa=xxx&ccc=yyy');
+
+      // RegExp should not have been called during test() calls
+      expect(constructorCallCount).toBe(0);
+    });
+
+    it('should pre-compile strict mode RegExp during sanitize()', function () {
+      params = new Params('!aaa=bbb&ccc=ddd');
+
+      // RegExp should be called during sanitization
+      const sanitizeCallCount = constructorCallCount;
+      expect(sanitizeCallCount).toBeGreaterThan(0);
+
+      constructorCallCount = 0;
+
+      // Now test multiple times - RegExp should NOT be called again
+      params.test('aaa=bbb&ccc=ddd');
+      params.test('ccc=ddd&aaa=bbb');
+
+      // RegExp should not have been called during test() calls
+      expect(constructorCallCount).toBe(0);
+    });
+
+    it('should fall back to creating RegExp when testing with non-cached patterns', function () {
+      // Create Params before setting up spy
+      global.RegExp = OriginalRegExp;
+      params = new Params('aaa=bbb');
+
+      // Re-setup spy
+      constructorCallCount = 0;
+      global.RegExp = new Proxy(OriginalRegExp, {
+        construct(target, args) {
+          constructorCallCount++;
+          return new target(...args);
+        }
+      });
+
+      // Test with the sanitized pattern (which is cached) - should not create RegExp
+      const cachedPattern = params.pattern;
+      params.test('aaa=bbb', cachedPattern);
+
+      const cachedCalls = constructorCallCount;
+      expect(cachedCalls).toBe(0);
+
+      constructorCallCount = 0;
+
+      // Test with a different pattern (not cached) - should create RegExp
+      params.test('ccc=ddd', ['ccc=ddd']);
+
+      const nonCachedCalls = constructorCallCount;
+      expect(nonCachedCalls).toBeGreaterThan(0);
+    });
+
+    it('should cache empty patterns correctly', function () {
+      params = new Params('!');
+
+      // RegExp should be called during sanitization (even for empty strict patterns)
+      const sanitizeCallCount = constructorCallCount;
+      expect(sanitizeCallCount).toBeGreaterThan(0);
+
+      constructorCallCount = 0;
+
+      // Test with empty content
+      params.test('');
+      params.test(null);
+
+      // RegExp should not have been called during test() calls
+      expect(constructorCallCount).toBe(0);
+    });
+
+  });
+
 });

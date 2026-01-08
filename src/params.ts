@@ -2,6 +2,9 @@ import UrlPart from './url-part.js';
 import exists from './utilities/exists.js';
 
 export default class Params extends UrlPart {
+  private compiled_patterns!: RegExp[] | null;
+  private strict_compiled_pattern!: RegExp | null;
+
   get is_required(): boolean {
     return false;
   }
@@ -55,6 +58,17 @@ export default class Params extends UrlPart {
       });
     }
 
+    // Pre-compile RegExps for performance (even if result is empty array)
+    this.compiled_patterns = result.map((p) => new RegExp('(^|\\&)' + p + '(\\&|$)'));
+
+    // Pre-compile strict mode RegExp if needed (even with empty patterns)
+    if (this.is_strict) {
+      const wrapped_patterns = result
+        .map((p) => `(${p})`)
+        .join('|');
+      this.strict_compiled_pattern = new RegExp('(^|\\&)(' + wrapped_patterns + ')(\\&|$)');
+    }
+
     return result;
   }
 
@@ -67,21 +81,50 @@ export default class Params extends UrlPart {
         return true;
       }
 
-      result = (patterns as string[]).reduce((previous_result, pattern) => {
-        const re = new RegExp('(^|\&)' + pattern + '(\&|$)');
-        return previous_result && re.test(content as string);
-      }, result);
+      // Use pre-compiled RegExps only if testing against this.pattern
+      const useCache = patterns === this.pattern && this.compiled_patterns !== null;
+
+      if (useCache && this.compiled_patterns) {
+        for (const re of this.compiled_patterns) {
+          if (!re.test(content as string)) {
+            result = false;
+            break;
+          }
+        }
+      } else {
+        // Fall back to creating RegExps on demand for non-cached patterns
+        for (const pattern of patterns as string[]) {
+          const re = new RegExp('(^|\\&)' + pattern + '(\\&|$)');
+          if (!re.test(content as string)) {
+            result = false;
+            break;
+          }
+        }
+      }
 
       if (this.is_strict === true) {
         if (typeof content === 'string') {
-          const wrapped_patterns = (patterns as string[])
-            .map((pattern) => `(${pattern})`)
-            .join('|');
-          const re = new RegExp('(^|\&)(' + wrapped_patterns + ')(\&|$)');
+          if (useCache && this.strict_compiled_pattern) {
+            for (const pair of content.split('&')) {
+              if (!this.strict_compiled_pattern.test(pair)) {
+                result = false;
+                break;
+              }
+            }
+          } else {
+            // Fall back to creating RegExp on demand
+            const wrapped_patterns = (patterns as string[])
+              .map((p) => `(${p})`)
+              .join('|');
+            const re = new RegExp('(^|\\&)(' + wrapped_patterns + ')(\\&|$)');
 
-          result = content.split('&').reduce((previous_result, pair) => {
-            return previous_result && re.test(pair);
-          }, result);
+            for (const pair of content.split('&')) {
+              if (!re.test(pair)) {
+                result = false;
+                break;
+              }
+            }
+          }
         } else {
           result = false;
         }
