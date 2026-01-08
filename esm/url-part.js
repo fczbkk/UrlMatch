@@ -1,4 +1,3 @@
-import exists from "./utilities/exists.js";
 class UrlPart {
   constructor(pattern) {
     this.is_strict = false;
@@ -18,19 +17,18 @@ class UrlPart {
     return [];
   }
   validate(pattern = this.original_pattern) {
-    if (exists(pattern)) {
-      let result = true;
-      this.validate_rules.forEach((rule) => {
+    if (pattern != null) {
+      for (const rule of this.validate_rules) {
         if (!rule.test(pattern)) {
-          result = false;
+          return false;
         }
-      });
-      this.invalidate_rules.forEach((rule) => {
+      }
+      for (const rule of this.invalidate_rules) {
         if (rule.test(pattern)) {
-          result = false;
+          return false;
         }
-      });
-      return result;
+      }
+      return true;
     }
     return !this.is_required;
   }
@@ -38,7 +36,7 @@ class UrlPart {
     if (content === null) {
       content = "";
     }
-    if (exists(pattern) && pattern instanceof RegExp) {
+    if (pattern != null && pattern instanceof RegExp) {
       return pattern.test(content);
     }
     return true;
@@ -47,13 +45,13 @@ class UrlPart {
     return [];
   }
   sanitize(pattern = this.original_pattern) {
-    if (!exists(pattern)) {
+    if (pattern == null) {
       pattern = this.default_value;
     }
-    if (exists(pattern) && this.validate(pattern)) {
-      this.sanitize_replacements.forEach(({ substring, replacement }) => {
+    if (pattern != null && this.validate(pattern)) {
+      for (const { substring, replacement } of this.sanitize_replacements) {
         pattern = pattern.replace(substring, replacement);
-      });
+      }
       return new RegExp("^" + pattern + "$");
     }
     return null;

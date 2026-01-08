@@ -1,8 +1,7 @@
 import UrlPart from "./url-part.js";
-import exists from "./utilities/exists.js";
 class Scheme extends UrlPart {
   validate(pattern = this.original_pattern) {
-    if (exists(pattern)) {
+    if (pattern != null) {
       const re = new RegExp(
         "^(\\*|[a-z]+)$"
       );

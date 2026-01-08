@@ -24,11 +24,6 @@ var UrlMatch = (() => {
     default: () => UrlMatch
   });
 
-  // src/utilities/exists.ts
-  function exists(val) {
-    return typeof val !== "undefined" && val !== null;
-  }
-
   // src/url-part.ts
   var UrlPart = class {
     constructor(pattern) {
@@ -49,19 +44,18 @@ var UrlMatch = (() => {
       return [];
     }
     validate(pattern = this.original_pattern) {
-      if (exists(pattern)) {
-        let result = true;
-        this.validate_rules.forEach((rule) => {
+      if (pattern != null) {
+        for (const rule of this.validate_rules) {
           if (!rule.test(pattern)) {
-            result = false;
+            return false;
           }
-        });
-        this.invalidate_rules.forEach((rule) => {
+        }
+        for (const rule of this.invalidate_rules) {
           if (rule.test(pattern)) {
-            result = false;
+            return false;
           }
-        });
-        return result;
+        }
+        return true;
       }
       return !this.is_required;
     }
@@ -69,7 +63,7 @@ var UrlMatch = (() => {
       if (content === null) {
         content = "";
       }
-      if (exists(pattern) && pattern instanceof RegExp) {
+      if (pattern != null && pattern instanceof RegExp) {
         return pattern.test(content);
       }
       return true;
@@ -78,13 +72,13 @@ var UrlMatch = (() => {
       return [];
     }
     sanitize(pattern = this.original_pattern) {
-      if (!exists(pattern)) {
+      if (pattern == null) {
         pattern = this.default_value;
       }
-      if (exists(pattern) && this.validate(pattern)) {
-        this.sanitize_replacements.forEach(({ substring, replacement }) => {
+      if (pattern != null && this.validate(pattern)) {
+        for (const { substring, replacement } of this.sanitize_replacements) {
           pattern = pattern.replace(substring, replacement);
-        });
+        }
         return new RegExp("^" + pattern + "$");
       }
       return null;
@@ -94,7 +88,7 @@ var UrlMatch = (() => {
   // src/scheme.ts
   var Scheme = class extends UrlPart {
     validate(pattern = this.original_pattern) {
-      if (exists(pattern)) {
+      if (pattern != null) {
         const re = new RegExp(
           "^(\\*|[a-z]+)$"
         );
@@ -139,9 +133,9 @@ var UrlMatch = (() => {
         // make asterisk and dot at the beginning optional
         { substring: /^\*\./, replacement: "(*.)?" },
         // escape all dots
-        { substring: ".", replacement: "\\." },
+        { substring: /\./g, replacement: "\\." },
         // replace asterisks with pattern
-        { substring: "*", replacement: "[a-z0-9-_.]+" }
+        { substring: /\*/g, replacement: "[a-z0-9-_.]+" }
       ];
     }
   };
@@ -154,13 +148,13 @@ var UrlMatch = (() => {
     get sanitize_replacements() {
       return [
         // escape brackets
-        { substring: /\(/, replacement: "\\(" },
-        { substring: /\)/, replacement: "\\)" },
+        { substring: /\(/g, replacement: "\\(" },
+        { substring: /\)/g, replacement: "\\)" },
         // assume trailing slash at the end of path is optional
         { substring: /\/$/, replacement: "\\/?" },
         { substring: /\/\*$/, replacement: "((/?)|/*)" },
         // plus sign
-        { substring: /\+/, replacement: "\\+" },
+        { substring: /\+/g, replacement: "\\+" },
         // allow letters, numbers, plus signs, hyphens, dots, slashes
         // and underscores instead of wildcard
         { substring: /\*/g, replacement: "[a-zA-Z0-9+-./_:~!$&'()*,;=@%]*" }
@@ -192,38 +186,68 @@ var UrlMatch = (() => {
         pattern = null;
       }
       const result = [];
-      if (exists(pattern)) {
-        pattern.split("&").forEach((pair) => {
+      if (pattern != null) {
+        for (const pair of pattern.split("&")) {
           let [key, val] = pair.split("=");
           key = key === "*" ? ".+" : key.replace(/\*/g, ".*");
-          if (!exists(val) || val === "") {
+          if (val == null || val === "") {
             val = "=?";
           } else {
             val = val === "*" ? "=?.*" : "=" + val.replace(/\*/g, ".*");
           }
           val = val.replace(/[\[\](){}]/g, "\\$&");
           result.push(key + val);
-        });
+        }
+      }
+      this.compiled_patterns = result.map((p) => new RegExp("(^|\\&)" + p + "(\\&|$)"));
+      if (this.is_strict) {
+        const wrapped_patterns = result.map((p) => `(${p})`).join("|");
+        this.strict_compiled_pattern = new RegExp("(^|\\&)(" + wrapped_patterns + ")(\\&|$)");
       }
       return result;
     }
     test(content = "", patterns = this.pattern) {
       let result = true;
-      if (exists(patterns)) {
+      if (patterns != null) {
         if (this.is_strict && content === null && patterns.length === 0) {
           return true;
         }
-        result = patterns.reduce((previous_result, pattern) => {
-          const re = new RegExp("(^|&)" + pattern + "(&|$)");
-          return previous_result && re.test(content);
-        }, result);
+        const useCache = patterns === this.pattern && this.compiled_patterns !== null;
+        if (useCache && this.compiled_patterns) {
+          for (const re of this.compiled_patterns) {
+            if (!re.test(content)) {
+              result = false;
+              break;
+            }
+          }
+        } else {
+          for (const pattern of patterns) {
+            const re = new RegExp("(^|\\&)" + pattern + "(\\&|$)");
+            if (!re.test(content)) {
+              result = false;
+              break;
+            }
+          }
+        }
         if (this.is_strict === true) {
           if (typeof content === "string") {
-            const wrapped_patterns = patterns.map((pattern) => `(${pattern})`).join("|");
-            const re = new RegExp("(^|&)(" + wrapped_patterns + ")(&|$)");
-            result = content.split("&").reduce((previous_result, pair) => {
-              return previous_result && re.test(pair);
-            }, result);
+            if (useCache && this.strict_compiled_pattern) {
+              for (const pair of content.split("&")) {
+                if (!this.strict_compiled_pattern.test(pair)) {
+                  result = false;
+                  break;
+                }
+              }
+            } else {
+              const wrapped_patterns = patterns.map((p) => `(${p})`).join("|");
+              const re = new RegExp("(^|\\&)(" + wrapped_patterns + ")(\\&|$)");
+              for (const pair of content.split("&")) {
+                if (!re.test(pair)) {
+                  result = false;
+                  break;
+                }
+              }
+            }
           } else {
             result = false;
           }
@@ -255,16 +279,10 @@ var UrlMatch = (() => {
 
   // src/pattern.ts
   var split_re = new RegExp(
-    "^([a-z]+|\\*)*://([^\\/\\#\\?]+@)*([\\w\\*\\.\\-]+)*(\\:\\d+)*(/([^\\?\\#]*))*(\\?([^\\#]*))*(\\#(.*))*"
-    // (9) fragment, (10) excluding hash
+    "^(?<scheme>[a-z]+|\\*)*://(?:[^\\/\\#\\?]+@)*(?<host>[\\w\\*\\.\\-]+)*(?:\\:\\d+)*(?:/(?<path>[^\\?\\#]*))*(?:\\?(?<params>[^\\#]*))*(?:\\#(?<fragment>.*))*"
+    // fragment: everything after # (optional)
   );
-  var parts_map = {
-    scheme: 1,
-    host: 3,
-    path: 6,
-    params: 8,
-    fragment: 10
-  };
+  var URL_PARTS = ["scheme", "host", "path", "params", "fragment"];
   var Pattern = class {
     constructor(pattern) {
       if (pattern === "*" || pattern === "<all_urls>") {
@@ -282,12 +300,13 @@ var UrlMatch = (() => {
         params: null,
         fragment: null
       };
-      const parts = pattern.match(split_re);
-      if (exists(parts) && parts !== null) {
-        for (const key in parts_map) {
-          const val = parts_map[key];
-          result[key] = exists(parts[val]) ? parts[val] : empty_value;
-        }
+      const match = pattern.match(split_re);
+      if (match?.groups) {
+        result.scheme = match.groups.scheme ?? empty_value;
+        result.host = match.groups.host ?? empty_value;
+        result.path = match.groups.path ?? empty_value;
+        result.params = match.groups.params ?? empty_value;
+        result.fragment = match.groups.fragment ?? empty_value;
       }
       return result;
     }
@@ -309,27 +328,25 @@ var UrlMatch = (() => {
       return pattern;
     }
     validate(url_parts = this.url_parts) {
-      let result = true;
       for (const key in url_parts) {
         const val = url_parts[key];
         if (!val.validate()) {
-          result = false;
+          return false;
         }
       }
-      return result;
+      return true;
     }
     test(url) {
-      let result = false;
-      if (exists(url)) {
-        result = true;
-        const splits = this.split(url);
-        ["scheme", "host", "path", "params", "fragment"].forEach((part) => {
-          if (!this.url_parts[part].test(splits[part])) {
-            result = false;
-          }
-        });
+      if (url == null) {
+        return false;
       }
-      return result;
+      const splits = this.split(url);
+      for (const part of URL_PARTS) {
+        if (!this.url_parts[part].test(splits[part])) {
+          return false;
+        }
+      }
+      return true;
     }
     debug(url) {
       const splits = this.split(url);
@@ -366,45 +383,54 @@ var UrlMatch = (() => {
   // src/index.ts
   var UrlMatch = class {
     constructor(patterns = []) {
-      this.patterns = [];
+      this.pattern_set = /* @__PURE__ */ new Set();
+      this.pattern_cache = /* @__PURE__ */ new Map();
       this.add(patterns);
+    }
+    get patterns() {
+      return Array.from(this.pattern_set);
     }
     add(patterns = []) {
       if (typeof patterns === "string") {
         patterns = [patterns];
       }
-      patterns.forEach((pattern) => {
-        if (this.patterns.indexOf(pattern) === -1) {
-          this.patterns.push(pattern);
+      for (const pattern of patterns) {
+        if (!this.pattern_set.has(pattern)) {
+          this.pattern_set.add(pattern);
+          this.pattern_cache.set(pattern, new Pattern(pattern));
         }
-      });
+      }
       return this.patterns;
     }
     remove(patterns = []) {
       if (typeof patterns === "string") {
         patterns = [patterns];
       }
-      this.patterns = this.patterns.filter((pattern) => {
-        return patterns.indexOf(pattern) === -1;
-      });
+      for (const pattern of patterns) {
+        if (this.pattern_set.has(pattern)) {
+          this.pattern_set.delete(pattern);
+          this.pattern_cache.delete(pattern);
+        }
+      }
       return this.patterns;
     }
     test(content) {
-      let result = false;
-      this.patterns.forEach((pattern) => {
-        const pattern_obj = new Pattern(pattern);
-        if (pattern_obj.test(content) === true) {
-          result = true;
+      for (const pattern of this.pattern_set) {
+        const pattern_obj = this.pattern_cache.get(pattern);
+        if (pattern_obj && pattern_obj.test(content) === true) {
+          return true;
         }
-      });
-      return result;
+      }
+      return false;
     }
     debug(content) {
       const result = {};
-      this.patterns.forEach((pattern) => {
-        const pattern_obj = new Pattern(pattern);
-        result[pattern] = pattern_obj.debug(content);
-      });
+      for (const pattern of this.pattern_set) {
+        const pattern_obj = this.pattern_cache.get(pattern);
+        if (pattern_obj) {
+          result[pattern] = pattern_obj.debug(content);
+        }
+      }
       return result;
     }
   };

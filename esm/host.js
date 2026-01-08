@@ -27,9 +27,9 @@ class Host extends UrlPart {
       // make asterisk and dot at the beginning optional
       { substring: /^\*\./, replacement: "(*.)?" },
       // escape all dots
-      { substring: ".", replacement: "\\." },
+      { substring: /\./g, replacement: "\\." },
       // replace asterisks with pattern
-      { substring: "*", replacement: "[a-z0-9-_.]+" }
+      { substring: /\*/g, replacement: "[a-z0-9-_.]+" }
     ];
   }
 }

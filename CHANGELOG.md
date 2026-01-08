@@ -1,3 +1,28 @@
+# [3.6.0](https://github.com/fczbkk/UrlMatch/compare/v3.5.0...v3.6.0) (2026-01-08)
+
+
+### Bug Fixes
+
+* better escaping of special characters in some Host and Path patterns ([21b0c5e](https://github.com/fczbkk/UrlMatch/commit/21b0c5eecf22b4b6d2f8d9f3b69cfc74baefaf06))
+* rename vitest config to .mjs for CI compatibility ([aee59cb](https://github.com/fczbkk/UrlMatch/commit/aee59cbdba60cec214556ea112684c45c686b628))
+
+
+### Features
+
+* add ESM support with backward-compatible CJS ([49f1cb2](https://github.com/fczbkk/UrlMatch/commit/49f1cb27de4c719d8074480f726b7075ed01a6b1))
+* migrate to TypeScript ([16dee92](https://github.com/fczbkk/UrlMatch/commit/16dee92a5d3d64d2e268c26da2874794c178ad39))
+
+
+### Performance Improvements
+
+* cache Pattern objects to avoid repeated instantiation ([083a717](https://github.com/fczbkk/UrlMatch/commit/083a7174e24148873a05fa3c5abcaa2286339233))
+* pre-compile RegExp patterns in Params class ([f65315b](https://github.com/fczbkk/UrlMatch/commit/f65315baf0c2ec5fe17fa65f1c5f8bdbe9a82a55))
+* replace forEach with for...of and extract array literal to constant ([23e0318](https://github.com/fczbkk/UrlMatch/commit/23e031800e7059cb70b81b98635704917485c047))
+* replace forEach with for...of loops to enable early exit ([4546d53](https://github.com/fczbkk/UrlMatch/commit/4546d532d48d9e843a6bbb14d40b56aca0c0d4eb))
+* use Set for pattern deduplication instead of indexOf ([8e56bd4](https://github.com/fczbkk/UrlMatch/commit/8e56bd4cf8debd366c0f4a8a3eac88fd99171288))
+
+
+
 <a name="3.5.0"></a>
 # [3.5.0](https://github.com/fczbkk/UrlMatch/compare/v3.4.0...v3.5.0) (2023-05-07)
 

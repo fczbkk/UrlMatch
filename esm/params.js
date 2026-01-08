@@ -1,5 +1,4 @@
 import UrlPart from "./url-part.js";
-import exists from "./utilities/exists.js";
 class Params extends UrlPart {
   get is_required() {
     return false;
@@ -23,38 +22,68 @@ class Params extends UrlPart {
       pattern = null;
     }
     const result = [];
-    if (exists(pattern)) {
-      pattern.split("&").forEach((pair) => {
+    if (pattern != null) {
+      for (const pair of pattern.split("&")) {
         let [key, val] = pair.split("=");
         key = key === "*" ? ".+" : key.replace(/\*/g, ".*");
-        if (!exists(val) || val === "") {
+        if (val == null || val === "") {
           val = "=?";
         } else {
           val = val === "*" ? "=?.*" : "=" + val.replace(/\*/g, ".*");
         }
         val = val.replace(/[\[\](){}]/g, "\\$&");
         result.push(key + val);
-      });
+      }
+    }
+    this.compiled_patterns = result.map((p) => new RegExp("(^|\\&)" + p + "(\\&|$)"));
+    if (this.is_strict) {
+      const wrapped_patterns = result.map((p) => `(${p})`).join("|");
+      this.strict_compiled_pattern = new RegExp("(^|\\&)(" + wrapped_patterns + ")(\\&|$)");
     }
     return result;
   }
   test(content = "", patterns = this.pattern) {
     let result = true;
-    if (exists(patterns)) {
+    if (patterns != null) {
       if (this.is_strict && content === null && patterns.length === 0) {
         return true;
       }
-      result = patterns.reduce((previous_result, pattern) => {
-        const re = new RegExp("(^|&)" + pattern + "(&|$)");
-        return previous_result && re.test(content);
-      }, result);
+      const useCache = patterns === this.pattern && this.compiled_patterns !== null;
+      if (useCache && this.compiled_patterns) {
+        for (const re of this.compiled_patterns) {
+          if (!re.test(content)) {
+            result = false;
+            break;
+          }
+        }
+      } else {
+        for (const pattern of patterns) {
+          const re = new RegExp("(^|\\&)" + pattern + "(\\&|$)");
+          if (!re.test(content)) {
+            result = false;
+            break;
+          }
+        }
+      }
       if (this.is_strict === true) {
         if (typeof content === "string") {
-          const wrapped_patterns = patterns.map((pattern) => `(${pattern})`).join("|");
-          const re = new RegExp("(^|&)(" + wrapped_patterns + ")(&|$)");
-          result = content.split("&").reduce((previous_result, pair) => {
-            return previous_result && re.test(pair);
-          }, result);
+          if (useCache && this.strict_compiled_pattern) {
+            for (const pair of content.split("&")) {
+              if (!this.strict_compiled_pattern.test(pair)) {
+                result = false;
+                break;
+              }
+            }
+          } else {
+            const wrapped_patterns = patterns.map((p) => `(${p})`).join("|");
+            const re = new RegExp("(^|\\&)(" + wrapped_patterns + ")(\\&|$)");
+            for (const pair of content.split("&")) {
+              if (!re.test(pair)) {
+                result = false;
+                break;
+              }
+            }
+          }
         } else {
           result = false;
         }

@@ -3,18 +3,11 @@ import Host from "./host.js";
 import Path from "./path.js";
 import Params from "./params.js";
 import Fragment from "./fragment.js";
-import exists from "./utilities/exists.js";
 const split_re = new RegExp(
-  "^([a-z]+|\\*)*://([^\\/\\#\\?]+@)*([\\w\\*\\.\\-]+)*(\\:\\d+)*(/([^\\?\\#]*))*(\\?([^\\#]*))*(\\#(.*))*"
-  // (9) fragment, (10) excluding hash
+  "^(?<scheme>[a-z]+|\\*)*://(?:[^\\/\\#\\?]+@)*(?<host>[\\w\\*\\.\\-]+)*(?:\\:\\d+)*(?:/(?<path>[^\\?\\#]*))*(?:\\?(?<params>[^\\#]*))*(?:\\#(?<fragment>.*))*"
+  // fragment: everything after # (optional)
 );
-const parts_map = {
-  scheme: 1,
-  host: 3,
-  path: 6,
-  params: 8,
-  fragment: 10
-};
+const URL_PARTS = ["scheme", "host", "path", "params", "fragment"];
 class Pattern {
   constructor(pattern) {
     if (pattern === "*" || pattern === "<all_urls>") {
@@ -32,12 +25,13 @@ class Pattern {
       params: null,
       fragment: null
     };
-    const parts = pattern.match(split_re);
-    if (exists(parts) && parts !== null) {
-      for (const key in parts_map) {
-        const val = parts_map[key];
-        result[key] = exists(parts[val]) ? parts[val] : empty_value;
-      }
+    const match = pattern.match(split_re);
+    if (match?.groups) {
+      result.scheme = match.groups.scheme ?? empty_value;
+      result.host = match.groups.host ?? empty_value;
+      result.path = match.groups.path ?? empty_value;
+      result.params = match.groups.params ?? empty_value;
+      result.fragment = match.groups.fragment ?? empty_value;
     }
     return result;
   }
@@ -59,27 +53,25 @@ class Pattern {
     return pattern;
   }
   validate(url_parts = this.url_parts) {
-    let result = true;
     for (const key in url_parts) {
       const val = url_parts[key];
       if (!val.validate()) {
-        result = false;
+        return false;
       }
     }
-    return result;
+    return true;
   }
   test(url) {
-    let result = false;
-    if (exists(url)) {
-      result = true;
-      const splits = this.split(url);
-      ["scheme", "host", "path", "params", "fragment"].forEach((part) => {
-        if (!this.url_parts[part].test(splits[part])) {
-          result = false;
-        }
-      });
+    if (url == null) {
+      return false;
     }
-    return result;
+    const splits = this.split(url);
+    for (const part of URL_PARTS) {
+      if (!this.url_parts[part].test(splits[part])) {
+        return false;
+      }
+    }
+    return true;
   }
   debug(url) {
     const splits = this.split(url);
