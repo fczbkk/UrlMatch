@@ -74,9 +74,9 @@ export default abstract class UrlPart {
     }
 
     if (exists(pattern) && this.validate(pattern)) {
-      this.sanitize_replacements.forEach(({substring, replacement}) => {
+      for (const {substring, replacement} of this.sanitize_replacements) {
         pattern = (pattern as string).replace(substring, replacement);
-      });
+      }
       return new RegExp('^' + pattern + '$');
     }
     return null;

@@ -35,7 +35,7 @@ export default class Params extends UrlPart {
 
     if (exists(pattern)) {
       // replace asterisks
-      (pattern as string).split('&').forEach((pair) => {
+      for (const pair of (pattern as string).split('&')) {
         let [key, val] = pair.split('=');
 
         // if key is asterisk, then at least one character is required
@@ -55,7 +55,7 @@ export default class Params extends UrlPart {
         val = val.replace(/[\[\](){}]/g, '\\$&');
 
         result.push(key + val);
-      });
+      }
     }
 
     // Pre-compile RegExps for performance (even if result is empty array)

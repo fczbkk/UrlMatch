@@ -22,13 +22,13 @@ export default class UrlMatch {
       patterns = [patterns];
     }
 
-    patterns.forEach((pattern) => {
+    for (const pattern of patterns) {
       if (!this.pattern_set.has(pattern)) {
         this.pattern_set.add(pattern);
         // Create and cache the Pattern object once
         this.pattern_cache.set(pattern, new Pattern(pattern));
       }
-    });
+    }
 
     return this.patterns;
   }
@@ -38,13 +38,13 @@ export default class UrlMatch {
       patterns = [patterns];
     }
 
-    patterns.forEach((pattern) => {
+    for (const pattern of patterns) {
       if (this.pattern_set.has(pattern)) {
         this.pattern_set.delete(pattern);
         // Remove from cache when pattern is removed
         this.pattern_cache.delete(pattern);
       }
-    });
+    }
 
     return this.patterns;
   }

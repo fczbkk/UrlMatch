@@ -25,6 +25,8 @@ const parts_map: Record<string, number> = {
   fragment: 10
 };
 
+const URL_PARTS = ['scheme', 'host', 'path', 'params', 'fragment'] as const;
+
 interface UrlParts {
   scheme: Scheme;
   host: Host;
@@ -128,7 +130,7 @@ export default class Pattern {
     }
 
     const splits = this.split(url);
-    for (const part of ['scheme', 'host', 'path', 'params', 'fragment'] as const) {
+    for (const part of URL_PARTS) {
       if (!this.url_parts[part].test(splits[part])) {
         return false;
       }
