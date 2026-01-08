@@ -1,9 +1,8 @@
 import UrlPart from './url-part.js';
-import exists from './utilities/exists.js';
 
 export default class Scheme extends UrlPart {
   validate(pattern: string | null = this.original_pattern): boolean {
-    if (exists(pattern)) {
+    if (pattern != null) {
       const re = new RegExp(
         '^(' +
         '\\*' +     // single wildcard
@@ -11,7 +10,7 @@ export default class Scheme extends UrlPart {
         '[a-z]+' +  // any string of lowercase letters
         ')$'
       );
-      return re.test(pattern as string);
+      return re.test(pattern);
     }
     return false;
   }

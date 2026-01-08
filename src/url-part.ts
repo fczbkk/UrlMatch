@@ -1,5 +1,3 @@
-import exists from './utilities/exists.js';
-
 interface SanitizeReplacement {
   substring: string | RegExp;
   replacement: string;
@@ -33,15 +31,15 @@ export default abstract class UrlPart {
   }
 
   validate(pattern: string | null = this.original_pattern): boolean {
-    if (exists(pattern)) {
+    if (pattern != null) {
       for (const rule of this.validate_rules) {
-        if (!rule.test(pattern as string)) {
+        if (!rule.test(pattern)) {
           return false;
         }
       }
 
       for (const rule of this.invalidate_rules) {
-        if (rule.test(pattern as string)) {
+        if (rule.test(pattern)) {
           return false;
         }
       }
@@ -57,7 +55,7 @@ export default abstract class UrlPart {
       content = '';
     }
 
-    if (exists(pattern) && pattern instanceof RegExp) {
+    if (pattern != null && pattern instanceof RegExp) {
       return pattern.test(content);
     }
 
@@ -69,13 +67,13 @@ export default abstract class UrlPart {
   }
 
   sanitize(pattern: string | null = this.original_pattern): RegExp | null | string[] {
-    if (!exists(pattern)) {
+    if (pattern == null) {
       pattern = this.default_value;
     }
 
-    if (exists(pattern) && this.validate(pattern)) {
+    if (pattern != null && this.validate(pattern)) {
       for (const {substring, replacement} of this.sanitize_replacements) {
-        pattern = (pattern as string).replace(substring, replacement);
+        pattern = pattern.replace(substring, replacement);
       }
       return new RegExp('^' + pattern + '$');
     }

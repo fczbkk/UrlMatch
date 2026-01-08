@@ -1,5 +1,4 @@
 import UrlPart from './url-part.js';
-import exists from './utilities/exists.js';
 
 export default class Params extends UrlPart {
   private compiled_patterns!: RegExp[] | null;
@@ -33,15 +32,15 @@ export default class Params extends UrlPart {
 
     const result: string[] = [];
 
-    if (exists(pattern)) {
+    if (pattern != null) {
       // replace asterisks
-      for (const pair of (pattern as string).split('&')) {
+      for (const pair of pattern.split('&')) {
         let [key, val] = pair.split('=');
 
         // if key is asterisk, then at least one character is required
         key = (key === '*') ? '.+' : key.replace(/\*/g, '.*');
 
-        if (!exists(val) || val === '') {
+        if (val == null || val === '') {
           // if value is missing, it is prohibited
           // only equal sign is allowed
           val = '=?';
@@ -75,7 +74,7 @@ export default class Params extends UrlPart {
   test(content: string | null = '', patterns: string[] | null = this.pattern as string[] | null): boolean {
     let result = true;
 
-    if (exists(patterns)) {
+    if (patterns != null) {
       // special case, when we want to strictly match no params, e.g. '*://*/*?!'
       if (this.is_strict && (content === null) && ((patterns as string[]).length === 0)) {
         return true;

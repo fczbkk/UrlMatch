@@ -3,7 +3,6 @@ import Host from './host.js';
 import Path from './path.js';
 import Params from './params.js';
 import Fragment from './fragment.js';
-import exists from './utilities/exists.js';
 
 /**
  * Regular expression to parse URL patterns into components.
@@ -87,12 +86,12 @@ export default class Pattern {
     };
     const match = pattern.match(split_re);
 
-    if (exists(match) && match !== null && match.groups) {
-      result.scheme = exists(match.groups.scheme) ? match.groups.scheme : empty_value;
-      result.host = exists(match.groups.host) ? match.groups.host : empty_value;
-      result.path = exists(match.groups.path) ? match.groups.path : empty_value;
-      result.params = exists(match.groups.params) ? match.groups.params : empty_value;
-      result.fragment = exists(match.groups.fragment) ? match.groups.fragment : empty_value;
+    if (match?.groups) {
+      result.scheme = match.groups.scheme ?? empty_value;
+      result.host = match.groups.host ?? empty_value;
+      result.path = match.groups.path ?? empty_value;
+      result.params = match.groups.params ?? empty_value;
+      result.fragment = match.groups.fragment ?? empty_value;
     }
 
     return result;
@@ -129,7 +128,7 @@ export default class Pattern {
   }
 
   test(url: string): boolean {
-    if (!exists(url)) {
+    if (url == null) {
       return false;
     }
 
