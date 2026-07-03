@@ -19,14 +19,15 @@ import Fragment from './fragment.js';
  */
 const split_re = new RegExp(
   '^'                                  + // Start of string
-  '(?<scheme>[a-z]+|\\*)*'             + // scheme: protocol or wildcard (optional)
+  '(?<scheme>[a-z]+|\\*)?'             + // scheme: protocol or wildcard (optional)
   '://'                                + // scheme separator
-  '(?:[^\\/\\#\\?]+@)*'                + // username/password (ignored, non-capturing)
-  '(?<host>[\\w\\*\\.\\-]+)*'          + // host: domain with wildcards (optional)
-  '(?:\\:\\d+)*'                       + // port number (ignored, non-capturing)
-  '(?:/(?<path>[^\\?\\#]*))*'          + // path: everything after / but before ? or # (optional)
-  '(?:\\?(?<params>[^\\#]*))*'         + // params: everything after ? but before # (optional)
-  '(?:\\#(?<fragment>.*))*'              // fragment: everything after # (optional)
+  '(?:[^\\/\\#\\?]+@)?'                + // username/password (ignored, non-capturing)
+  '(?<host>[\\w\\*\\.\\-]+)?'          + // host: domain with wildcards (optional)
+  '(?:\\:\\d+)?'                       + // port number (ignored, non-capturing)
+  '(?:/(?<path>[^\\?\\#]*))?'          + // path: everything after / but before ? or # (optional)
+  '(?:\\?(?<params>[^\\#]*))?'         + // params: everything after ? but before # (optional)
+  '(?:\\#(?<fragment>.*))?'            + // fragment: everything after # (optional)
+  '$'                                    // End of string
 );
 
 const URL_PARTS = ['scheme', 'host', 'path', 'params', 'fragment'] as const;

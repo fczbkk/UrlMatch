@@ -76,6 +76,19 @@ describe('Pattern', function() {
       expect(result.fragment).toEqual('@ccc');
     });
 
+    it('should not hang on long non-URL strings', function () {
+      const start = performance.now();
+      const result = pattern.split('a'.repeat(100) + '!');
+      expect(performance.now() - start).toBeLessThan(100);
+      expect(result.scheme).toEqual(null);
+    });
+
+    it('should not split URL with unparsable content after host', function () {
+      const result = pattern.split('http://aaa.bbb:xyz/ccc');
+      expect(result.host).toEqual(null);
+      expect(result.path).toEqual(null);
+    });
+
   });
 
   describe('getUrlParts', function() {
@@ -263,6 +276,11 @@ describe('Pattern', function() {
       pattern = new Pattern('*://aaa.bbb/');
       expect(pattern.test('http://aaa.bbb/')).toBe(true);
       expect(pattern.test('http://aaa.bbb/ccc')).toBe(false);
+    });
+
+    it('should not match URL with unparsable content after host', function() {
+      pattern = new Pattern('*://aaa.bbb/');
+      expect(pattern.test('http://aaa.bbb:xyz/ccc')).toBe(false);
     });
 
   });
