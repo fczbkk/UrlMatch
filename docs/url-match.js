@@ -57,7 +57,7 @@ var UrlMatch = (() => {
         }
         return true;
       }
-      return !this.is_required;
+      return !this.is_required || this.default_value != null;
     }
     test(content = "", pattern = this.pattern) {
       if (content === null) {
@@ -124,8 +124,9 @@ var UrlMatch = (() => {
         /^(\.|-)/,
         // ends with dot or hyphen
         /(\.|-)$/,
-        // anything except characters, numbers, hyphen, dot and asterisk
-        /[^a-z0-9-.\*]/
+        // anything except characters, numbers, hyphen, dot, underscore
+        // and asterisk
+        /[^a-z0-9-._\*]/
       ];
     }
     get sanitize_replacements() {
@@ -140,6 +141,34 @@ var UrlMatch = (() => {
     }
   };
 
+  // src/port.ts
+  var Port = class extends UrlPart {
+    get is_required() {
+      return false;
+    }
+    get validate_rules() {
+      return [
+        // digits and wildcards only, e.g. "8080", "*" or "3*"
+        /^[\d\*]{1,5}$/
+      ];
+    }
+    get invalidate_rules() {
+      return [
+        // two asterisks in a row
+        /\*\*/
+      ];
+    }
+    get sanitize_replacements() {
+      return [
+        // single wildcard requires a port number
+        { substring: /^\*$/, replacement: "\\d+" },
+        // partial wildcard matches any number of digits, e.g. "3*"
+        // matches 3, 3000, 3001, etc.
+        { substring: /\*/g, replacement: "\\d*" }
+      ];
+    }
+  };
+
   // src/path.ts
   var Path = class extends UrlPart {
     get default_value() {
@@ -147,14 +176,12 @@ var UrlMatch = (() => {
     }
     get sanitize_replacements() {
       return [
-        // escape brackets
-        { substring: /\(/g, replacement: "\\(" },
-        { substring: /\)/g, replacement: "\\)" },
+        // escape all RegExp metacharacters except the `*` wildcard
+        // (`/` stays literal, it is not a metacharacter in RegExp constructor)
+        { substring: /[.+?^${}()|[\]\\]/g, replacement: "\\$&" },
         // assume trailing slash at the end of path is optional
         { substring: /\/$/, replacement: "\\/?" },
         { substring: /\/\*$/, replacement: "((/?)|/*)" },
-        // plus sign
-        { substring: /\+/g, replacement: "\\+" },
         // allow letters, numbers, plus signs, hyphens, dots, slashes
         // and underscores instead of wildcard
         { substring: /\*/g, replacement: "[a-zA-Z0-9+-./_:~!$&'()*,;=@%]*" }
@@ -163,6 +190,9 @@ var UrlMatch = (() => {
   };
 
   // src/params.ts
+  function wildcardToRegExp(text) {
+    return text.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\\/]/g, "\\$&")).join(".*");
+  }
   var Params = class extends UrlPart {
     get is_required() {
       return false;
@@ -189,13 +219,12 @@ var UrlMatch = (() => {
       if (pattern != null) {
         for (const pair of pattern.split("&")) {
           let [key, val] = pair.split("=");
-          key = key === "*" ? ".+" : key.replace(/\*/g, ".*");
+          key = key === "*" ? ".+" : wildcardToRegExp(key);
           if (val == null || val === "") {
             val = "=?";
           } else {
-            val = val === "*" ? "=?.*" : "=" + val.replace(/\*/g, ".*");
+            val = val === "*" ? "=?.*" : "=" + wildcardToRegExp(val);
           }
-          val = val.replace(/[\[\](){}]/g, "\\$&");
           result.push(key + val);
         }
       }
@@ -211,6 +240,9 @@ var UrlMatch = (() => {
       if (patterns != null) {
         if (this.is_strict && content === null && patterns.length === 0) {
           return true;
+        }
+        if (content === null) {
+          content = "";
         }
         const useCache = patterns === this.pattern && this.compiled_patterns !== null;
         if (useCache && this.compiled_patterns) {
@@ -270,19 +302,23 @@ var UrlMatch = (() => {
     }
     get sanitize_replacements() {
       return [
-        { substring: /\*/g, replacement: ".*" },
-        { substring: /\?/g, replacement: "\\?" },
-        { substring: /\//g, replacement: "\\/" }
+        // escape all RegExp metacharacters except the `*` wildcard
+        { substring: /[.+?^${}()|[\]\\\/]/g, replacement: "\\$&" },
+        { substring: /\*/g, replacement: ".*" }
       ];
     }
   };
 
   // src/pattern.ts
   var split_re = new RegExp(
-    "^(?<scheme>[a-z]+|\\*)*://(?:[^\\/\\#\\?]+@)*(?<host>[\\w\\*\\.\\-]+)*(?:\\:\\d+)*(?:/(?<path>[^\\?\\#]*))*(?:\\?(?<params>[^\\#]*))*(?:\\#(?<fragment>.*))*"
-    // fragment: everything after # (optional)
+    "^(?<scheme>[a-zA-Z]+|\\*)?://(?:[^\\/\\#\\?]+@)?(?<host>[\\w\\*\\.\\-]+)?(?:\\:(?<port>[\\d\\*]+))?(?:/(?<path>[^\\?\\#]*))?(?:\\?(?<params>[^\\#]*))?(?:\\#(?<fragment>.*))?$"
+    // End of string
   );
-  var URL_PARTS = ["scheme", "host", "path", "params", "fragment"];
+  var URL_PARTS = ["scheme", "host", "port", "path", "params", "fragment"];
+  var DEFAULT_PORTS = {
+    http: "80",
+    https: "443"
+  };
   var Pattern = class {
     constructor(pattern) {
       if (pattern === "*" || pattern === "<all_urls>") {
@@ -291,22 +327,22 @@ var UrlMatch = (() => {
       this.original_pattern = pattern;
       this.pattern = this.sanitize(pattern);
       this.url_parts = this.getUrlParts(this.pattern);
+      this.is_valid = this.validate(this.url_parts);
     }
     split(pattern = "", empty_value = null) {
       const result = {
         scheme: null,
         host: null,
+        port: null,
         path: null,
         params: null,
         fragment: null
       };
       const match = pattern.match(split_re);
       if (match?.groups) {
-        result.scheme = match.groups.scheme ?? empty_value;
-        result.host = match.groups.host ?? empty_value;
-        result.path = match.groups.path ?? empty_value;
-        result.params = match.groups.params ?? empty_value;
-        result.fragment = match.groups.fragment ?? empty_value;
+        for (const part of URL_PARTS) {
+          result[part] = match.groups[part] ?? empty_value;
+        }
       }
       return result;
     }
@@ -315,6 +351,7 @@ var UrlMatch = (() => {
       return {
         scheme: new Scheme(splits.scheme),
         host: new Host(splits.host),
+        port: new Port(splits.port),
         path: new Path(splits.path),
         params: new Params(splits.params),
         fragment: new Fragment(splits.fragment)
@@ -336,11 +373,26 @@ var UrlMatch = (() => {
       }
       return true;
     }
+    // split a tested URL, normalizing the case-insensitive parts
+    // (scheme and host) so they match lowercase patterns
+    splitUrl(url) {
+      const splits = this.split(url);
+      if (splits.scheme != null) {
+        splits.scheme = splits.scheme.toLowerCase();
+      }
+      if (splits.host != null) {
+        splits.host = splits.host.toLowerCase();
+      }
+      if (splits.port == null && splits.scheme != null) {
+        splits.port = DEFAULT_PORTS[splits.scheme] ?? null;
+      }
+      return splits;
+    }
     test(url) {
-      if (url == null) {
+      if (!this.is_valid || url == null) {
         return false;
       }
-      const splits = this.split(url);
+      const splits = this.splitUrl(url);
       for (const part of URL_PARTS) {
         if (!this.url_parts[part].test(splits[part])) {
           return false;
@@ -349,34 +401,18 @@ var UrlMatch = (() => {
       return true;
     }
     debug(url) {
-      const splits = this.split(url);
-      return {
-        scheme: {
-          pattern: this.url_parts.scheme.original_pattern,
-          value: splits.scheme,
-          result: this.url_parts.scheme.test(splits.scheme)
-        },
-        host: {
-          pattern: this.url_parts.host.original_pattern,
-          value: splits.host,
-          result: this.url_parts.host.test(splits.host)
-        },
-        path: {
-          pattern: this.url_parts.path.original_pattern,
-          value: splits.path,
-          result: this.url_parts.path.test(splits.path)
-        },
-        params: {
-          pattern: this.url_parts.params.original_pattern,
-          value: splits.params,
-          result: this.url_parts.params.test(splits.params)
-        },
-        fragment: {
-          pattern: this.url_parts.fragment.original_pattern,
-          value: splits.fragment,
-          result: this.url_parts.fragment.test(splits.fragment)
-        }
-      };
+      const splits = this.splitUrl(url);
+      const result = {};
+      for (const part of URL_PARTS) {
+        const url_part = this.url_parts[part];
+        result[part] = {
+          pattern: url_part.original_pattern,
+          value: splits[part],
+          // part of an invalid pattern must never report a match
+          result: url_part.validate() && url_part.test(splits[part])
+        };
+      }
+      return result;
     }
   };
 

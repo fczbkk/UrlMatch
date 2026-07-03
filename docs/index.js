@@ -31,6 +31,12 @@ window.addEventListener('load', function () {
     parts.push(getWrappedDetail(data.scheme));
     parts.push('://');
     parts.push(getWrappedDetail(data.host));
+
+    if (data.port.value !== null) {
+      parts.push(':');
+      parts.push(getWrappedDetail(data.port));
+    }
+
     parts.push('/');
     parts.push(getWrappedDetail(data.path));
 
