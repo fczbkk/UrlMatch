@@ -66,6 +66,7 @@ export default class Pattern {
   original_pattern: string;
   pattern: string;
   url_parts: UrlParts;
+  is_valid: boolean;
 
   constructor(pattern: string) {
     if (pattern === '*' || pattern === '<all_urls>') {
@@ -75,6 +76,7 @@ export default class Pattern {
     this.original_pattern = pattern;
     this.pattern = this.sanitize(pattern);
     this.url_parts = this.getUrlParts(this.pattern);
+    this.is_valid = this.validate(this.url_parts);
   }
 
   split(pattern: string = '', empty_value: null = null): UrlSplits {
@@ -129,7 +131,8 @@ export default class Pattern {
   }
 
   test(url: string): boolean {
-    if (url == null) {
+    // invalid pattern must never match any URL
+    if (!this.is_valid || url == null) {
       return false;
     }
 
@@ -145,33 +148,18 @@ export default class Pattern {
 
   debug(url: string): UrlMatchPatternDebug {
     const splits = this.split(url);
+    const result = {} as UrlMatchPatternDebug;
 
-    return {
-      scheme: {
-        pattern: this.url_parts.scheme.original_pattern,
-        value: splits.scheme,
-        result: this.url_parts.scheme.test(splits.scheme)
-      },
-      host: {
-        pattern: this.url_parts.host.original_pattern,
-        value: splits.host,
-        result: this.url_parts.host.test(splits.host)
-      },
-      path: {
-        pattern: this.url_parts.path.original_pattern,
-        value: splits.path,
-        result: this.url_parts.path.test(splits.path)
-      },
-      params: {
-        pattern: this.url_parts.params.original_pattern,
-        value: splits.params,
-        result: this.url_parts.params.test(splits.params)
-      },
-      fragment: {
-        pattern: this.url_parts.fragment.original_pattern,
-        value: splits.fragment,
-        result: this.url_parts.fragment.test(splits.fragment)
-      }
-    };
+    for (const part of URL_PARTS) {
+      const url_part = this.url_parts[part];
+      result[part] = {
+        pattern: url_part.original_pattern,
+        value: splits[part],
+        // part of an invalid pattern must never report a match
+        result: url_part.validate() && url_part.test(splits[part])
+      };
+    }
+
+    return result;
   }
 }

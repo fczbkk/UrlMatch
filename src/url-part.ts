@@ -47,7 +47,9 @@ export default abstract class UrlPart {
       return true;
     }
 
-    return !this.is_required;
+    // a missing part is acceptable when it is optional
+    // or when a default value can stand in for it
+    return !this.is_required || this.default_value != null;
   }
 
   test(content: string | null = '', pattern: RegExp | string[] | null = this.pattern): boolean {

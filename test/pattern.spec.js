@@ -283,6 +283,26 @@ describe('Pattern', function() {
       expect(pattern.test('http://aaa.bbb:xyz/ccc')).toBe(false);
     });
 
+    it('should not match anything when pattern is missing scheme', function() {
+      pattern = new Pattern('aaa.bbb/*');
+      expect(pattern.is_valid).toBe(false);
+      expect(pattern.test('http://aaa.bbb/')).toBe(false);
+      expect(pattern.test('http://ccc.ddd/')).toBe(false);
+    });
+
+    it('should not match anything when pattern host is invalid', function() {
+      pattern = new Pattern('*://aaa*bbb/*');
+      expect(pattern.is_valid).toBe(false);
+      expect(pattern.test('http://aaaxbbb/')).toBe(false);
+      expect(pattern.test('http://ccc.ddd/')).toBe(false);
+    });
+
+    it('should not match anything when pattern params are invalid', function() {
+      pattern = new Pattern('*://*/*?aaa==bbb');
+      expect(pattern.is_valid).toBe(false);
+      expect(pattern.test('http://ccc.ddd/?aaa=bbb')).toBe(false);
+    });
+
   });
 
   describe('debug', function () {
