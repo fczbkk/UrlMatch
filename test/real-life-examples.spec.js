@@ -153,6 +153,12 @@ describe('Real life examples', function() {
     expect(my_match.test(url)).toBe(true);
   });
 
+  it('should not match URL without params against a param pattern', () => {
+    const my_match = new UrlMatch('*://*/*?nu*');
+    expect(my_match.test('https://aaa.bbb/')).toBe(false);
+    expect(my_match.test('https://aaa.bbb/?null')).toBe(true);
+  });
+
   it('should work with params containing square brackets in keys', () => {
     const url = 'https://aaa.bbb/?ccc[]=ddd';
     const my_match = new UrlMatch('*://*/*?ccc[]=*');

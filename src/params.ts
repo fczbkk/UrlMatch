@@ -86,6 +86,12 @@ export default class Params extends UrlPart {
         return true;
       }
 
+      // treat missing params as empty string, otherwise RegExp.test()
+      // would coerce null to the string "null"
+      if (content === null) {
+        content = '';
+      }
+
       // Use pre-compiled RegExps only if testing against this.pattern
       const useCache = patterns === this.pattern && this.compiled_patterns !== null;
 

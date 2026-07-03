@@ -238,6 +238,15 @@ describe('Params', function() {
       expect(params.test('aaaxbbb=ccc', pattern)).toBe(false);
     });
 
+    it('should not match missing params against a key pattern', function() {
+      // RegExp.test() coerces null to the string "null", so patterns
+      // resembling that string used to match URLs without any params
+      const pattern = params.sanitize('nu*');
+      expect(params.test(null, pattern)).toBe(false);
+      expect(params.test('', pattern)).toBe(false);
+      expect(params.test('null', pattern)).toBe(true);
+    });
+
     it('should not treat plus sign in val as a quantifier', function() {
       const pattern = params.sanitize('aaa=bbb+ccc');
       expect(params.test('aaa=bbb+ccc', pattern)).toBe(true);
