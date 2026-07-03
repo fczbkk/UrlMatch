@@ -19,7 +19,7 @@ import Fragment from './fragment.js';
  */
 const split_re = new RegExp(
   '^'                                  + // Start of string
-  '(?<scheme>[a-z]+|\\*)?'             + // scheme: protocol or wildcard (optional)
+  '(?<scheme>[a-zA-Z]+|\\*)?'          + // scheme: protocol or wildcard (optional)
   '://'                                + // scheme separator
   '(?:[^\\/\\#\\?]+@)?'                + // username/password (ignored, non-capturing)
   '(?<host>[\\w\\*\\.\\-]+)?'          + // host: domain with wildcards (optional)
@@ -130,13 +130,26 @@ export default class Pattern {
     return true;
   }
 
+  // split a tested URL, normalizing the case-insensitive parts
+  // (scheme and host) so they match lowercase patterns
+  splitUrl(url: string): UrlSplits {
+    const splits = this.split(url);
+    if (splits.scheme != null) {
+      splits.scheme = splits.scheme.toLowerCase();
+    }
+    if (splits.host != null) {
+      splits.host = splits.host.toLowerCase();
+    }
+    return splits;
+  }
+
   test(url: string): boolean {
     // invalid pattern must never match any URL
     if (!this.is_valid || url == null) {
       return false;
     }
 
-    const splits = this.split(url);
+    const splits = this.splitUrl(url);
     for (const part of URL_PARTS) {
       if (!this.url_parts[part].test(splits[part])) {
         return false;
@@ -147,7 +160,7 @@ export default class Pattern {
   }
 
   debug(url: string): UrlMatchPatternDebug {
-    const splits = this.split(url);
+    const splits = this.splitUrl(url);
     const result = {} as UrlMatchPatternDebug;
 
     for (const part of URL_PARTS) {

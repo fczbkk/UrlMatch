@@ -303,6 +303,17 @@ describe('Pattern', function() {
       expect(pattern.test('http://ccc.ddd/?aaa=bbb')).toBe(false);
     });
 
+    it('should match scheme and host case-insensitively', function() {
+      pattern = new Pattern('http://aaa.bbb/');
+      expect(pattern.test('HTTP://AAA.BBB/')).toBe(true);
+      expect(pattern.test('http://AaA.bBb')).toBe(true);
+    });
+
+    it('should keep path matching case-sensitive', function() {
+      pattern = new Pattern('*://aaa.bbb/ccc');
+      expect(pattern.test('http://aaa.bbb/CCC')).toBe(false);
+    });
+
   });
 
   describe('debug', function () {
