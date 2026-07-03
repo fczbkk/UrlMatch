@@ -1,5 +1,14 @@
 import UrlPart from './url-part.js';
 
+// escape RegExp metacharacters in literal text while converting
+// `*` wildcards to universal matches
+function wildcardToRegExp(text: string): string {
+  return text
+    .split('*')
+    .map((part) => part.replace(/[.+?^${}()|[\]\\\/]/g, '\\$&'))
+    .join('.*');
+}
+
 export default class Params extends UrlPart {
   private compiled_patterns!: RegExp[] | null;
   private strict_compiled_pattern!: RegExp | null;
@@ -38,7 +47,7 @@ export default class Params extends UrlPart {
         let [key, val] = pair.split('=');
 
         // if key is asterisk, then at least one character is required
-        key = (key === '*') ? '.+' : key.replace(/\*/g, '.*');
+        key = (key === '*') ? '.+' : wildcardToRegExp(key);
 
         if (val == null || val === '') {
           // if value is missing, it is prohibited
@@ -47,11 +56,8 @@ export default class Params extends UrlPart {
         } else {
           // if value match is universal, the value is optional
           // thus the equal sign is optional
-          val = (val === '*') ? '=?.*' : '=' + val.replace(/\*/g, '.*');
+          val = (val === '*') ? '=?.*' : '=' + wildcardToRegExp(val);
         }
-
-        // escape all brackets
-        val = val.replace(/[\[\](){}]/g, '\\$&');
 
         result.push(key + val);
       }

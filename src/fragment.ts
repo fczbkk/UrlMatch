@@ -14,9 +14,9 @@ export default class Fragment extends UrlPart {
 
   get sanitize_replacements() {
     return [
-      {substring: /\*/g, replacement: '.*'},
-      {substring: /\?/g, replacement: '\\\?'},
-      {substring: /\//g, replacement: '\\\/'}
+      // escape all RegExp metacharacters except the `*` wildcard
+      {substring: /[.+?^${}()|[\]\\\/]/g, replacement: '\\$&'},
+      {substring: /\*/g, replacement: '.*'}
     ];
   }
 }

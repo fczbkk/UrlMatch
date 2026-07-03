@@ -128,6 +128,18 @@ describe('Path', function() {
       expect(path.test('apixv2xtest', pattern)).toBe(false);
     });
 
+    it('should escape square brackets in paths', function () {
+      const pattern = path.sanitize('aaa[bbb]*');
+      expect(path.test('aaa[bbb]ccc', pattern)).toBe(true);
+      expect(path.test('aaabbb', pattern)).toBe(false);
+    });
+
+    it('should not treat dot as a wildcard', function () {
+      const pattern = path.sanitize('aaa.bbb');
+      expect(path.test('aaa.bbb', pattern)).toBe(true);
+      expect(path.test('aaaxbbb', pattern)).toBe(false);
+    });
+
   });
 
 });

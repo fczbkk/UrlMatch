@@ -126,6 +126,15 @@ describe('Params', function() {
       ]);
     });
 
+    it('should escape RegExp metacharacters in keys', function() {
+      expect(params.sanitize('aaa[]=bbb')).toEqual([
+        'aaa\\[\\]=bbb'
+      ]);
+      expect(params.sanitize('aaa.bbb=ccc')).toEqual([
+        'aaa\\.bbb=ccc'
+      ]);
+    });
+
   });
 
   describe('test', function() {
@@ -215,6 +224,24 @@ describe('Params', function() {
     it('should match val with serialized JSON data', function() {
       const pattern = params.sanitize('aaa={bbb:*,ddd:[*,fff]}');
       expect(params.test('aaa={bbb:ccc,ddd:[eee,fff]}', pattern)).toBe(true);
+    });
+
+    it('should match key with square brackets', function() {
+      const pattern = params.sanitize('aaa[]=*');
+      expect(params.test('aaa[]=bbb', pattern)).toBe(true);
+      expect(params.test('ccc=ddd', pattern)).toBe(false);
+    });
+
+    it('should not treat dot in key as a wildcard', function() {
+      const pattern = params.sanitize('aaa.bbb=ccc');
+      expect(params.test('aaa.bbb=ccc', pattern)).toBe(true);
+      expect(params.test('aaaxbbb=ccc', pattern)).toBe(false);
+    });
+
+    it('should not treat plus sign in val as a quantifier', function() {
+      const pattern = params.sanitize('aaa=bbb+ccc');
+      expect(params.test('aaa=bbb+ccc', pattern)).toBe(true);
+      expect(params.test('aaa=bbbbccc', pattern)).toBe(false);
     });
 
     it('should match unwanted val', function() {

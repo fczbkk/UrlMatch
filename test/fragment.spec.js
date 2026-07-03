@@ -45,6 +45,11 @@ describe('Fragment', function() {
       expect(fragment.sanitize('aaa*bbb*ccc')).toEqual(/^aaa.*bbb.*ccc$/);
     });
 
+    it('should escape RegExp metacharacters', function() {
+      expect(fragment.sanitize('aaa[bbb')).toEqual(/^aaa\[bbb$/);
+      expect(fragment.sanitize('aaa.bbb')).toEqual(/^aaa\.bbb$/);
+    });
+
   });
 
   describe('test', function() {
@@ -98,6 +103,17 @@ describe('Fragment', function() {
     it('should match fragment with slash', function () {
       const pattern = fragment.sanitize('aaa/bbb');
       expect(fragment.test('aaa/bbb', pattern)).toBe(true);
+    });
+
+    it('should match fragment with square bracket', function () {
+      const pattern = fragment.sanitize('aaa[bbb');
+      expect(fragment.test('aaa[bbb', pattern)).toBe(true);
+    });
+
+    it('should not treat dot as a wildcard', function () {
+      const pattern = fragment.sanitize('aaa.bbb');
+      expect(fragment.test('aaa.bbb', pattern)).toBe(true);
+      expect(fragment.test('aaaxbbb', pattern)).toBe(false);
     });
 
   });

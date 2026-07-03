@@ -147,4 +147,16 @@ describe('Real life examples', function() {
     expect(my_match.test(url)).toBe(true);
   });
 
+  it('should work with fragments containing square brackets', () => {
+    const url = 'https://aaa.bbb/ccc#ddd[0]';
+    const my_match = new UrlMatch('*://*/*#ddd[*]');
+    expect(my_match.test(url)).toBe(true);
+  });
+
+  it('should work with params containing square brackets in keys', () => {
+    const url = 'https://aaa.bbb/?ccc[]=ddd';
+    const my_match = new UrlMatch('*://*/*?ccc[]=*');
+    expect(my_match.test(url)).toBe(true);
+  });
+
 });
