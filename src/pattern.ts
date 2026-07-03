@@ -1,5 +1,6 @@
 import Scheme from './scheme.js';
 import Host from './host.js';
+import Port from './port.js';
 import Path from './path.js';
 import Params from './params.js';
 import Fragment from './fragment.js';
@@ -13,6 +14,7 @@ import Fragment from './fragment.js';
  * Named groups:
  * - scheme: Protocol (http, https, *, etc.)
  * - host: Domain name (with optional wildcards)
+ * - port: Port number (or wildcard)
  * - path: URL path (without leading slash)
  * - params: Query parameters (without leading ?)
  * - fragment: Hash fragment (without leading #)
@@ -23,18 +25,25 @@ const split_re = new RegExp(
   '://'                                + // scheme separator
   '(?:[^\\/\\#\\?]+@)?'                + // username/password (ignored, non-capturing)
   '(?<host>[\\w\\*\\.\\-]+)?'          + // host: domain with wildcards (optional)
-  '(?:\\:\\d+)?'                       + // port number (ignored, non-capturing)
+  '(?:\\:(?<port>[\\d\\*]+))?'         + // port: port number with wildcards (optional)
   '(?:/(?<path>[^\\?\\#]*))?'          + // path: everything after / but before ? or # (optional)
   '(?:\\?(?<params>[^\\#]*))?'         + // params: everything after ? but before # (optional)
   '(?:\\#(?<fragment>.*))?'            + // fragment: everything after # (optional)
   '$'                                    // End of string
 );
 
-const URL_PARTS = ['scheme', 'host', 'path', 'params', 'fragment'] as const;
+const URL_PARTS = ['scheme', 'host', 'port', 'path', 'params', 'fragment'] as const;
+
+// well-known ports used when a tested URL does not state one explicitly
+const DEFAULT_PORTS: Record<string, string> = {
+  http: '80',
+  https: '443'
+};
 
 interface UrlParts {
   scheme: Scheme;
   host: Host;
+  port: Port;
   path: Path;
   params: Params;
   fragment: Fragment;
@@ -43,6 +52,7 @@ interface UrlParts {
 interface UrlSplits {
   scheme: string | null;
   host: string | null;
+  port: string | null;
   path: string | null;
   params: string | null;
   fragment: string | null;
@@ -57,6 +67,7 @@ export interface UrlMatchFragmentDebug {
 export interface UrlMatchPatternDebug {
   scheme: UrlMatchFragmentDebug;
   host: UrlMatchFragmentDebug;
+  port: UrlMatchFragmentDebug;
   path: UrlMatchFragmentDebug;
   params: UrlMatchFragmentDebug;
   fragment: UrlMatchFragmentDebug;
@@ -83,6 +94,7 @@ export default class Pattern {
     const result: UrlSplits = {
       scheme: null,
       host: null,
+      port: null,
       path: null,
       params: null,
       fragment: null
@@ -90,11 +102,9 @@ export default class Pattern {
     const match = pattern.match(split_re);
 
     if (match?.groups) {
-      result.scheme = match.groups.scheme ?? empty_value;
-      result.host = match.groups.host ?? empty_value;
-      result.path = match.groups.path ?? empty_value;
-      result.params = match.groups.params ?? empty_value;
-      result.fragment = match.groups.fragment ?? empty_value;
+      for (const part of URL_PARTS) {
+        result[part] = match.groups[part] ?? empty_value;
+      }
     }
 
     return result;
@@ -105,6 +115,7 @@ export default class Pattern {
     return {
       scheme: new Scheme(splits.scheme),
       host: new Host(splits.host),
+      port: new Port(splits.port),
       path: new Path(splits.path),
       params: new Params(splits.params),
       fragment: new Fragment(splits.fragment)
@@ -139,6 +150,10 @@ export default class Pattern {
     }
     if (splits.host != null) {
       splits.host = splits.host.toLowerCase();
+    }
+    // URL without an explicit port is served on the scheme's default port
+    if (splits.port == null && splits.scheme != null) {
+      splits.port = DEFAULT_PORTS[splits.scheme] ?? null;
     }
     return splits;
   }

@@ -7,6 +7,7 @@ JavaScript library for URL pattern matching using Chrome extension-style pattern
 - Chrome extension [match patterns](http://developer.chrome.com/extensions/match_patterns.html) compatible
 - URL parameter matching with wildcards
 - URL fragment matching
+- URL port matching
 - Strict mode for precise parameter validation
 - Debug mode for pattern troubleshooting
 - Works in both Node.js and browsers
@@ -40,6 +41,7 @@ import UrlMatch from '@fczbkk/url-match';
   - [Match URL Parameters](#match-url-parameters)
   - [Strict Mode for Params](#strict-mode-for-params)
   - [Match URL Fragments](#match-url-fragments)
+  - [Match URL Ports](#match-url-ports)
 - [Debugging](#debugging)
 
 ## Basic Usage
@@ -185,6 +187,41 @@ myMatch.test('http://google.com/#aaa'); // true
 myMatch.test('http://google.com/#aaabbb'); // true
 ```
 
+### Match URL Ports
+
+Beyond Chrome's pattern matching, you can match URL ports. A pattern without a port matches any port.
+
+```javascript
+const myMatch = new UrlMatch('*://localhost:3000/*');
+myMatch.test('http://localhost:3000/'); // true
+myMatch.test('http://localhost:8080/'); // false
+myMatch.test('http://localhost/'); // false
+```
+
+Use a wildcard to match any port:
+
+```javascript
+const myMatch = new UrlMatch('*://localhost:*/*');
+myMatch.test('http://localhost:3000/'); // true
+myMatch.test('http://localhost:8080/'); // true
+```
+
+Use a partial wildcard to match a range of ports:
+
+```javascript
+const myMatch = new UrlMatch('*://localhost:3*/*');
+myMatch.test('http://localhost:3000/'); // true
+myMatch.test('http://localhost:3001/'); // true
+myMatch.test('http://localhost:8080/'); // false
+```
+
+Default ports are inferred from the scheme (`http` → `80`, `https` → `443`):
+
+```javascript
+const myMatch = new UrlMatch('http://example.com:80/*');
+myMatch.test('http://example.com/'); // true
+```
+
 ## Debugging
 
 Use the `debug()` method to get detailed information about how each URL part matches against the pattern. Instead of a boolean, it returns an object showing the pattern, value, and result for each URL component.
@@ -203,6 +240,11 @@ myMatch.debug('http://aaa.bbb/');
     "host": {
       "pattern": "aaa.bbb",
       "value": "aaa.bbb",
+      "result": true
+    },
+    "port": {
+      "pattern": null,
+      "value": "80",
       "result": true
     },
     "path": {

@@ -53,6 +53,12 @@ describe('Real life examples', function() {
     expect(my_match.test('http://localhost:3000/aaa')).toBe(true);
   });
 
+  it('should match localhost on specific port only', function() {
+    const my_match = new UrlMatch('*://localhost:3000/*');
+    expect(my_match.test('http://localhost:3000/aaa')).toBe(true);
+    expect(my_match.test('http://localhost:8080/aaa')).toBe(false);
+  });
+
   it('should not require `/` after a domain name', function() {
     const my_match = new UrlMatch('http://google.com/');
     expect(my_match.test('http://google.com')).toBe(true);

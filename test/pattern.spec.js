@@ -89,6 +89,13 @@ describe('Pattern', function() {
       expect(result.path).toEqual(null);
     });
 
+    it('should split port from host', function () {
+      const result = pattern.split('http://aaa.bbb:8080/ccc');
+      expect(result.host).toEqual('aaa.bbb');
+      expect(result.port).toEqual('8080');
+      expect(result.path).toEqual('ccc');
+    });
+
   });
 
   describe('getUrlParts', function() {
@@ -314,6 +321,47 @@ describe('Pattern', function() {
       expect(pattern.test('http://aaa.bbb/CCC')).toBe(false);
     });
 
+    it('should match specific port', function() {
+      pattern = new Pattern('*://aaa.bbb:8080/*');
+      expect(pattern.test('http://aaa.bbb:8080/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb:9090/')).toBe(false);
+      expect(pattern.test('http://aaa.bbb/')).toBe(false);
+    });
+
+    it('should match any port when pattern has no port', function() {
+      pattern = new Pattern('*://aaa.bbb/*');
+      expect(pattern.test('http://aaa.bbb/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb:8080/')).toBe(true);
+    });
+
+    it('should match any port on wildcard port', function() {
+      pattern = new Pattern('*://aaa.bbb:*/*');
+      expect(pattern.test('http://aaa.bbb:3000/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb/')).toBe(true);
+    });
+
+    it('should match port range on partial wildcard', function() {
+      pattern = new Pattern('*://aaa.bbb:3*/*');
+      expect(pattern.test('http://aaa.bbb:3000/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb:3001/')).toBe(true);
+      expect(pattern.test('http://aaa.bbb:8080/')).toBe(false);
+    });
+
+    it('should match default port for scheme', function() {
+      pattern = new Pattern('http://aaa.bbb:80/*');
+      expect(pattern.test('http://aaa.bbb/')).toBe(true);
+      expect(pattern.test('https://aaa.bbb/')).toBe(false);
+
+      pattern = new Pattern('https://aaa.bbb:443/*');
+      expect(pattern.test('https://aaa.bbb/')).toBe(true);
+    });
+
+    it('should not match anything when pattern port is invalid', function() {
+      pattern = new Pattern('*://aaa.bbb:abc/*');
+      expect(pattern.is_valid).toBe(false);
+      expect(pattern.test('http://aaa.bbb/')).toBe(false);
+    });
+
   });
 
   describe('debug', function () {
@@ -323,6 +371,13 @@ describe('Pattern', function() {
       const result = pattern.debug('http://aaa.bbb/');
       expect(result.scheme)
         .toEqual({pattern: '*', value: 'http', result: true});
+    });
+
+    it('should include port in debug object', function () {
+      pattern = new Pattern('*://aaa.bbb/');
+      const result = pattern.debug('http://aaa.bbb/');
+      expect(result.port)
+        .toEqual({pattern: null, value: '80', result: true});
     });
 
   });
