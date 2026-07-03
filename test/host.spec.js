@@ -55,6 +55,10 @@ describe('Host', function() {
       expect(host.validate('aaa+bbb.ccc')).toBe(false);
     });
 
+    it('should validate underscore', function() {
+      expect(host.validate('aaa_bbb.ccc')).toBe(true);
+    });
+
     it('should not validate when starts or ends with dot or hyphen', function() {
       expect(host.validate('-aaa.bbb')).toBe(false);
       expect(host.validate('.aaa.bbb')).toBe(false);
@@ -119,6 +123,12 @@ describe('Host', function() {
     it('should allow underscore in host', function () {
       const pattern = host.sanitize('*');
       expect(host.test('aaa_bbb', pattern)).toBe(true);
+    });
+
+    it('should match host pattern containing underscore', function () {
+      const pattern = host.sanitize('aaa_bbb.ccc');
+      expect(host.test('aaa_bbb.ccc', pattern)).toBe(true);
+      expect(host.test('aaaxbbb.ccc', pattern)).toBe(false);
     });
 
     it('should escape all dots in multi-level domains', function () {

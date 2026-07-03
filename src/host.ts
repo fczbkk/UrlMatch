@@ -20,8 +20,9 @@ export default class Host extends UrlPart {
       /^(\.|-)/,
       // ends with dot or hyphen
       /(\.|-)$/,
-      // anything except characters, numbers, hyphen, dot and asterisk
-      /[^a-z0-9-.\*]/
+      // anything except characters, numbers, hyphen, dot, underscore
+      // and asterisk
+      /[^a-z0-9-._\*]/
     ];
   }
 
