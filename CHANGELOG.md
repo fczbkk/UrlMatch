@@ -1,3 +1,23 @@
+# [3.7.0](https://github.com/fczbkk/UrlMatch/compare/v3.6.0...v3.7.0) (2026-07-03)
+
+
+### Bug Fixes
+
+* add GitHub Pages deployment with required permissions ([d13188a](https://github.com/fczbkk/UrlMatch/commit/d13188a666675e462f9169f85c6418473a605764))
+* allow underscores in host patterns ([bd2e04d](https://github.com/fczbkk/UrlMatch/commit/bd2e04d28eec4c74034857cd3e8315992e571b08))
+* escape RegExp metacharacters in path, fragment and params patterns ([46b9c66](https://github.com/fczbkk/UrlMatch/commit/46b9c66a3917c35529c0cc9c5ac198db95ae2712))
+* make invalid patterns match nothing instead of all URLs ([a322026](https://github.com/fczbkk/UrlMatch/commit/a3220263270f79502d4b00deaadbc92684fb1130))
+* match scheme and host case-insensitively ([267a428](https://github.com/fczbkk/UrlMatch/commit/267a428d859ae921fbe49461d92b7d2c7fd3f4a8))
+* prevent catastrophic backtracking in URL split regex ([03db8c8](https://github.com/fczbkk/UrlMatch/commit/03db8c8947b4d094c2dfb82e9701b724581002bb))
+* treat missing params as empty string when matching ([1538527](https://github.com/fczbkk/UrlMatch/commit/1538527d84232cfc203e629c7a3480e59d7a3d5b))
+
+
+### Features
+
+* add port matching support with wildcards ([e13951d](https://github.com/fczbkk/UrlMatch/commit/e13951d8741bdb04c430b89ccc76201575e4df3a))
+
+
+
 # [3.6.0](https://github.com/fczbkk/UrlMatch/compare/v3.5.0...v3.6.0) (2026-01-08)
 
 

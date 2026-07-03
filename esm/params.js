@@ -1,4 +1,7 @@
 import UrlPart from "./url-part.js";
+function wildcardToRegExp(text) {
+  return text.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\\/]/g, "\\$&")).join(".*");
+}
 class Params extends UrlPart {
   get is_required() {
     return false;
@@ -25,13 +28,12 @@ class Params extends UrlPart {
     if (pattern != null) {
       for (const pair of pattern.split("&")) {
         let [key, val] = pair.split("=");
-        key = key === "*" ? ".+" : key.replace(/\*/g, ".*");
+        key = key === "*" ? ".+" : wildcardToRegExp(key);
         if (val == null || val === "") {
           val = "=?";
         } else {
-          val = val === "*" ? "=?.*" : "=" + val.replace(/\*/g, ".*");
+          val = val === "*" ? "=?.*" : "=" + wildcardToRegExp(val);
         }
-        val = val.replace(/[\[\](){}]/g, "\\$&");
         result.push(key + val);
       }
     }
@@ -47,6 +49,9 @@ class Params extends UrlPart {
     if (patterns != null) {
       if (this.is_strict && content === null && patterns.length === 0) {
         return true;
+      }
+      if (content === null) {
+        content = "";
       }
       const useCache = patterns === this.pattern && this.compiled_patterns !== null;
       if (useCache && this.compiled_patterns) {
